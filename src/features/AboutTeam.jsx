@@ -2,7 +2,6 @@ import Video from "../components/Video";
 
 function AboutTeam() {
   return (
-    /* id para NavBar scrollavel */
     <section id="equipe" className="bg-[#0a1945] py-20 px-6">
       <div className="max-w-4xl mx-auto flex flex-col items-center">
         <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-10 text-center">
@@ -10,9 +9,7 @@ function AboutTeam() {
         </h2>
         /* Vídeo de apresentação, a fazer */
         <div className="w-full mb-12">
-          <Video
-            videoId="GkbAcwYix7I" /* Substituir pelo id do vídeo original depois */
-          />
+          <Video videoId="GkbAcwYix7I" />
         </div>
         /* Texto de apresentação */
         <div className="text-gray-300 text-sm md:text-base leading-relaxed space-y-6 text-justify">

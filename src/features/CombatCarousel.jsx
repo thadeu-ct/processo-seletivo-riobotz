@@ -44,7 +44,6 @@ function CombatCarousel() {
   };
 
   return (
-    /* id para NavBar scrollavel */
     <section id="combates" className="py-20 bg-white">
       <div className="max-w-6xl mx-auto px-4">
         <div className="bg-white border-4 border-[#0a1945] rounded-xl overflow-hidden shadow-2xl pb-10">

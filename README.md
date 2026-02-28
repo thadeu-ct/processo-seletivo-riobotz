@@ -50,21 +50,21 @@ O projeto utiliza uma abordagem moderna de _Feature-Based Architecture_, separan
 └── package.json
 ```
 
-✨ Contribuidores
+## ✨ Contribuidores
 Desenvolvido com a colaboração de:
 
 <p align="center">
-<a href="https://github.com/thadeu-ct">
-<img src="https://www.google.com/search?q=https://github.com/thadeu-ct.png" width="100" style="border-radius:50%" alt="Thadeu">
-<br />
-<sub><b>Thadeu Cavalcanti</b></sub><br />
-<sub>Frontend & Arquitetura UI/UX</sub>
-</a>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<a href="https://www.google.com/search?q=https://github.com/joaocapechi">
-<img src="https://www.google.com/search?q=https://github.com/joaocapechi.png" width="100" style="border-radius:50%" alt="João Capechi">
-<br />
-<sub><b>João Capechi (Telhado)</b></sub><br />
-<sub>Backend & Integração de API</sub>
-</a>
+  <a href="https://github.com/thadeu-ct">
+    <img src="https://github.com/thadeu-ct.png" width="100" style="border-radius:50%" alt="Thadeu">
+    <br />
+    <sub><b>Thadeu Cavalcanti</b></sub><br />
+    <sub>Frontend & Arquitetura UI/UX</sub>
+  </a>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://github.com/joaocapechi">
+    <img src="https://github.com/joaocapechi.png" width="100" style="border-radius:50%" alt="João Capechi">
+    <br />
+    <sub><b>João Capechi (Telhado)</b></sub><br />
+    <sub>Backend & Integração de API</sub>
+  </a>
 </p>

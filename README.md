@@ -2,7 +2,7 @@
 
 Esta é a plataforma web oficial desenvolvida para o processo seletivo da **RioBotz**, a equipe de robótica da PUC-Rio. O projeto foi construído do zero utilizando React e Tailwind CSS, focado em criar uma experiência interativa e gamificada para os candidatos, além de fornecer um painel de controle robusto para a administração da equipe.
 
-**[🔗 Acesse a plataforma](https://seletivo-riobotz.vercel.app)** _(Substitua pelo seu link do Vercel)_
+**[🔗 Acesse a plataforma](https://pros-sec-riobotz.vercel.app)**
 
 ## ✨ Tecnologias Utilizadas
 

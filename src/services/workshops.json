@@ -1,0 +1,145 @@
+[
+  {
+    "id": "eletronica-1-componentes",
+    "titulo": "Eletrônica 1: Baterias e Motores",
+    "descricao": "Entenda as grandezas elétricas na prática! Vamos botar a mão em baterias e motores reais, além de entender fisicamente como funciona um sinal eletrônico (PWM).",
+    "tipo": "Presencial",
+    "dataHora": "A definir",
+    "local": "Laboratório de Robótica",
+    "areas": ["eletronica", "autonomos"],
+    "videoId": null,
+    "quizLink": null
+  },
+  {
+    "id": "eletronica-2-sistemas",
+    "titulo": "Eletrônica 2: Sistemas Completos",
+    "descricao": "Conheça o sistema nervoso do robô! Demonstração física de eletrônicas completas, passando por ESC, Receiver, Rádio, Mixer, BEC e Chave Geral.",
+    "tipo": "Presencial",
+    "dataHora": "A definir",
+    "local": "Laboratório de Robótica",
+    "areas": ["eletronica", "autonomos"],
+    "videoId": null,
+    "quizLink": null
+  },
+  {
+    "id": "microcontroladores-2-pratica",
+    "titulo": "Microcontroladores 2: Protoboard e Lógica",
+    "descricao": "Oficina prática com protoboards! Aplique lógica de programação básica, entenda a estrutura Setup/Loop e aprenda a ler e escrever sinais no microcontrolador.",
+    "tipo": "Presencial",
+    "dataHora": "A definir",
+    "local": "Laboratório de Autônomos",
+    "areas": ["autonomos"],
+    "videoId": null,
+    "quizLink": null
+  },
+  {
+    "id": "easyeda-pratica",
+    "titulo": "Oficina de EasyEDA",
+    "descricao": "Mão na massa no design de PCBs! Prática intensiva de desenho e roteamento de placas de circuito impresso usando o EasyEDA.",
+    "tipo": "Presencial",
+    "dataHora": "A definir",
+    "local": "Sala Reservada",
+    "areas": ["autonomos"],
+    "videoId": null,
+    "quizLink": null
+  },
+  {
+    "id": "materiais-2-identificacao",
+    "titulo": "Materiais 2: Identificação Física",
+    "descricao": "Aprenda a identificar materiais com os próprios olhos. Vamos analisar os metais e polímeros usados pela equipe e descobrir como separá-los e aplicá-los.",
+    "tipo": "Presencial",
+    "dataHora": "A definir",
+    "local": "Laboratório de Mecânica",
+    "areas": ["mecanica"],
+    "videoId": null,
+    "quizLink": null
+  },
+  {
+    "id": "solidworks-pratica",
+    "titulo": "SolidWorks: Mão na Massa",
+    "descricao": "Projete as peças solicitadas! Domine funções básicas do software, realize testes de força simulados e aplique otimização topológica nas estruturas.",
+    "tipo": "Presencial",
+    "dataHora": "A definir",
+    "local": "Laboratório de Informática",
+    "areas": ["mecanica"],
+    "videoId": null,
+    "quizLink": null
+  },
+  {
+    "id": "fabricacao-usinagem",
+    "titulo": "Fabricação e Usinagem",
+    "descricao": "Hora de usar o maquinário! Aprenda técnicas de segurança na usinagem, uso correto de EPIs, ferramentas do lab e como testar voltagens de forma segura.",
+    "tipo": "Presencial",
+    "dataHora": "A definir",
+    "local": "Oficina / Laboratório",
+    "areas": ["mecanica", "eletronica"],
+    "videoId": null,
+    "quizLink": null
+  },
+  {
+    "id": "competicoes-robotica",
+    "titulo": "Competições de Robótica",
+    "descricao": "Conheça as arenas! Apresentação das regras gerais das competições e exposição física de vários robôs de combate e autônomos da equipe.",
+    "tipo": "Presencial",
+    "dataHora": "A definir",
+    "local": "Auditório / Espaço Aberto",
+    "areas": ["gestao", "comunicacao", "mecanica", "eletronica", "autonomos"],
+    "videoId": null,
+    "quizLink": null
+  },
+  {
+    "id": "resolucao-problemas-eletronicos",
+    "titulo": "Resolução de Problemas Eletrônicos",
+    "descricao": "Dinâmica de troubleshooting. Teste seus conhecimentos com perguntas dinâmicas e situações reais focadas em encontrar e corrigir falhas eletrônicas.",
+    "tipo": "Presencial",
+    "dataHora": "A definir",
+    "local": "Laboratório de Robótica",
+    "areas": ["eletronica"],
+    "videoId": null,
+    "quizLink": null
+  },
+  {
+    "id": "microcontroladores-1-teoria",
+    "titulo": "Microcontroladores 1",
+    "descricao": "Fundamentos da inteligência da máquina: entenda o que é um sinal eletrônico, fluxo de leitura de sensores, a diferença entre sinais Analógicos e Digitais, e o que é PWM.",
+    "tipo": "Online",
+    "dataHora": null,
+    "local": null,
+    "areas": ["autonomos"],
+    "videoId": "dQw4w9WgXcQ",
+    "quizLink": "/quiz/microcontroladores-1"
+  },
+  {
+    "id": "boas-praticas-laboratorio",
+    "titulo": "Boas Práticas no Laboratório",
+    "descricao": "Segurança e eficiência. Aprenda o uso correto de EPIs, técnicas e materiais para solda eletrônica, e protocolos rígidos para testes de robôs com segurança.",
+    "tipo": "Online",
+    "dataHora": null,
+    "local": null,
+    "areas": ["mecanica", "eletronica", "autonomos"],
+    "videoId": "dQw4w9WgXcQ",
+    "quizLink": "/quiz/boas-praticas"
+  },
+  {
+    "id": "materiais-1-propriedades",
+    "titulo": "Materiais 1",
+    "descricao": "Teoria da destruição e resistência. Estudo focado exclusivamente nas propriedades mecânicas dos materiais para escolher a melhor blindagem e arma.",
+    "tipo": "Online",
+    "dataHora": null,
+    "local": null,
+    "areas": ["mecanica"],
+    "videoId": "dQw4w9WgXcQ",
+    "quizLink": "/quiz/materiais-1"
+  },
+  {
+    "id": "sistemas-transmissao",
+    "titulo": "Sistemas de Transmissão",
+    "descricao": "A força em movimento. Entenda como funcionam os sistemas de transmissão de potência mecânica para locomoção e armas ativas dos robôs.",
+    "tipo": "Online",
+    "dataHora": null,
+    "local": null,
+    "areas": ["mecanica"],
+    "videoId": "dQw4w9WgXcQ",
+    "quizLink": "/quiz/sistemas-transmissao"
+  }
+]

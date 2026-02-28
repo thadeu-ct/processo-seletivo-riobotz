@@ -53,18 +53,21 @@ O projeto utiliza uma abordagem moderna de _Feature-Based Architecture_, separan
 ## ✨ Contribuidores
 Desenvolvido com a colaboração de:
 
-<p align="center">
-  <a href="https://github.com/thadeu-ct">
-    <img src="https://github.com/thadeu-ct.png" width="100" style="border-radius:50%" alt="Thadeu">
-    <br />
-    <sub><b>Thadeu Cavalcanti</b></sub><br />
-    <sub>Frontend & Arquitetura UI/UX</sub>
-  </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="https://github.com/joaocapechi">
-    <img src="https://github.com/joaocapechi.png" width="100" style="border-radius:50%" alt="João Capechi">
-    <br />
-    <sub><b>João Capechi (Telhado)</b></sub><br />
-    <sub>Backend & Integração de API</sub>
-  </a>
-</p>
+<table align="center">
+  <tr>
+    <td align="center">
+      <a href="https://github.com/thadeu-ct">
+        <img src="https://github.com/thadeu-ct.png" width="100px;" alt="Thadeu Cavalcanti"/><br />
+        <sub><b>Thadeu Cavalcanti</b></sub>
+      </a><br />
+      <sub>Frontend & Arquitetura UI/UX</sub>
+    </td>
+    <td align="center">
+      <a href="https://github.com/joaocapechi">
+        <img src="https://github.com/joaocapechi.png" width="100px;" alt="João Capechi"/><br />
+        <sub><b>João Capechi (Telhado)</b></sub>
+      </a><br />
+      <sub>Backend & Integração de API</sub>
+    </td>
+  </tr>
+</table>

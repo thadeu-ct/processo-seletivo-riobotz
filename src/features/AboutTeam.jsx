@@ -7,11 +7,9 @@ function AboutTeam() {
         <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-10 text-center">
           Um pouco mais sobre a equipe...
         </h2>
-        /* Vídeo de apresentação, a fazer */
         <div className="w-full mb-12">
           <Video videoId="GkbAcwYix7I" />
         </div>
-        /* Texto de apresentação */
         <div className="text-gray-300 text-sm md:text-base leading-relaxed space-y-6 text-justify">
           <p>
             Fundada em 2003, sob a supervisão do professor Marco Antônio

@@ -1,16 +1,21 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import LogoRioBotz from "../assets/logo-riobotz.svg";
 import Input from "../components/Input";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
+
 function Login() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     email: "",
     senha: "",
   });
 
   const [loginStatus, setLoginStatus] = useState("idle");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,16 +25,53 @@ function Login() {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const verificarDestino = async () => {
+    try {
+      const resp = await fetch(`${API_URL}/data`);
+      const data = await resp.json();
 
-    if (formData.senha === "falhalogin") {
-      setLoginStatus("pending_ctc");
-    } else if (formData.senha === "senhaerrada") {
-      setLoginStatus("invalid_credentials");
-    } else {
-      setLoginStatus("idle");
-      alert("Login aprovado! (Fingindo ir para a área logada)");
+      if (data.date === false) {
+        navigate("/espera");
+      } else {
+        navigate("/escolha");
+      }
+    } catch (error) {
+      console.error("Erro ao verificar data do processo:", error);
+      navigate("/home");
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setLoginStatus("idle");
+
+    const dataToSend = new FormData();
+    dataToSend.append("email", formData.email);
+    dataToSend.append("senha", formData.senha);
+
+    try {
+      const response = await fetch(`${API_URL}/login`, {
+        method: "POST",
+        body: dataToSend,
+      });
+
+      const result = await response.json();
+
+      if (result.erro) {
+        console.log("Erro Login:", result.erro);
+        setLoginStatus("invalid_credentials");
+      } else {
+        console.log("Bem-vindo,", result.nome);
+        await verificarDestino();
+      }
+    } catch (error) {
+      console.error("Erro de conexão:", error);
+      alert(
+        "Erro ao conectar com o servidor. Verifique se a API está rodando.",
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -87,14 +129,8 @@ function Login() {
           <form onSubmit={handleSubmit} className="flex flex-col">
             {loginStatus === "invalid_credentials" && (
               <div className="bg-blue-100 border border-blue-300 text-[#0a1945] p-3 rounded text-xs text-center mb-6">
-                <p className="font-semibold">Senha inválida.</p>
-                <p>
-                  Esqueceu a senha? Redefina{" "}
-                  <Link to="/redefinir" className="underline font-bold">
-                    aqui
-                  </Link>
-                  .
-                </p>
+                <p className="font-semibold">Credenciais inválidas.</p>
+                <p>Verifique seu e-mail e senha e tente novamente.</p>
               </div>
             )}
 
@@ -131,9 +167,10 @@ function Login() {
 
             <button
               type="submit"
-              className="bg-[#0a1945] hover:bg-blue-900 text-white font-bold py-3 px-8 rounded mt-2 w-1/2 mx-auto transition-colors"
+              disabled={loading}
+              className={`bg-[#0a1945] hover:bg-blue-900 text-white font-bold py-3 px-8 rounded mt-2 w-1/2 mx-auto transition-colors ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
             >
-              Entrar
+              {loading ? "Entrando..." : "Entrar"}
             </button>
           </form>
         )}

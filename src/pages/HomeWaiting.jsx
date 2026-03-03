@@ -60,7 +60,7 @@ function HomeWaiting() {
           </h2>
 
           <a
-            href="#"
+            href="https://chat.whatsapp.com/CsRsfKVtqRzImGvYeULm62?mode=hq2tswi"
             target="_blank"
             rel="noreferrer"
             className="flex items-center justify-center w-20 h-20 rounded-full bg-green-500 text-white hover:scale-110 transition-transform shadow-xl shadow-green-500/20"

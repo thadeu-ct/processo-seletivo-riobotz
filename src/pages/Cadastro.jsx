@@ -1,8 +1,11 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import LogoRioBotz from "../assets/logo-riobotz.svg";
 import Input from "../components/Input";
+
+// Endereço do Backend
+const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
 
 const inputFields = [
   {
@@ -35,11 +38,13 @@ const inputFields = [
     id: "senha",
     label: "Senha:",
     type: "password",
-    placeholder: "Digite sua senha",
+    placeholder: "Digite sua senha (mínimo 6 caracteres)",
   },
 ];
 
 function Cadastro() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     nome: "",
     matricula: "",
@@ -48,21 +53,72 @@ function Cadastro() {
     senha: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
+    // Limpa a mensagem de erro quando o usuário começa a digitar de novo
+    setErrorMessage("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Dados prontos para o Flask:", formData);
+    setLoading(true);
+    setErrorMessage("");
 
-    /* lugar para fazer o fetch depois */
+    // O Flask do Telhado espera que a matrícula seja só número e o telefone tenha 14 chars.
+    // Vamos limpar a formatação da matrícula que pode vir do Input mask
+    const matLimpa = formData.matricula.replace(/\D/g, "");
 
-    alert("Dados salvos no console! Agora você pode se inscrever no CTC.");
+    // Preparando os dados exatamente com os nomes que o api.py espera
+    const dataToSend = new FormData();
+    dataToSend.append("nome", formData.nome);
+    dataToSend.append("mat", matLimpa); // O Flask quer 'mat'
+    dataToSend.append("email", formData.email);
+    dataToSend.append("tel", formData.telefone); // O Flask quer 'tel' (verifique se a máscara do Input gera exatos 14 chars no state)
+    dataToSend.append("senha", formData.senha);
+
+    try {
+      const response = await fetch(`${API_URL}/cadastro`, {
+        method: "POST",
+        body: dataToSend,
+      });
+
+      const data = await response.json();
+
+      if (data.erro && data.erro !== 0) {
+        // Trata os códigos de erro que o Telhado criou (1=Nome, 2=Matricula, etc)
+        const mensagensErro = {
+          1: "Nome inválido ou contém caracteres perigosos.",
+          2: "Matrícula deve conter apenas números.",
+          3: "E-mail inválido.",
+          4: "Telefone inválido. Formato esperado: 14 caracteres.",
+          5: "Senha muito curta (mín. 6) ou inválida.",
+        };
+
+        setErrorMessage(
+          mensagensErro[data.erro] || "Erro desconhecido no cadastro.",
+        );
+      } else {
+        // SUCESSO (erro == 0 no Flask dele)
+        alert(
+          "Cadastro realizado com sucesso! Agora você pode se inscrever no CTC e fazer login.",
+        );
+        navigate("/login"); // Manda pro Login
+      }
+    } catch (error) {
+      console.error("Erro ao conectar:", error);
+      setErrorMessage(
+        "Erro ao conectar com o servidor. O Back-end está rodando?",
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -78,6 +134,12 @@ function Cadastro() {
         <h2 className="text-[#0a1945] font-extrabold text-lg text-center mb-6">
           1. Conte-nos mais sobre você!
         </h2>
+
+        {errorMessage && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 text-sm text-center">
+            {errorMessage}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="flex flex-col">
           {inputFields.map((field) => (
@@ -96,9 +158,10 @@ function Cadastro() {
 
           <button
             type="submit"
-            className="bg-[#0a1945] hover:bg-blue-900 text-white font-bold py-3 px-8 rounded mt-4 w-1/2 mx-auto transition-colors"
+            disabled={loading}
+            className={`bg-[#0a1945] hover:bg-blue-900 text-white font-bold py-3 px-8 rounded mt-4 w-1/2 mx-auto transition-colors ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
           >
-            Cadastrar
+            {loading ? "Enviando..." : "Cadastrar"}
           </button>
         </form>
 

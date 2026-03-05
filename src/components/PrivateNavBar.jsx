@@ -5,6 +5,9 @@ function PrivateNavBar() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const nomeSalvo = localStorage.getItem("nomeUsuario");
+  const nomeUsuario = nomeSalvo ? nomeSalvo.split(" ")[0] : "Candidato(a)";
+
   return (
     <>
       <nav className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 items-center gap-10 text-white font-bold whitespace-nowrap">
@@ -53,7 +56,7 @@ function PrivateNavBar() {
               <div className="px-4 py-3 border-b border-gray-100 mb-1">
                 <p className="text-sm text-gray-500">Logado como</p>
                 <p className="text-[#0a1945] font-black truncate">
-                  Candidato(a)
+                  {nomeUsuario}
                 </p>
               </div>
               <Link

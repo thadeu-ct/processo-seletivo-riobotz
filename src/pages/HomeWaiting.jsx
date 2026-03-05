@@ -2,6 +2,9 @@ import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
 
 function HomeWaiting() {
+  const nomeSalvo = localStorage.getItem("nomeUsuario");
+  const nomeUsuario = nomeSalvo ? nomeSalvo.split(" ")[0] : "Candidato(a)";
+
   return (
     <div className="min-h-screen bg-[#0a1945] flex flex-col font-sans">
       <PrivateHeader />
@@ -9,7 +12,7 @@ function HomeWaiting() {
       <main className="flex-grow flex flex-col">
         <section className="bg-white py-16 px-6 flex flex-col items-center text-center">
           <h1 className="text-[#0a1945] font-black text-2xl md:text-3xl mb-6">
-            Bem-vindo(a), Candidato(a)!
+            Bem-vindo(a), {nomeUsuario}!
           </h1>
 
           <p className="text-[#0a1945] font-extrabold text-lg md:text-xl max-w-sm mb-8 leading-tight">

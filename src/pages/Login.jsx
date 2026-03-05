@@ -63,6 +63,7 @@ function Login() {
         setLoginStatus("invalid_credentials");
       } else {
         console.log("Bem-vindo,", result.nome);
+        localStorage.setItem("nomeUsuario", result.nome);
         await verificarDestino();
       }
     } catch (error) {

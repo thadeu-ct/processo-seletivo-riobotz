@@ -1,15 +1,18 @@
 from dotenv import load_dotenv
 from flask import Flask, request
+from flask_cors import CORS
 from functions import *
 import os
 import sqlite3
 
 load_dotenv()
 
-banco = sqlite3.connect(os.getenv("DATABASE"))
+banco = sqlite3.connect(os.getenv("DATABASE"), check_same_thread=False)
+banco.row_factory = sqlite3.Row
 db = banco.cursor()
 
 app = Flask(__name__)
+CORS(app)
 app.config["SESSION_PERMANENT"] = False
 
 
@@ -44,7 +47,7 @@ def cadastro():
 
     tel: str = request.form.get("tel")
     if (
-        len(tel) != 14 or verifica_texto(tel)
+        len(tel) != 19 or verifica_texto(tel)
     ):
         return {
             "erro": ERRO_TEL
@@ -60,7 +63,7 @@ def cadastro():
     
     db.execute(
         "INSERT INTO users VALUES (?, ?, ?, ?, ?, 0)",
-        matricula, nome, email, tel, create_hash(senha)
+        (matricula, nome, email, tel, create_hash(senha))
     )
 
     banco.commit()
@@ -73,27 +76,30 @@ def cadastro():
 @app.route("/api/login", methods=["POST"])
 def login():
     email = request.form.get("email")
-    if not email.find("@") or email.find(DANGEROUS_CHARS):
+    if not email.find("@") or verifica_texto(email):
         return {
             "erro": ERRO_EMAIL
         }
     
     db.execute(
         "SELECT senha, nome FROM users WHERE email = ?",
-        email
+        (email,)
     )
 
-    row = db.fetchmany(1)[0]
-    hash = row["senha"]
+    resultados = db.fetchmany(1)
+
+    if len(resultados) == 0:
+        return {"erro": ERRO_SENHA}
+    
+    row = resultados[0]
+    hash_senha = row["senha"]
 
     senha = request.form.get("senha")
     if (
-        senha.find(DANGEROUS_CHARS) or len(senha) < 6
-        or not compare_hash(senha, hash)
+        verifica_texto(senha) or len(senha) < 6
+        or not compare_hash(senha, hash_senha)
     ):
-        return {
-            "erro": ERRO_SENHA
-        }
+        return {"erro": ERRO_SENHA}
     
     return {
         "nome": row["nome"]

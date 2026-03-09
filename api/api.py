@@ -7,14 +7,18 @@ import sqlite3
 
 load_dotenv()
 
-banco = sqlite3.connect(os.getenv("DATABASE_URL"), check_same_thread=False)
-banco.row_factory = sqlite3.Row
-db = banco.cursor()
+# banco = sqlite3.connect(os.getenv("DATABASE_URL"), check_same_thread=False)
+# banco.row_factory = sqlite3.Row
+# db = banco.cursor()
 
 app = Flask(__name__)
 CORS(app)
 app.config["SESSION_PERMANENT"] = False
 
+def get_db_connection():
+    # O psycopg2 entende perfeitamente a URL do Supabase
+    conn = psycopg2.connect(os.getenv("DATABASE_URL"))
+    return conn
 
 @app.route("/api/data")
 def date():
@@ -60,6 +64,10 @@ def cadastro():
         return {
             "erro": ERRO_SENHA
         }
+
+    banco = get_db_connection()
+
+    db = banco.cursor()
     
     db.execute(
         "INSERT INTO users VALUES (?, ?, ?, ?, ?, 0)",
@@ -67,6 +75,9 @@ def cadastro():
     )
 
     banco.commit()
+
+    db.close()
+    banco.close()
 
     return {
         "erro": 0

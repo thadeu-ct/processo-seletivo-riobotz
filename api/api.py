@@ -71,7 +71,7 @@ def cadastro():
     db = banco.cursor()
     
     db.execute(
-        "INSERT INTO users VALUES (?, ?, ?, ?, ?, 0)",
+        "INSERT INTO users VALUES (%s, %s, %s, %s, %s, 0)",
         (matricula, nome, email, tel, create_hash(senha))
     )
 

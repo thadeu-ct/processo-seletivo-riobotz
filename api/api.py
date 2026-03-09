@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 from flask import Flask, request
 from flask_cors import CORS
-from functions import *
+from .functions import *
 import os
 import sqlite3
 

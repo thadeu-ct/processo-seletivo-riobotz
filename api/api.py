@@ -7,7 +7,7 @@ import sqlite3
 
 load_dotenv()
 
-banco = sqlite3.connect(os.getenv("DATABASE"), check_same_thread=False)
+banco = sqlite3.connect(os.getenv("DATABASE_URL"), check_same_thread=False)
 banco.row_factory = sqlite3.Row
 db = banco.cursor()
 

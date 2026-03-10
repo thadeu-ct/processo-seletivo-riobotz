@@ -93,12 +93,19 @@ def login():
             "erro": ERRO_EMAIL
         }
     
+    banco = get_db_connection()
+
+    db = banco.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
     db.execute(
-        "SELECT senha, nome FROM users WHERE email = ?",
+        "SELECT senha, nome FROM users WHERE email = %s",
         (email,)
     )
 
     resultados = db.fetchmany(1)
+
+    db.close()
+    banco.close()
 
     if len(resultados) == 0:
         return {"erro": ERRO_SENHA}

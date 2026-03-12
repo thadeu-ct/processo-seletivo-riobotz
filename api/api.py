@@ -9,6 +9,10 @@ import sqlite3
 
 load_dotenv()
 
+# banco = sqlite3.connect(os.getenv("DATABASE_URL"), check_same_thread=False)
+# banco.row_factory = sqlite3.Row
+# db = banco.cursor()
+
 app = Flask(__name__)
 CORS(app)
 app.config["SESSION_PERMANENT"] = False
@@ -143,7 +147,9 @@ def escolha():
     db.close()
     banco.close()
 
-    return {}
+    return {
+        "erro": 0
+    }
 
 
 if __name__ == "__main__":

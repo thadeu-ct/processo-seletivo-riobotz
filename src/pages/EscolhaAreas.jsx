@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import PrivateHeader from "../components/PrivateHeader";
 
 const areasDaEquipe = [
@@ -134,6 +134,9 @@ function EscolhaAreas() {
   const [selecionadas, setSelecionadas] = useState([]);
   const [areaEmDestaque, setAreaEmDestaque] = useState(null);
 
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
   const toggleArea = (id) => {
     setSelecionadas((prev) =>
       prev.includes(id)
@@ -149,10 +152,43 @@ function EscolhaAreas() {
           (a) => a.id === selecionadas[selecionadas.length - 1],
         )
       : null);
-
+  
   const isCentralSelecionada =
     areaCentral && selecionadas.includes(areaCentral.id);
+  
+  const handleContinuar = async () => {
+    if (selecionadas.length === 0) return;
 
+    setIsLoading(true);
+
+    try {
+      const matricula = localStorage.getItem("matriculaUsuario"); 
+      const response = await fetch(`${apiUrl}/api/escolha`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          areas: selecionadas,
+          matricula: matricula
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.erro) {
+        alert("Erro ao salvar suas áreas: " + data.erro);
+      } else {
+        navigate("/home");
+      }
+    } catch (error) {
+      console.error("Erro na requisição:", error);
+      alert("Erro de conexão com o servidor. Tente novamente.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
   return (
     <div className="min-h-screen bg-[#0a1945] flex flex-col font-sans">
       <style>{`
@@ -308,18 +344,19 @@ function EscolhaAreas() {
           </div>
         </div>
 
-        <Link
-          to="/home"
+        <button
+          onClick={handleContinuar}
+          disabled={selecionadas.length === 0 || isLoading}
           className={`mt-auto px-16 py-6 rounded-full font-black text-3xl transition-all shadow-2xl border-4
             ${
-              selecionadas.length > 0
-                ? "bg-transparent text-white border-white hover:bg-white hover:text-[#0a1945] hover:scale-105"
+              selecionadas.length > 0 && !isLoading
+                ? "bg-transparent text-white border-white hover:bg-white hover:text-[#0a1945] hover:scale-105 cursor-pointer"
                 : "bg-transparent text-gray-500 border-gray-500 cursor-not-allowed pointer-events-none"
             }
           `}
         >
-          CONTINUAR
-        </Link>
+          {isLoading ? "SALVANDO..." : "CONTINUAR"}
+        </button>
       </main>
     </div>
   );

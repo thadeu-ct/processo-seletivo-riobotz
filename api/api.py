@@ -9,10 +9,6 @@ import sqlite3
 
 load_dotenv()
 
-# banco = sqlite3.connect(os.getenv("DATABASE_URL"), check_same_thread=False)
-# banco.row_factory = sqlite3.Row
-# db = banco.cursor()
-
 app = Flask(__name__)
 CORS(app)
 app.config["SESSION_PERMANENT"] = False
@@ -72,7 +68,7 @@ def cadastro():
     db = banco.cursor()
     
     db.execute(
-        "INSERT INTO users VALUES (%s, %s, %s, %s, %s, False)",
+        "INSERT INTO users VALUES (%s, %s, %s, %s, %s, False, 0)",
         (matricula, nome, email, tel, create_hash(senha))
     )
 
@@ -99,7 +95,7 @@ def login():
     db = banco.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     db.execute(
-        "SELECT senha, nome FROM users WHERE email = %s",
+        "SELECT senha, nome, matricula, botcoin FROM users WHERE email = %s",
         (email,)
     )
 
@@ -122,8 +118,32 @@ def login():
         return {"erro": ERRO_SENHA}
     
     return {
-        "nome": row["nome"]
+        "nome": row["nome"],
+        "mat": row["matricula"],
+        "botcoin": row["botcoin"]
     }
+
+
+@app.route("/api/escolha", methods=["POST"])
+def escolha():
+    matricula = request.form.get("matricula")
+    areas = request.form.get("areas")
+
+    banco = get_db_connection()
+    db = banco.cursor()
+
+    for area in areas:
+        db.execute(
+            "INSERT INTO user_areas VALUES(%s, %s)",
+            (matricula, area)
+        )
+    
+    banco.commit()
+
+    db.close()
+    banco.close()
+
+    return {}
 
 
 if __name__ == "__main__":

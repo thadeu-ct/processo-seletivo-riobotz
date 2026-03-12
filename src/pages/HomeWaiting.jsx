@@ -1,7 +1,11 @@
+import { useNavigate } from "react-router-dom";
+
 import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
 
 function HomeWaiting() {
+  const navigate = useNavigate();
+  
   const nomeSalvo = localStorage.getItem("nomeUsuario");
   const nomeUsuario = nomeSalvo ? nomeSalvo.split(" ")[0] : "Candidato(a)";
 

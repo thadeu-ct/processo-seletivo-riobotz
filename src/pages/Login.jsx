@@ -31,7 +31,7 @@ function Login() {
       const data = await resp.json();
 
       if (data.date === false) {
-        navigate("/espera");
+        navigate("/escolha");
       } else {
         navigate("/escolha");
       }

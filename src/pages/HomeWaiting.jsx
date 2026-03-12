@@ -1,11 +1,7 @@
-import { useNavigate } from "react-router-dom";
-
 import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
 
 function HomeWaiting() {
-  const navigate = useNavigate();
-  
   const nomeSalvo = localStorage.getItem("nomeUsuario");
   const nomeUsuario = nomeSalvo ? nomeSalvo.split(" ")[0] : "Candidato(a)";
 
@@ -14,17 +10,18 @@ function HomeWaiting() {
       <PrivateHeader />
 
       <main className="flex-grow flex flex-col">
-        <section className="bg-white py-16 px-6 flex flex-col items-center text-center">
+        <section className="bg-white py-16 px-6 flex flex-col items-center text-center relative">
           <h1 className="text-[#0a1945] font-black text-2xl md:text-3xl mb-6">
             Bem-vindo(a), {nomeUsuario}!
           </h1>
 
-           <button
-            onClick={() => navigate("/escolha")}
+          {/* Troquei para tag 'a' com href. Força a barra e vai pra página! */}
+          <a
+            href="/escolha"
             className="absolute top-24 right-4 bg-red-600 hover:bg-red-500 text-white font-black py-2 px-4 rounded-lg shadow-xl z-50 animate-pulse border-2 border-white"
           >
             🚨 PULAR PRO /ESCOLHA 🚨
-          </button>
+          </a>
 
           <p className="text-[#0a1945] font-extrabold text-lg md:text-xl max-w-sm mb-8 leading-tight">
             O conteúdo do processo seletivo será disponibilizado após a palestra

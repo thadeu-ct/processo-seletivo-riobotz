@@ -15,9 +15,9 @@ function HomeWaiting() {
             Bem-vindo(a), {nomeUsuario}!
           </h1>
 
-           <button 
+           <button S
             onClick={() => navigate("/escolha")}
-            className="absolute top-4 right-4 bg-red-600 hover:bg-red-500 text-white font-black py-2 px-4 rounded-lg shadow-xl z-50 animate-pulse border-2 border-white"
+            className="absolute top-12 right-4 bg-red-600 hover:bg-red-500 text-white font-black py-2 px-4 rounded-lg shadow-xl z-50 animate-pulse border-2 border-white"
           >
             🚨 PULAR PRO /ESCOLHA 🚨
           </button>

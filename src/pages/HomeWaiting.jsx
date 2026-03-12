@@ -15,6 +15,13 @@ function HomeWaiting() {
             Bem-vindo(a), {nomeUsuario}!
           </h1>
 
+           <button 
+            onClick={() => navigate("/escolha")}
+            className="absolute top-4 right-4 bg-red-600 hover:bg-red-500 text-white font-black py-2 px-4 rounded-lg shadow-xl z-50 animate-pulse border-2 border-white"
+          >
+            🚨 PULAR PRO /ESCOLHA 🚨
+          </button>
+
           <p className="text-[#0a1945] font-extrabold text-lg md:text-xl max-w-sm mb-8 leading-tight">
             O conteúdo do processo seletivo será disponibilizado após a palestra
             de abertura:

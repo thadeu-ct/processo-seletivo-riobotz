@@ -31,7 +31,7 @@ function Login() {
       const data = await resp.json();
 
       if (data.date === false) {
-        navigate("/escolha");
+        navigate("/espera");
       } else {
         navigate("/escolha");
       }
@@ -64,6 +64,8 @@ function Login() {
       } else {
         console.log("Bem-vindo,", result.nome);
         localStorage.setItem("nomeUsuario", result.nome);
+        localStorage.setItem("matriculaUsuario", result.matricula);
+        localStorage.setItem("botcoinUsuario", result.botcoin);
         await verificarDestino();
       }
     } catch (error) {

@@ -93,13 +93,6 @@ function Login() {
         />
       </Link>
 
-      <button 
-        onClick={() => navigate("/escolha")}
-        className="absolute top-4 right-4 bg-red-600 hover:bg-red-500 text-white font-black py-2 px-4 rounded-lg shadow-xl z-50 animate-pulse border-2 border-white"
-      >
-        🚨 PULAR PRO /ESCOLHA 🚨
-      </button>
-
       {loginStatus !== "pending_ctc" && (
         <h1 className="text-white font-extrabold text-3xl mb-6 tracking-wide">
           Login

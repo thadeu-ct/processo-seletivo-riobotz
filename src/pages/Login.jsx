@@ -31,7 +31,8 @@ function Login() {
       const data = await resp.json();
 
       if (data.date === false) {
-        navigate("/espera");
+        // Lembrar de mudar para espera depois
+        navigate("/escolha");
       } else {
         navigate("/escolha");
       }

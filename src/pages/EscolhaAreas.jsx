@@ -130,6 +130,8 @@ const areasDaEquipe = [
   },
 ];
 
+const apiUrl = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
+
 function EscolhaAreas() {
   const [selecionadas, setSelecionadas] = useState([]);
   const [areaEmDestaque, setAreaEmDestaque] = useState(null);
@@ -162,8 +164,7 @@ function EscolhaAreas() {
     setIsLoading(true);
 
     try {
-      const matricula = localStorage.getItem("matriculaUsuario"); 
-      const apiUrl = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
+      const matricula = localStorage.getItem("matriculaUsuario");
       const response = await fetch(`${apiUrl}/escolha`, {
         method: "POST",
         headers: {

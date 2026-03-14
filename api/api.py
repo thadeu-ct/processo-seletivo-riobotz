@@ -125,31 +125,36 @@ def login():
 
 @app.route("/api/escolha", methods=["POST"])
 def escolha():
-    data = request.get_json()
+    data = request.get_json(silent=True)
+
     if not data:
-        return jsonify({
-            "erro": "Dados Inválidos"
-        })
+        return jsonify({"erro": "JSON inválido ou ausente"}), 400
+
     matricula = data.get("matricula")
     areas = data.get("areas")
 
-    banco = get_db_connection()
-    db = banco.cursor()
+    if not matricula or not areas:
+        return jsonify({"erro": "matricula e areas são obrigatórios"}), 400
 
-    for area in areas:
-        db.execute(
-            "INSERT INTO user_areas VALUES(%s, %s)",
-            (matricula, area)
-        )
-    
-    banco.commit()
+    try:
+        banco = get_db_connection()
+        db = banco.cursor()
 
-    db.close()
-    banco.close()
+        for area in areas:
+            db.execute(
+                "INSERT INTO user_areas VALUES(%s, %s)",
+                (matricula, area)
+            )
+        
+        banco.commit()
+        db.close()
+        banco.close()
 
-    return jsonify({
-        "erro": 0
-    })
+        return jsonify({"erro": 0})
+
+    except Exception as e:
+        print(f"Erro no banco: {e}")  # This will appear in your server logs
+        return jsonify({"erro": str(e)}), 500
 
 
 if __name__ == "__main__":

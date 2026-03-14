@@ -118,7 +118,7 @@ def login():
     
     return {
         "nome": row["nome"],
-        "mat": row["matricula"],
+        "matricula": row["matricula"],
         "botcoin": row["botcoin"]
     }
 

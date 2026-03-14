@@ -83,10 +83,10 @@ def cadastro():
 
 @app.route("/api/login", methods=["POST"])
 def login():
-    email = request.form.get("email")
-    if not email.find("@") or verifica_texto(email):
+    matricula = request.form.get("matricula")
+    if not matricula.isnumeric():
         return {
-            "erro": ERRO_EMAIL
+            "erro": ERRO_MATRICULA
         }
     
     banco = get_db_connection()
@@ -94,8 +94,8 @@ def login():
     db = banco.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     db.execute(
-        "SELECT senha, nome, matricula, botcoin FROM users WHERE email = %s",
-        (email,)
+        "SELECT senha, nome, matricula, registrado, botcoin FROM users WHERE matricula = %s",
+        (matricula,)
     )
 
     resultados = db.fetchmany(1)
@@ -119,7 +119,8 @@ def login():
     return {
         "nome": row["nome"],
         "matricula": row["matricula"],
-        "botcoin": row["botcoin"]
+        "botcoin": row["botcoin"],
+        "registrado": row["registrado"]
     }
 
 

@@ -32,7 +32,7 @@ function Login() {
 
       if (data.date === false) {
         // Lembrar de mudar para espera depois
-        navigate("/escolha");
+        navigate("/espera");
       } else {
         navigate("/escolha");
       }

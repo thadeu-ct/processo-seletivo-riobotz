@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import LogoRioBotz from "../assets/logo-riobotz.svg";
 import Input from "../components/Input";
+import CBCTC from "../components/CBCTC";
 
 // Endereço do Backend
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
@@ -55,6 +56,7 @@ function Cadastro() {
 
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [showCTCModal, setShowCTCModal] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -105,11 +107,7 @@ function Cadastro() {
           mensagensErro[data.erro] || "Erro desconhecido no cadastro.",
         );
       } else {
-        // SUCESSO (erro == 0 no Flask dele)
-        alert(
-          "Cadastro realizado com sucesso! Agora você pode se inscrever no CTC e fazer login.",
-        );
-        navigate("/login"); // Manda pro Login
+        setShowCTCModal(true);
       }
     } catch (error) {
       console.error("Erro ao conectar:", error);
@@ -121,8 +119,18 @@ function Cadastro() {
     }
   };
 
+  const handleCTCConfirm = () => {
+    // Dá um pequeno atraso para o navegador abrir a nova aba tranquilamente
+    setTimeout(() => {
+      navigate("/login");
+    }, 500);
+  };
+
   return (
-    <div className="min-h-screen bg-[#0a1945] flex flex-col items-center py-10">
+    <div className="min-h-screen bg-[#0a1945] flex flex-col items-center py-10 relative">
+      {/* A MÁGICA ACONTECE AQUI: Se showCTCModal for true, o modal aparece e recebe a função! */}
+      {showCTCModal && <CBCTC onConfirm={handleCTCConfirm} />}
+
       <Link to="/" className="mb-6">
         <img src={LogoRioBotz} alt="Logo RioBotz" className="h-16" />
       </Link>
@@ -164,22 +172,6 @@ function Cadastro() {
             {loading ? "Enviando..." : "Cadastrar"}
           </button>
         </form>
-
-        <div className="text-center mt-8 pt-6 border-t border-gray-200">
-          <h2 className="text-[#0a1945] font-extrabold text-lg mb-4">
-            2. Inscreva-se <span className="underline">oficialmente</span> pelo
-            site do CTC:
-          </h2>
-
-          <a
-            href="https://www.cbctc.puc-rio.br/Paginas/MeuCB/Noticias.aspx?id=788"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block bg-yellow-500 hover:bg-yellow-400 text-black font-extrabold py-3 px-6 rounded-full transition-transform hover:scale-105"
-          >
-            Inscreva-se aqui
-          </a>
-        </div>
       </div>
 
       <p className="text-gray-300 text-sm mt-6">

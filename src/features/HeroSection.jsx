@@ -28,7 +28,7 @@ function HeroSection() {
         </Link>
 
         <p className="mt-4 text-yellow-400 font-semibold text-lg tracking-wider">
-          Inscrições abertas até XX/XX
+          Inscrições abertas até 31/03
         </p>
       </div>
     </section>

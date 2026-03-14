@@ -12,7 +12,7 @@ function CallToAction() {
           to="/cadastro"
           className="bg-yellow-400 text-[#0a1945] font-black py-4 px-16 rounded-lg text-3xl transition-transform hover:scale-105 shadow-md hover:shadow-xl"
         >
-          Dia XX/XX
+          Dia 01/04
         </Link>
         <div className="space-y-6 mt-2">
           <p className="text-[#0a1945] font-extrabold text-xl md:text-2xl max-w-2xl mx-auto leading-relaxed">

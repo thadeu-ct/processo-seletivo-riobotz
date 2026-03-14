@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from .functions import *
 import psycopg2
@@ -126,6 +126,10 @@ def login():
 @app.route("/api/escolha", methods=["POST"])
 def escolha():
     data = request.get_json()
+    if not data:
+        return jsonify({
+            "erro": "Dados Inválidos"
+        })
     matricula = data.get("matricula")
     areas = data.get("areas")
 
@@ -143,9 +147,9 @@ def escolha():
     db.close()
     banco.close()
 
-    return {
+    return jsonify({
         "erro": 0
-    }
+    })
 
 
 if __name__ == "__main__":

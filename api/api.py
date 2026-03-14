@@ -142,7 +142,7 @@ def escolha():
 
         for area in areas:
             db.execute(
-                "INSERT INTO user_areas VALUES(%s, %s)",
+                "INSERT INTO user_area VALUES(%s, %s)",
                 (matricula, area)
             )
         

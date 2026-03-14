@@ -5,13 +5,8 @@ from .functions import *
 import psycopg2
 import psycopg2.extras
 import os
-import sqlite3
 
 load_dotenv()
-
-# banco = sqlite3.connect(os.getenv("DATABASE_URL"), check_same_thread=False)
-# banco.row_factory = sqlite3.Row
-# db = banco.cursor()
 
 app = Flask(__name__)
 CORS(app)
@@ -130,8 +125,9 @@ def login():
 
 @app.route("/api/escolha", methods=["POST"])
 def escolha():
-    matricula = request.form.get("matricula")
-    areas = request.form.get("areas")
+    data = request.get_json()
+    matricula = data.get("matricula")
+    areas = data.get("areas")
 
     banco = get_db_connection()
     db = banco.cursor()

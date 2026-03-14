@@ -165,17 +165,16 @@ function EscolhaAreas() {
 
     try {
       const matricula = localStorage.getItem("matriculaUsuario");
-      
-      const formData = new FormData();
-      formData.append("matricula", matricula);
-
-      selecionadas.forEach((area) => {
-        formData.append("areas", area);
-      });
 
       const response = await fetch(`${apiUrl}/escolha`, {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          areas: selecionadas,
+          matricula: matricula
+        }),
       });
 
       const data = await response.json();

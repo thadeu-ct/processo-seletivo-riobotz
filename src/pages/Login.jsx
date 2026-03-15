@@ -9,7 +9,6 @@ const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
 function Login() {
   const navigate = useNavigate();
 
-  // 1. Mudamos o state inicial: de 'email' para 'matricula'
   const [formData, setFormData] = useState({
     matricula: "",
     senha: "",
@@ -47,11 +46,9 @@ function Login() {
     setLoading(true);
     setLoginStatus("idle");
 
-    // 2. Limpamos a máscara da matrícula (igual no Cadastro.jsx)
     const matLimpa = formData.matricula.replace(/\D/g, "");
 
     const dataToSend = new FormData();
-    // 3. Enviamos 'matricula' em vez de 'email', pois o api.py agora pede matricula
     dataToSend.append("matricula", matLimpa);
     dataToSend.append("senha", formData.senha);
 
@@ -66,6 +63,9 @@ function Login() {
       if (result.erro) {
         console.log("Erro Login:", result.erro);
         setLoginStatus("invalid_credentials");
+      } else if (result.registrado === false) {
+        console.log("Usuário ainda não oficializado no CTC.");
+        setLoginStatus("pending_ctc");
       } else {
         console.log("Bem-vindo,", result.nome);
         localStorage.setItem("nomeUsuario", result.nome);
@@ -85,7 +85,7 @@ function Login() {
 
   const resetLogin = () => {
     setLoginStatus("idle");
-    setFormData({ matricula: "", senha: "" }); // Atualizado aqui também
+    setFormData({ matricula: "", senha: "" });
   };
 
   return (
@@ -107,7 +107,6 @@ function Login() {
       <div className="bg-white rounded-lg p-8 w-11/12 max-w-sm shadow-2xl">
         {loginStatus === "pending_ctc" ? (
           <div className="flex flex-col items-center text-center">
-            {/* ... Bloco pending_ctc mantido intacto para a próxima tarefa ... */}
             <h2 className="text-[#0a1945] font-extrabold text-2xl mb-4">
               Oops...
             </h2>
@@ -143,7 +142,6 @@ function Login() {
               </div>
             )}
 
-            {/* 4. Campo de Matrícula usando o padrão do Cadastro.jsx */}
             <Input
               id="matricula"
               label="Matrícula:"

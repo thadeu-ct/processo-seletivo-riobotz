@@ -9,8 +9,9 @@ const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
 function Login() {
   const navigate = useNavigate();
 
+  // 1. Mudamos o state inicial: de 'email' para 'matricula'
   const [formData, setFormData] = useState({
-    email: "",
+    matricula: "",
     senha: "",
   });
 
@@ -46,8 +47,12 @@ function Login() {
     setLoading(true);
     setLoginStatus("idle");
 
+    // 2. Limpamos a máscara da matrícula (igual no Cadastro.jsx)
+    const matLimpa = formData.matricula.replace(/\D/g, "");
+
     const dataToSend = new FormData();
-    dataToSend.append("email", formData.email);
+    // 3. Enviamos 'matricula' em vez de 'email', pois o api.py agora pede matricula
+    dataToSend.append("matricula", matLimpa);
     dataToSend.append("senha", formData.senha);
 
     try {
@@ -80,7 +85,7 @@ function Login() {
 
   const resetLogin = () => {
     setLoginStatus("idle");
-    setFormData({ email: "", senha: "" });
+    setFormData({ matricula: "", senha: "" }); // Atualizado aqui também
   };
 
   return (
@@ -102,6 +107,7 @@ function Login() {
       <div className="bg-white rounded-lg p-8 w-11/12 max-w-sm shadow-2xl">
         {loginStatus === "pending_ctc" ? (
           <div className="flex flex-col items-center text-center">
+            {/* ... Bloco pending_ctc mantido intacto para a próxima tarefa ... */}
             <h2 className="text-[#0a1945] font-extrabold text-2xl mb-4">
               Oops...
             </h2>
@@ -133,17 +139,19 @@ function Login() {
             {loginStatus === "invalid_credentials" && (
               <div className="bg-blue-100 border border-blue-300 text-[#0a1945] p-3 rounded text-xs text-center mb-6">
                 <p className="font-semibold">Credenciais inválidas.</p>
-                <p>Verifique seu e-mail e senha e tente novamente.</p>
+                <p>Verifique sua matrícula e senha e tente novamente.</p>
               </div>
             )}
 
+            {/* 4. Campo de Matrícula usando o padrão do Cadastro.jsx */}
             <Input
-              id="email"
-              label="E-mail:"
-              type="email"
-              name="email"
-              placeholder="Digite seu e-mail"
-              value={formData.email}
+              id="matricula"
+              label="Matrícula:"
+              type="text"
+              name="matricula"
+              placeholder="Digite seu número de matrícula"
+              mask="0000000"
+              value={formData.matricula}
               onChange={handleChange}
               required
             />

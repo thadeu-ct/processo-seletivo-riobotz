@@ -4,43 +4,16 @@ import Footer from "../components/Footer";
 import LogoRioBotz from "../assets/logo-riobotz.svg";
 import Input from "../components/Input";
 import CBCTC from "../components/CBCTC";
+import { FORM_FIELDS } from "../services/formFields";
 
-// Endereço do Backend
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
 
-const inputFields = [
-  {
-    id: "nome",
-    label: "Nome completo:",
-    type: "text",
-    placeholder: "Digite seu nome completo",
-  },
-  {
-    id: "matricula",
-    label: "Matrícula:",
-    type: "text",
-    placeholder: "Digite seu número de matrícula",
-    mask: "0000000",
-  },
-  {
-    id: "email",
-    label: "E-mail:",
-    type: "email",
-    placeholder: "Digite seu e-mail",
-  },
-  {
-    id: "telefone",
-    label: "Telefone:",
-    type: "tel",
-    placeholder: "Digite seu número de telefone",
-    mask: "+00 (00) 00000-0000",
-  },
-  {
-    id: "senha",
-    label: "Senha:",
-    type: "password",
-    placeholder: "Digite sua senha (mínimo 6 caracteres)",
-  },
+const camposCadastro = [
+  FORM_FIELDS.nome,
+  FORM_FIELDS.matricula,
+  FORM_FIELDS.email,
+  FORM_FIELDS.telefone,
+  FORM_FIELDS.senha,
 ];
 
 function Cadastro() {
@@ -128,7 +101,6 @@ function Cadastro() {
 
   return (
     <div className="min-h-screen bg-[#0a1945] flex flex-col items-center py-10 relative">
-      {/* A MÁGICA ACONTECE AQUI: Se showCTCModal for true, o modal aparece e recebe a função! */}
       {showCTCModal && <CBCTC onConfirm={handleCTCConfirm} />}
 
       <Link to="/" className="mb-6">
@@ -150,13 +122,10 @@ function Cadastro() {
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col">
-          {inputFields.map((field) => (
+          {camposCadastro.map((field) => (
             <Input
               key={field.id}
-              label={field.label}
-              type={field.type}
-              placeholder={field.placeholder}
-              mask={field.mask}
+              {...field}
               name={field.id}
               value={formData[field.id]}
               onChange={handleChange}

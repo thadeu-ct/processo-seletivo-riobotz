@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import LogoRioBotz from "../assets/logo-riobotz.svg";
 import Input from "../components/Input";
+import { FORM_FIELDS } from "../services/formFields";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
 
@@ -143,23 +144,16 @@ function Login() {
             )}
 
             <Input
-              id="matricula"
-              label="Matrícula:"
-              type="text"
+              {...FORM_FIELDS.matricula}
               name="matricula"
-              placeholder="Digite seu número de matrícula"
-              mask="0000000"
               value={formData.matricula}
               onChange={handleChange}
               required
             />
 
             <Input
-              id="senha"
-              label="Senha:"
-              type="password"
+              {...FORM_FIELDS.senha}
               name="senha"
-              placeholder="Digite sua senha"
               value={formData.senha}
               onChange={handleChange}
               required

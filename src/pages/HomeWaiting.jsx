@@ -21,7 +21,7 @@ function HomeWaiting() {
           </p>
 
           <div className="bg-yellow-400 text-[#0a1945] font-black py-4 px-16 rounded-lg text-2xl mb-8 shadow-md">
-            Dia XX/XX
+            Dia 01/04
           </div>
 
           <p className="text-[#0a1945] font-black text-xl md:text-2xl">

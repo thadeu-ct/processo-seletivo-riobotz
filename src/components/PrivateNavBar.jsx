@@ -6,28 +6,35 @@ function PrivateNavBar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const location = useLocation();
-  
+
   const nomeSalvo = localStorage.getItem("nomeUsuario");
   const nomeUsuario = nomeSalvo ? nomeSalvo.split(" ")[0] : "Candidato(a)";
 
   return (
     <>
-      <nav className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 items-center gap-10 text-white font-bold whitespace-nowrap">
-        <Link
-          to="/calendario"
-          className="hover:text-yellow-400 transition-colors"
-        >
-          Calendário
-        </Link>
-        <Link to="/escolha" className="hover:text-yellow-400 transition-colors">
-          Áreas
-        </Link>
-        <Link to="/home" className="hover:text-yellow-400 transition-colors">
-          Workshops
-        </Link>
-      </nav>
+      {/* 1. Esconde os links principais no desktop se estiver na tela de espera */}
+      {location.pathname !== "/espera" && (
+        <nav className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 items-center gap-10 text-white font-bold whitespace-nowrap">
+          <Link
+            to="/calendario"
+            className="hover:text-yellow-400 transition-colors"
+          >
+            Calendário
+          </Link>
+          <Link
+            to="/escolha"
+            className="hover:text-yellow-400 transition-colors"
+          >
+            Áreas
+          </Link>
+          <Link to="/home" className="hover:text-yellow-400 transition-colors">
+            Workshops
+          </Link>
+        </nav>
+      )}
 
       <div className="flex items-center gap-3 md:gap-6 z-50">
+        {/* O Botcoin já estava escondido na espera, perfeito! */}
         {location.pathname !== "/espera" && (
           <div className="flex items-center gap-1.5 md:gap-2 font-black text-yellow-400 bg-yellow-400/10 px-3 md:px-4 py-1.5 rounded-full border border-yellow-400/30">
             <svg
@@ -55,6 +62,7 @@ function PrivateNavBar() {
             </svg>
           </button>
 
+          {/* Dropdown de perfil sempre visível para a pessoa poder dar logout */}
           {isProfileOpen && (
             <div className="absolute right-0 top-12 mt-2 w-48 bg-white rounded-xl shadow-2xl py-2 z-50 border border-gray-100 animate-fade-in">
               <div className="px-4 py-3 border-b border-gray-100 mb-1">
@@ -81,43 +89,47 @@ function PrivateNavBar() {
           )}
         </div>
 
-        <button
-          className="text-white hover:text-yellow-400 transition-colors md:hidden block"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-        >
-          {isMenuOpen ? (
-            <svg
-              className="w-8 h-8"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M6 18L18 6M6 6l12 12"
-              ></path>
-            </svg>
-          ) : (
-            <svg
-              className="w-8 h-8"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h16M4 18h16"
-              ></path>
-            </svg>
-          )}
-        </button>
+        {/* 2. Esconde o botão hambúrguer do mobile na espera */}
+        {location.pathname !== "/espera" && (
+          <button
+            className="text-white hover:text-yellow-400 transition-colors md:hidden block"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? (
+              <svg
+                className="w-8 h-8"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                ></path>
+              </svg>
+            ) : (
+              <svg
+                className="w-8 h-8"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                ></path>
+              </svg>
+            )}
+          </button>
+        )}
       </div>
 
-      {isMenuOpen && (
+      {/* 3. Garante que o menu suspenso do mobile também não renderize */}
+      {location.pathname !== "/espera" && isMenuOpen && (
         <div className="absolute top-full left-0 w-full bg-[#0a1945] flex flex-col items-center py-6 gap-6 md:hidden shadow-2xl border-t border-white/10 z-40">
           <Link
             to="/calendario"

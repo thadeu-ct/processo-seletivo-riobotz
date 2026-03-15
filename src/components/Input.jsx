@@ -18,7 +18,7 @@ function Input({
     type === "password" ? (showPassword ? "text" : "password") : type;
 
   const baseInputClass =
-    "w-full px-4 py-3 rounded border border-gray-300 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 bg-gray-50 text-[#0a1945]";
+    "w-full pl-4 pr-12 py-3 rounded border border-gray-300 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 bg-gray-50 text-[#0a1945]";
 
   return (
     <div className="flex flex-col mb-4">

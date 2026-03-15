@@ -14,11 +14,9 @@ function Input({
 }) {
   const [showPassword, setShowPassword] = useState(false);
 
-  // Define dinamicamente se o tipo é texto ou senha baseado no olhinho
   const inputType =
     type === "password" ? (showPassword ? "text" : "password") : type;
 
-  // Extraímos as classes base do input para não repetir código
   const baseInputClass =
     "w-full px-4 py-3 rounded border border-gray-300 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 bg-gray-50 text-[#0a1945]";
 
@@ -32,7 +30,6 @@ function Input({
       </label>
 
       <div className="relative flex items-center">
-        {/* Renderiza o IMaskInput SE existir uma mask, senão renderiza o input normal */}
         {mask ? (
           <IMaskInput
             mask={mask}
@@ -42,8 +39,6 @@ function Input({
             placeholder={placeholder}
             value={value}
             onAccept={(val) => {
-              // O onAccept do IMask é um pouco diferente do onChange nativo.
-              // Precisamos simular o evento (e) para o Form funcionar.
               onChange({ target: { name: name, value: val } });
             }}
             required={required}
@@ -62,7 +57,6 @@ function Input({
           />
         )}
 
-        {/* Botão do Olhinho (Só renderiza se o tipo original era password) */}
         {type === "password" && (
           <button
             type="button"

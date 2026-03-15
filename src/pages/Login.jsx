@@ -153,6 +153,7 @@ function Login() {
 
             <Input
               {...FORM_FIELDS.senha}
+              placeholder="Digite sua senha"
               name="senha"
               value={formData.senha}
               onChange={handleChange}

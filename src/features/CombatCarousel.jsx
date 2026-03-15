@@ -13,21 +13,21 @@ const combatVideos = [
     id: 1,
     title: "Combates de alto impacto.",
     location: "BattleBots - Las Vegas, EUA",
-    videoId: "GkbAcwYix7I", //https://www.youtube.com/watch?v=GkbAcwYix7I
+    videoId: "GkbAcwYix7I",
     startSeconds: 0,
   },
   {
     id: 2,
     title: "Em competições internacionais.",
     location: "NHRL - Norwalk, EUA",
-    videoId: "fqgrigHtMI4", // https://www.youtube.com/live/fqgrigHtMI4?si=HBtOuM7IEqZ1B9ec&t=13266
+    videoId: "fqgrigHtMI4",
     startSeconds: 13266,
   },
   {
     id: 3,
     title: "Por todo o Brasil.",
     location: "Bots Fight Club - São Paulo, Brasil",
-    videoId: "OF76Ie9mRQc", // https://www.youtube.com/live/OF76Ie9mRQc?si=4DBKXISI0IMV-I5s&t=29442
+    videoId: "OF76Ie9mRQc",
     startSeconds: 29442,
   },
 ];
@@ -55,12 +55,18 @@ function CombatCarousel() {
             pagination={{ clickable: true }}
             loop={true}
             onSwiper={(swiper) => setSwiperInstance(swiper)}
-            className="w-full h-full"
+            // A mágica do padding nas laterais:
+            className="w-full h-full px-10 md:px-16"
+            // Diminuindo o tamanho da seta nativa do Swiper:
+            style={{
+              "--swiper-navigation-size": "24px",
+            }}
           >
             {combatVideos.map((video) => (
               <SwiperSlide key={video.id}>
-                <div className="flex flex-col items-center justify-center p-8 text-center h-full">
-                  <h2 className="text-3xl md:text-4xl font-extrabold text-[#0a1945] mb-8">
+                {/* Reduzi o padding interno no mobile e o tamanho do título */}
+                <div className="flex flex-col items-center justify-center px-2 py-6 md:p-8 text-center h-full">
+                  <h2 className="text-xl sm:text-2xl md:text-4xl font-extrabold text-[#0a1945] mb-4 md:mb-8">
                     {video.title}
                   </h2>
 
@@ -71,7 +77,7 @@ function CombatCarousel() {
                     className="max-w-4xl"
                   />
 
-                  <p className="mt-6 text-[#0a1945] font-bold text-lg">
+                  <p className="mt-4 md:mt-6 text-[#0a1945] font-bold text-sm md:text-lg">
                     {video.location}
                   </p>
                 </div>

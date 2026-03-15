@@ -4,7 +4,7 @@ import Header from "./Header";
 function PublicHeader() {
   return (
     <Header logoLink="/">
-      <nav className="flex absolute left-1/2 transform -translate-x-1/2 items-center gap-3 md:gap-10 text-white font-bold text-sm md:text-base whitespace-nowrap">
+      <nav className="flex absolute left-1/2 transform -translate-x-1/2 items-center gap-2 sm:gap-4 md:gap-10 text-white font-bold text-[10px] sm:text-sm md:text-base whitespace-nowrap">
         <a href="#combates" className="hover:text-yellow-400 transition-colors">
           Combates
         </a>
@@ -18,7 +18,7 @@ function PublicHeader() {
       <div className="flex items-center">
         <Link
           to="/login"
-          className="text-white font-extrabold text-base md:text-xl tracking-wide hover:text-yellow-400 transition-colors"
+          className="text-white font-extrabold text-xs sm:text-sm md:text-xl tracking-wide hover:text-yellow-400 transition-colors"
         >
           Entrar
         </Link>

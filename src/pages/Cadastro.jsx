@@ -4,6 +4,7 @@ import Footer from "../components/Footer";
 import LogoRioBotz from "../assets/logo-riobotz.svg";
 import Input from "../components/Input";
 import CBCTC from "../components/CBCTC";
+import TermosCond from "../features/TermosCond"; // IMPORT NOVO
 import { FORM_FIELDS } from "../services/formFields";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
@@ -31,31 +32,59 @@ function Cadastro() {
   const [errorMessage, setErrorMessage] = useState("");
   const [showCTCModal, setShowCTCModal] = useState(false);
 
+  // --- NOVOS ESTADOS PARA A LGPD ---
+  const [showTermosModal, setShowTermosModal] = useState(false);
+  const [leuTermos, setLeuTermos] = useState(false); // Só vira true depois que abrir o modal
+  const [aceitouTermos, setAceitouTermos] = useState(false); // O checkbox em si
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
-    // Limpa a mensagem de erro quando o usuário começa a digitar de novo
+    setErrorMessage("");
+  };
+
+  const abrirTermos = (e) => {
+    e.preventDefault(); // Evita que clique no link envie o form acidentalmente
+    setShowTermosModal(true);
+    setLeuTermos(true); // O usuário cumpriu o requisito de ler!
+  };
+
+  const handleCheckboxChange = (e) => {
+    if (!leuTermos) {
+      // Se não leu, não deixa marcar e mostra um aviso
+      setErrorMessage(
+        "Por favor, clique no link e leia os Termos e Condições antes de concordar.",
+      );
+      return;
+    }
+    setAceitouTermos(e.target.checked);
     setErrorMessage("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validação extra por segurança, embora o botão vá estar desabilitado
+    if (!aceitouTermos) {
+      setErrorMessage(
+        "Você precisa aceitar os termos e condições para prosseguir.",
+      );
+      return;
+    }
+
     setLoading(true);
     setErrorMessage("");
 
-    // O Flask do Telhado espera que a matrícula seja só número e o telefone tenha 14 chars.
-    // Vamos limpar a formatação da matrícula que pode vir do Input mask
     const matLimpa = formData.matricula.replace(/\D/g, "");
 
-    // Preparando os dados exatamente com os nomes que o api.py espera
     const dataToSend = new FormData();
     dataToSend.append("nome", formData.nome);
-    dataToSend.append("mat", matLimpa); // O Flask quer 'mat'
+    dataToSend.append("mat", matLimpa);
     dataToSend.append("email", formData.email);
-    dataToSend.append("tel", formData.telefone); // O Flask quer 'tel' (verifique se a máscara do Input gera exatos 14 chars no state)
+    dataToSend.append("tel", formData.telefone);
     dataToSend.append("senha", formData.senha);
 
     try {
@@ -67,7 +96,6 @@ function Cadastro() {
       const data = await response.json();
 
       if (data.erro && data.erro !== 0) {
-        // Trata os códigos de erro que o Telhado criou (1=Nome, 2=Matricula, etc)
         const mensagensErro = {
           1: "Nome inválido ou contém caracteres perigosos.",
           2: "Matrícula deve conter apenas números.",
@@ -75,7 +103,6 @@ function Cadastro() {
           4: "Telefone inválido. Formato esperado: 14 caracteres.",
           5: "Senha muito curta (mín. 6) ou inválida.",
         };
-
         setErrorMessage(
           mensagensErro[data.erro] || "Erro desconhecido no cadastro.",
         );
@@ -93,7 +120,6 @@ function Cadastro() {
   };
 
   const handleCTCConfirm = () => {
-    // Dá um pequeno atraso para o navegador abrir a nova aba tranquilamente
     setTimeout(() => {
       navigate("/login");
     }, 500);
@@ -101,7 +127,11 @@ function Cadastro() {
 
   return (
     <div className="min-h-screen bg-[#0a1945] flex flex-col items-center py-10 relative">
+      {/* RENDENRIZA OS MODAIS */}
       {showCTCModal && <CBCTC onConfirm={handleCTCConfirm} />}
+      {showTermosModal && (
+        <TermosCond onClose={() => setShowTermosModal(false)} />
+      )}
 
       <Link to="/" className="mb-6">
         <img src={LogoRioBotz} alt="Logo RioBotz" className="h-16" />
@@ -133,10 +163,38 @@ function Cadastro() {
             />
           ))}
 
+          {/* NOVO BLOCO: CHECKBOX DOS TERMOS */}
+          <div className="flex items-start mt-4 mb-2">
+            <div className="flex items-center h-5">
+              <input
+                id="termos"
+                type="checkbox"
+                checked={aceitouTermos}
+                onChange={handleCheckboxChange}
+                className="w-4 h-4 text-yellow-500 bg-gray-100 border-gray-300 rounded focus:ring-yellow-500 focus:ring-2 cursor-pointer"
+              />
+            </div>
+            <div className="ml-3 text-sm">
+              <label
+                htmlFor="termos"
+                className="font-medium text-gray-700 cursor-pointer"
+              >
+                Eu li e concordo com os{" "}
+                <button
+                  onClick={abrirTermos}
+                  className="text-blue-600 hover:underline font-bold bg-transparent border-none p-0 cursor-pointer"
+                >
+                  Termos e Condições
+                </button>
+              </label>
+            </div>
+          </div>
+
           <button
             type="submit"
-            disabled={loading}
-            className={`bg-[#0a1945] hover:bg-blue-900 text-white font-bold py-3 px-8 rounded mt-4 w-1/2 mx-auto transition-colors ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
+            // O BOTÃO SÓ FICA ATIVADO SE A PESSOA TIVER ACEITADO O CHECKBOX (E NÃO ESTIVER CARREGANDO)
+            disabled={loading || !aceitouTermos}
+            className={`bg-[#0a1945] hover:bg-blue-900 text-white font-bold py-3 px-8 rounded mt-6 w-1/2 mx-auto transition-colors ${loading || !aceitouTermos ? "opacity-50 cursor-not-allowed" : ""}`}
           >
             {loading ? "Enviando..." : "Cadastrar"}
           </button>

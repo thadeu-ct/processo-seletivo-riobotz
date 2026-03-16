@@ -19,8 +19,8 @@ function AboutTeam() {
           <p>
             Nossa equipe é dividida em 5 áreas:{" "}
             <strong className="text-white font-bold">mecânica</strong> e{" "}
-            <strong className="text-white font-bold">eletrônica</strong>
-            ficam responsáveis por projetar e trazer à vida os robôs de combate,
+            <strong className="text-white font-bold">eletrônica</strong> ficam
+            responsáveis por projetar e trazer à vida os robôs de combate,
             enquanto os{" "}
             <strong className="text-white font-bold">autônomos</strong> se
             encarregam dos robôs sumô e seguidor de linha, que requerem uma

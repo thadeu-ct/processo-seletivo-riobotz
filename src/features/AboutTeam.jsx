@@ -17,7 +17,7 @@ function AboutTeam() {
           </p>
 
           <p>
-            Nossa equipe é dividida em áreas:{" "}
+            Nossa equipe é dividida em 5 áreas:{" "}
             <strong className="text-white font-bold">mecânica</strong> e{" "}
             <strong className="text-white font-bold">eletrônica</strong>
             ficam responsáveis por projetar e trazer à vida os robôs de combate,

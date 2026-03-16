@@ -7,7 +7,7 @@ function UserDropdown({ onClose }) {
   const userMatricula = localStorage.getItem("matricula") || "";
 
   // Insira aqui as matrículas reais dos diretores/capitão que terão acesso
-  const ADMIN_MATRICULAS = ["1234567", "9876543"];
+  const ADMIN_MATRICULAS = ["2610000"];
   const isAdmin = ADMIN_MATRICULAS.includes(userMatricula);
 
   return (

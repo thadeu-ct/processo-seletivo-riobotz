@@ -18,6 +18,7 @@ import Gestao from "./pages/Gestao";
 import Mecanica from "./pages/Mecanica";
 import Quiz from "./pages/Quiz";
 import AdminWorkshop from "./pages/AdminWorkshop";
+import RegistroAdmin from "./pages/RegistroAdmin";
 
 /* Criação das rotas de cada arquivo e mapeamento das URLs */
 const router = createBrowserRouter([
@@ -72,6 +73,10 @@ const router = createBrowserRouter([
   {
     path: "/admin/workshop/:id",
     element: <AdminWorkshop />,
+  },
+  {
+    path: "/registro-admin",
+    element: <RegistroAdmin />,
   },
 ]);
 

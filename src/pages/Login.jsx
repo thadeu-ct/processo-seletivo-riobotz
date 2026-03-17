@@ -27,7 +27,7 @@ function Login() {
   };
 
   const verificarDestino = async (matriculaUsuario) => {
-    const ADMIN_MATRICULAS = ["2610000"]; 
+    const ADMIN_MATRICULAS = import.meta.env.VITE_ADMIN_MATRICULAS?.split(",") || []; 
 
     if (ADMIN_MATRICULAS.includes(matriculaUsuario)) {
       navigate("/home");

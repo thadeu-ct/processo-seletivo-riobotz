@@ -161,7 +161,7 @@ def escolha():
 @app.route("/api/candidatos")
 def candidatos():
     banco = get_db_connection()
-    db = banco.cursor(cursor_factory=RealDictCursor)
+    db = banco.cursor(cursor_factory=psycopg2.extrasRealDictCursor)
 
     db.execute(
         "SELECT * FROM users"

@@ -38,19 +38,19 @@ function RegistroAdmin() {
     setMsgSalvar({ texto: "", tipo: "" });
 
     try {
-      // Manda a lista INTEIRA (ou só o que mudou, se você preferir otimizar) pro Telhado.
-      // O Telhado precisa criar a rota POST/PUT /admin/salvar-lote recebendo esse array de objetos.
-      const response = await fetch(`${API_URL}/admin/salvar-lote`, {
-        method: "PUT",
+      // Mandando a lista direto pra rota que o Telhado configurou
+      const response = await fetch(`${API_URL}/registrar`, {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ usuarios: usuarios }),
       });
 
       if (response.ok) {
         setMsgSalvar({ texto: "Alterações salvas com sucesso!", tipo: "sucesso" });
-        // Limpa a mensagem verde depois de 3 segundos
+        // Limpa a mensagem verde depois de 3 segundos para a tela não ficar suja
         setTimeout(() => setMsgSalvar({ texto: "", tipo: "" }), 3000);
       } else {
+        // Se o Telhado mandar um JSON com erro, você pode capturar aqui depois
         setMsgSalvar({ texto: "Erro ao salvar no servidor.", tipo: "erro" });
       }
     } catch (error) {

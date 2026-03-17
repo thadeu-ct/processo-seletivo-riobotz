@@ -173,6 +173,8 @@ def candidatos():
     db.close()
     banco.close()
 
+    print(rows)
+
     # resultados = [dict(zip(columns, row)) for row in rows ]
     return rows
 

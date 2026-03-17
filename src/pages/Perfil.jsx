@@ -160,13 +160,27 @@ function Perfil() {
           )}
 
           <form onSubmit={handleAtualizarDados} className="flex flex-col gap-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Campos Bloqueados (Read-only) */}
               <div className="opacity-70 cursor-not-allowed">
-                <Input {...FORM_FIELDS.matricula} value={dados.matricula} readOnly disabled className="bg-gray-100" />
+                <Input 
+                  {...FORM_FIELDS.matricula} 
+                  value={dados.matricula} 
+                  onChange={() => {}} /* <--- A SOLUÇÃO AQUI */
+                  readOnly 
+                  disabled 
+                  className="bg-gray-100" 
+                />
               </div>
               <div className="opacity-70 cursor-not-allowed">
-                <Input {...FORM_FIELDS.email} value={dados.email} readOnly disabled className="bg-gray-100" />
+                <Input 
+                  {...FORM_FIELDS.email} 
+                  value={dados.email} 
+                  onChange={() => {}} /* <--- E AQUI */
+                  readOnly 
+                  disabled 
+                  className="bg-gray-100" 
+                />
               </div>
             </div>
 

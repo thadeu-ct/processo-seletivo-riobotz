@@ -187,14 +187,18 @@ def registrar():
     if not data:
         return jsonify({"erro": "JSON inválido ou ausente"}), 400
 
+    valores = [
+        (d.get("registrado"), d.get("matricula"))
+        for d in data
+    ]
+    if not valores:
+        return {
+            "erro": "Nenhum dado válido"
+        }, 400
+    
     try:
         banco = get_db_connection()
         db = banco.cursor()
-
-        valores = [
-            (d.get("registrado"), d.get("matricula"))
-            for d in data
-        ]
 
         db.executemany(
             "UPDATE users SET registrado = %s WHERE matricula = %s",

@@ -168,19 +168,61 @@ def candidatos():
             "SELECT * FROM users"
         )
 
-        # columns = [ col[0] for col in db.description ]
         rows = db.fetchall()
 
         db.close()
         banco.close()
 
-        print(rows)
-
-        # resultados = [dict(zip(columns, row)) for row in rows ]
         return rows
     except Exception as e:
-        print(f"Erro no banco: {e}")  # This will appear in your server logs
+        print(f"Erro no banco: {e}")
         return jsonify({"erro": str(e)}), 500
+
+
+
+@app.route("/api/registrar", methods=["POST"])
+def registrar():
+    data = request.get_json(silent=True)
+
+    if not data:
+        return jsonify({"erro": "JSON inválido ou ausente"}), 400
+
+    try:
+        banco = get_db_connection()
+        db = banco.cursor()
+
+        valores = [
+            (d.get("registrado"), d.get("matricula"))
+            for d in data
+        ]
+
+        db.executemany(
+            "UPDATE users SET registrado = %s WHERE matricula = %s",
+            valores
+        )
+
+        # for d in data:
+        #     matricula = d.get("matricula")
+        #     registrado = d.get("registrado")
+
+        #     db.execute(
+        #         "UPDATE users SET registrado = %s WHERE matricula = %s",
+        #         (registrado, matricula)
+        #     )
+        
+        banco.commit()
+
+        db.close()
+        banco.close()
+    except Exception as e:
+        print(f"Erro no banco: {e}")
+        return {
+            "erro": str(e)
+        }, 500
+    
+    return {
+        "erro": 0
+    }
 
 
 if __name__ == "__main__":

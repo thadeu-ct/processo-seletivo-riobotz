@@ -79,7 +79,7 @@ function Login() {
         localStorage.setItem("nomeUsuario", result.nome);
         localStorage.setItem("matriculaUsuario", result.matricula);
         localStorage.setItem("botcoinUsuario", result.botcoin);
-        await verificarDestino();
+        await verificarDestino(result.matricula);
       }
     } catch (error) {
       console.error("Erro de conexão:", error);

@@ -20,6 +20,7 @@ import Quiz from "./pages/Quiz";
 import AdminWorkshop from "./pages/AdminWorkshop";
 import RegistroAdmin from "./pages/RegistroAdmin";
 import Perfil from "./pages/Perfil";
+import AdminRoute from "./components/AdminRoute";
 
 /* Criação das rotas de cada arquivo e mapeamento das URLs */
 const router = createBrowserRouter([
@@ -77,7 +78,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/registro-admin",
-    element: <RegistroAdmin />,
+    element: (
+      <AdminRoute>
+        <RegistroAdmin />
+      </AdminRoute>
+    ),
   },
   {
     path: "/perfil",

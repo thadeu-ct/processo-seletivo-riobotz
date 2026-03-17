@@ -129,7 +129,7 @@ function RegistroAdmin() {
                     
                     {/* APENAS O ÍCONE DO WHATSAPP AQUI */}
                     <td className="p-3">
-                      {user.tel && (
+                      {user.telefone && (
                         <a 
                           href={`https://wa.me/${user.telefone.replace(/\D/g, '')}`} 
                           target="_blank" 

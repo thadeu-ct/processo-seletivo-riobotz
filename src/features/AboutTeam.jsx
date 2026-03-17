@@ -8,7 +8,7 @@ function AboutTeam() {
           Um pouco mais sobre a equipe...
         </h2>
         <div className="w-full mb-12">
-          <Video videoId="ob2cKuC5Gj3_lk_t" />
+          <Video videoId="aVvvgCIJgEk" />
         </div>
         <div className="text-gray-300 text-sm md:text-base leading-relaxed space-y-6 text-justify">
           <p>

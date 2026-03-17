@@ -88,7 +88,7 @@ function RegistroAdmin() {
                       <div className="flex gap-3">
                         {/* LINK PARA WHATSAPP */}
                         <a 
-                          href={`https://wa.me/${user.tel.replace(/\D/g, '')}`} 
+                          href={`https://wa.me/${(user.tel || "").replace(/\D/g, '')}`} 
                           target="_blank" 
                           rel="noopener noreferrer"
                           className="text-green-600 hover:text-green-800"
@@ -98,7 +98,7 @@ function RegistroAdmin() {
                         </a>
                         {/* LINK PARA E-MAIL */}
                         <a 
-                          href={`mailto:${user.email}`} 
+                          href={`mailto:${user.email || ""}`} 
                           className="text-blue-600 hover:text-blue-800"
                           title="Enviar E-mail"
                         >

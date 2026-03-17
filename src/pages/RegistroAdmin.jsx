@@ -32,37 +32,6 @@ function RegistroAdmin() {
     fetchData();
   }, []);
 
-  const handleAddMatricula = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMensagem({ texto: "", tipo: "" });
-
-    const matLimpa = novaMatricula.replace(/\D/g, "");
-
-    try {
-      // POST para adicionar uma nova matrícula avulsa
-      const response = await fetch(`${API_URL}/admin/registrar-matricula`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mat: matLimpa }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setMensagem({ texto: "Matrícula adicionada com sucesso!", tipo: "sucesso" });
-        setNovaMatricula("");
-        // Idealmente, aqui faríamos um novo fetch para recarregar a lista
-      } else {
-        setMensagem({ texto: data.erro || "Erro ao adicionar matrícula.", tipo: "erro" });
-      }
-    } catch (error) {
-      console.error("Erro na requisição de admin:", error);
-      setMensagem({ texto: "Erro de conexão com o servidor.", tipo: "erro" });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleToggleRegistro = async (mat, statusAtual) => {
     // Aqui entrará o fetch PUT/PATCH para atualizar o status no banco de dados.

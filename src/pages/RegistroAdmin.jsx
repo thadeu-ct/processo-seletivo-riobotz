@@ -81,7 +81,7 @@ function RegistroAdmin() {
               </thead>
               <tbody className="text-[#0a1945] font-medium divide-y divide-gray-100">
                 {usuarios.map((user) => (
-                  <tr key={user.mat} className="hover:bg-gray-50 transition-colors">
+                  <tr key={user.matricula} className="hover:bg-gray-50 transition-colors">
                     <td className="p-3">{user.mat}</td>
                     <td className="p-3">{user.nome}</td>
                     <td className="p-3">

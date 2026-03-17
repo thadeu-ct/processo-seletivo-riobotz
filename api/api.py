@@ -162,7 +162,7 @@ def escolha():
 def candidatos():
     try:
         banco = get_db_connection()
-        db = banco.cursor(cursor_factory=psycopg2.extrasRealDictCursor)
+        db = banco.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
         db.execute(
             "SELECT * FROM users"

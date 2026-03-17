@@ -42,7 +42,7 @@ function RegistroAdmin() {
       const response = await fetch(`${API_URL}/registrar`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ usuarios: usuarios }),
+        body: JSON.stringify(usuarios),
       });
 
       if (response.ok) {

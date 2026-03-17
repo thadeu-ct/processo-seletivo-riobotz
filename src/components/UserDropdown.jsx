@@ -6,7 +6,7 @@ function UserDropdown({ onClose }) {
   
   const userMatricula = localStorage.getItem("matriculaUsuario") || "";
 
-  const ADMIN_MATRICULAS = ["2610000"];
+  const ADMIN_MATRICULAS = import.meta.env.VITE_ADMIN_MATRICULAS?.split(",") || [];
   const isAdmin = ADMIN_MATRICULAS.includes(userMatricula);
 
   return (

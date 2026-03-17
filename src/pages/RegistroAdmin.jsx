@@ -21,6 +21,7 @@ function RegistroAdmin() {
       try {
         const resp = await fetch(`${API_URL}/candidatos`);
         const data = await resp.json();
+        console.error(data);
         setUsuarios(data);
       } catch (error) {
         console.error("Erro ao verificar data do processo:", error);
@@ -95,34 +96,6 @@ function RegistroAdmin() {
 
       {/* CONTEÚDO PRINCIPAL */}
       <div className="w-11/12 max-w-4xl flex flex-col gap-6">
-        
-        {/* PAINEL DE ADIÇÃO RÁPIDA */}
-        <div className="bg-white rounded-lg p-6 shadow-xl flex flex-col md:flex-row items-end gap-4">
-          <div className="w-full md:w-3/4">
-            <h2 className="text-[#0a1945] font-extrabold text-lg mb-2">Adicionar Novo Acesso</h2>
-            <Input
-              {...FORM_FIELDS.matricula}
-              name="matricula"
-              value={novaMatricula}
-              onChange={(e) => setNovaMatricula(e.target.value)}
-              placeholder="Digite a matrícula..."
-            />
-          </div>
-          <button
-            onClick={handleAddMatricula}
-            disabled={loading || novaMatricula.length < 5}
-            className={`w-full md:w-1/4 bg-yellow-500 hover:bg-yellow-600 text-[#0a1945] font-bold py-3 px-4 rounded transition-colors h-[50px] ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
-          >
-            {loading ? "Salvando..." : "Registrar"}
-          </button>
-        </div>
-
-        {mensagem.texto && (
-          <div className={`px-4 py-3 rounded text-center font-bold ${mensagem.tipo === "sucesso" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
-            {mensagem.texto}
-          </div>
-        )}
-
         {/* LISTA DE INSCRITOS */}
         <div className="bg-white rounded-lg p-6 shadow-xl overflow-hidden">
           <h2 className="text-[#0a1945] font-extrabold text-xl mb-4 border-b pb-2">Controle de Inscritos</h2>

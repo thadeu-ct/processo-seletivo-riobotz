@@ -12,10 +12,7 @@ app = Flask(__name__)
 CORS(app)
 app.config["SESSION_PERMANENT"] = False
 
-def get_db_connection():
-    # O psycopg2 entende perfeitamente a URL do Supabase
-    conn = psycopg2.connect(os.getenv("DATABASE_URL"))
-    return conn
+
 
 @app.route("/api/data")
 def date():

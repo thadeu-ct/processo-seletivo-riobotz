@@ -1,12 +1,11 @@
 import { Link } from "react-router-dom";
 
 function UserDropdown({ onClose }) {
-  // Puxa as informações do localStorage (ajuste o nome da chave da matrícula se for diferente)
   const nomeSalvo = localStorage.getItem("nomeUsuario");
   const nomeUsuario = nomeSalvo ? nomeSalvo.split(" ")[0] : "Candidato(a)";
-  const userMatricula = localStorage.getItem("matricula") || "";
+  
+  const userMatricula = localStorage.getItem("matriculaUsuario") || "";
 
-  // Insira aqui as matrículas reais dos diretores/capitão que terão acesso
   const ADMIN_MATRICULAS = ["2610000"];
   const isAdmin = ADMIN_MATRICULAS.includes(userMatricula);
 

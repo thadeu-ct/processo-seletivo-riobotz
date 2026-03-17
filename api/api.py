@@ -160,23 +160,27 @@ def escolha():
 
 @app.route("/api/candidatos")
 def candidatos():
-    banco = get_db_connection()
-    db = banco.cursor(cursor_factory=psycopg2.extrasRealDictCursor)
+    try:
+        banco = get_db_connection()
+        db = banco.cursor(cursor_factory=psycopg2.extrasRealDictCursor)
 
-    db.execute(
-        "SELECT * FROM users"
-    )
+        db.execute(
+            "SELECT * FROM users"
+        )
 
-    # columns = [ col[0] for col in db.description ]
-    rows = db.fetchall()
+        # columns = [ col[0] for col in db.description ]
+        rows = db.fetchall()
 
-    db.close()
-    banco.close()
+        db.close()
+        banco.close()
 
-    print(rows)
+        print(rows)
 
-    # resultados = [dict(zip(columns, row)) for row in rows ]
-    return rows
+        # resultados = [dict(zip(columns, row)) for row in rows ]
+        return rows
+    except Exception as e:
+        print(f"Erro no banco: {e}")  # This will appear in your server logs
+        return jsonify({"erro": str(e)}), 500
 
 
 if __name__ == "__main__":

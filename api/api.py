@@ -165,7 +165,7 @@ def candidatos():
         db = banco.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
         db.execute(
-            "SELECT * FROM users"
+            "SELECT * FROM users ORDER BY matricula"
         )
 
         rows = db.fetchall()

@@ -26,7 +26,14 @@ function Login() {
     }));
   };
 
-  const verificarDestino = async () => {
+  const verificarDestino = async (matriculaUsuario) => {
+    const ADMIN_MATRICULAS = ["2610000"]; 
+
+    if (ADMIN_MATRICULAS.includes(matriculaUsuario)) {
+      navigate("/home");
+      return;
+    }
+
     try {
       const resp = await fetch(`${API_URL}/data`);
       const data = await resp.json();
@@ -38,7 +45,7 @@ function Login() {
       }
     } catch (error) {
       console.error("Erro ao verificar data do processo:", error);
-      navigate("/home");
+      navigate("/home"); 
     }
   };
 

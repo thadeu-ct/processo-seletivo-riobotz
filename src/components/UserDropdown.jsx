@@ -24,7 +24,6 @@ function UserDropdown({ onClose }) {
         Configurações
       </Link>
 
-      {/* Link de Admin (SÓ APARECE SE A MATRÍCULA BATER COM A LISTA VIP) */}
       {isAdmin && (
         <Link
           to="/registro-admin"
@@ -39,7 +38,7 @@ function UserDropdown({ onClose }) {
         to="/"
         onClick={() => {
           onClose();
-          // localStorage.clear(); // Descomente isso se quiser limpar os dados no logout
+          localStorage.clear();
         }}
         className="block px-4 py-2 text-red-500 font-bold hover:bg-red-50 transition-colors"
       >

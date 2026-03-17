@@ -19,6 +19,7 @@ import Mecanica from "./pages/Mecanica";
 import Quiz from "./pages/Quiz";
 import AdminWorkshop from "./pages/AdminWorkshop";
 import RegistroAdmin from "./pages/RegistroAdmin";
+import Perfil from "./pages/Perfil";
 
 /* Criação das rotas de cada arquivo e mapeamento das URLs */
 const router = createBrowserRouter([
@@ -77,6 +78,10 @@ const router = createBrowserRouter([
   {
     path: "/registro-admin",
     element: <RegistroAdmin />,
+  },
+  {
+    path: "/perfil",
+    element: <Perfil />,
   },
 ]);
 

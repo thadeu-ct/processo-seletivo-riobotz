@@ -131,7 +131,7 @@ function RegistroAdmin() {
                     <td className="p-3">
                       {user.tel && (
                         <a 
-                          href={`https://wa.me/${user.tel.replace(/\D/g, '')}`} 
+                          href={`https://wa.me/${user.telefone.replace(/\D/g, '')}`} 
                           target="_blank" 
                           rel="noopener noreferrer"
                           className="text-green-600 hover:text-green-800 inline-flex items-center gap-1"

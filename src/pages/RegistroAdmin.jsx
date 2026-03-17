@@ -1,22 +1,67 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import Input from "../components/Input";
 import UserDropdown from "../components/UserDropdown";
+import { FORM_FIELDS } from "../services/formFields";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
 
 function RegistroAdmin() {
+  const navigate = useNavigate();
+  const [novaMatricula, setNovaMatricula] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [mensagem, setMensagem] = useState({ texto: "", tipo: "" });
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  
+  // Lista de usuários que virá do banco de dados
   const [usuarios, setUsuarios] = useState([]);
 
-  // SIMULAÇÃO: O que o front vai puxar do Flask quando a rota GET existir
   useEffect(() => {
-    // Aqui vai entrar o fetch do GET /admin/usuarios no futuro
-    setUsuarios([
-      { mat: "2311111", nome: "João Vitor Silva", tel: "5521999999999", email: "joao@puc.br", registrado: true },
-      { mat: "2412222", nome: "Maria Clara Souza", tel: "5521888888888", email: "maria@puc.br", registrado: false },
-      { mat: "2513333", nome: "Pedro Henrique", tel: "5521777777777", email: "pedro@puc.br", registrado: true },
-    ]);
+    const fetchData = async () => {
+      try {
+        const resp = await fetch(`${API_URL}/candidatos`);
+        const data = await resp.json();
+        setUsuarios(data);
+      } catch (error) {
+        console.error("Erro ao verificar data do processo:", error);
+        navigate("/registro-admin"); 
+      }
+    };
+  
+    fetchData();
   }, []);
+
+  const handleAddMatricula = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMensagem({ texto: "", tipo: "" });
+
+    const matLimpa = novaMatricula.replace(/\D/g, "");
+
+    try {
+      // POST para adicionar uma nova matrícula avulsa
+      const response = await fetch(`${API_URL}/admin/registrar-matricula`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mat: matLimpa }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMensagem({ texto: "Matrícula adicionada com sucesso!", tipo: "sucesso" });
+        setNovaMatricula("");
+        // Idealmente, aqui faríamos um novo fetch para recarregar a lista
+      } else {
+        setMensagem({ texto: data.erro || "Erro ao adicionar matrícula.", tipo: "erro" });
+      }
+    } catch (error) {
+      console.error("Erro na requisição de admin:", error);
+      setMensagem({ texto: "Erro de conexão com o servidor.", tipo: "erro" });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleToggleRegistro = async (mat, statusAtual) => {
     // Aqui entrará o fetch PUT/PATCH para atualizar o status no banco de dados.
@@ -42,15 +87,43 @@ function RegistroAdmin() {
             onClick={() => setIsProfileOpen(!isProfileOpen)}
             className="w-10 h-10 rounded-full bg-blue-800 border-2 border-transparent hover:border-yellow-400 transition-all flex items-center justify-center text-white"
           >
-            <span className="font-bold">A</span>
+            <span className="font-bold">A</span> {/* Pode por o ícone SVG aqui */}
           </button>
           {isProfileOpen && <UserDropdown onClose={() => setIsProfileOpen(false)} />}
         </div>
       </div>
 
-      {/* CONTEÚDO PRINCIPAL - APENAS A TABELA */}
+      {/* CONTEÚDO PRINCIPAL */}
       <div className="w-11/12 max-w-4xl flex flex-col gap-6">
         
+        {/* PAINEL DE ADIÇÃO RÁPIDA */}
+        <div className="bg-white rounded-lg p-6 shadow-xl flex flex-col md:flex-row items-end gap-4">
+          <div className="w-full md:w-3/4">
+            <h2 className="text-[#0a1945] font-extrabold text-lg mb-2">Adicionar Novo Acesso</h2>
+            <Input
+              {...FORM_FIELDS.matricula}
+              name="matricula"
+              value={novaMatricula}
+              onChange={(e) => setNovaMatricula(e.target.value)}
+              placeholder="Digite a matrícula..."
+            />
+          </div>
+          <button
+            onClick={handleAddMatricula}
+            disabled={loading || novaMatricula.length < 5}
+            className={`w-full md:w-1/4 bg-yellow-500 hover:bg-yellow-600 text-[#0a1945] font-bold py-3 px-4 rounded transition-colors h-[50px] ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
+          >
+            {loading ? "Salvando..." : "Registrar"}
+          </button>
+        </div>
+
+        {mensagem.texto && (
+          <div className={`px-4 py-3 rounded text-center font-bold ${mensagem.tipo === "sucesso" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+            {mensagem.texto}
+          </div>
+        )}
+
+        {/* LISTA DE INSCRITOS */}
         <div className="bg-white rounded-lg p-6 shadow-xl overflow-hidden">
           <h2 className="text-[#0a1945] font-extrabold text-xl mb-4 border-b pb-2">Controle de Inscritos</h2>
           

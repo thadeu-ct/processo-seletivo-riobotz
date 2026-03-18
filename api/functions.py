@@ -1,7 +1,8 @@
 from datetime import datetime
-from werkzeug.security import generate_password_hash, check_password_hash
-import psycopg2
+from flask import Flask, request, jsonify
 import os
+import psycopg2
+from werkzeug.security import generate_password_hash, check_password_hash
 
 '''
     Constantes
@@ -44,6 +45,17 @@ def create_hash(texto: str):
 
 def compare_hash(texto: str, hash: str):
     return check_password_hash(hash, texto)
+
+
+def get_request_input(nome: str):
+    ans = request.form.get(nome)
+    if verifica_texto(ans):
+        return {
+            "erro": "Caracteres inválidos"
+        }
+    
+    return ans
+
 
 
 def get_user(matriucla: str):

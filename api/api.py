@@ -84,34 +84,26 @@ def login():
         return {
             "erro": ERRO_MATRICULA
         }
-
-    usuario = get_user(matricula)
-    try:
-        if (usuario["erro"]): 
-            print(usuario)
-            return {
-                "erro": ERRO_MATRICULA
-            }, 400
     
-    # banco = get_db_connection()
+    banco = get_db_connection()
 
-    # db = banco.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    db = banco.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-    # db.execute(
-    #     "SELECT senha, nome, matricula, registrado, botcoin FROM users WHERE matricula = %s",
-    #     (matricula,)
-    # )
+    db.execute(
+        "SELECT senha, nome, matricula, registrado, botcoin FROM users WHERE matricula = %s",
+        (matricula,)
+    )
 
-    # resultados = db.fetchmany(1)
+    resultados = db.fetchmany(1)
 
-    # db.close()
-    # banco.close()
+    db.close()
+    banco.close()
 
-    # if len(resultados) == 0:
-    #     return {"erro": ERRO_SENHA}
+    if len(resultados) == 0:
+        return {"erro": ERRO_SENHA}
     
-    # row = resultados[0]
-    hash_senha = usuario["senha"]
+    row = resultados[0]
+    hash_senha = row["senha"]
 
     senha = request.form.get("senha")
     if (
@@ -121,10 +113,10 @@ def login():
         return {"erro": ERRO_SENHA}
     
     return {
-        "nome": usuario["nome"],
-        "matricula": usuario["matricula"],
-        "botcoin": usuario["botcoin"],
-        "registrado": usuario["registrado"]
+        "nome": row["nome"],
+        "matricula": row["matricula"],
+        "botcoin": row["botcoin"],
+        "registrado": row["registrado"]
     }
 
 

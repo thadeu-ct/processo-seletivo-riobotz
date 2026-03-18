@@ -2,15 +2,16 @@ from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from .functions import *
-import os
 import psycopg2
 import psycopg2.extras
+import os
 
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
 app.config["SESSION_PERMANENT"] = False
+
 
 
 @app.route("/api/data")
@@ -150,7 +151,7 @@ def escolha():
         return jsonify({"erro": 0})
 
     except Exception as e:
-        print(f"Erro no banco: {e}")
+        print(f"Erro no banco: {e}")  # This will appear in your server logs
         return jsonify({"erro": str(e)}), 500
 
 
@@ -201,6 +202,15 @@ def registrar():
             valores
         )
 
+        # for d in data:
+        #     matricula = d.get("matricula")
+        #     registrado = d.get("registrado")
+
+        #     db.execute(
+        #         "UPDATE users SET registrado = %s WHERE matricula = %s",
+        #         (registrado, matricula)
+        #     )
+        
         banco.commit()
 
         db.close()
@@ -214,83 +224,6 @@ def registrar():
     return {
         "erro": 0
     }
-
-
-@app.route("/api/usuario", methods=["POST"])
-def usuario():
-    mat: str = request.form.get("matricula")
-    if not matricula.isnumeric():
-        return {
-            "erro": ERRO_MATRICULA
-        }, 400
-
-    usuario = get_user(matricula)
-
-    try:
-        if usuario["erro"]:
-            print(usuario)
-            return {
-                "erro": ERRO_MATRICULA
-            }
-    
-    return jsonify(usuario)
-
-
-@app.route("/api/troca_senha", methods=["POST"])
-def troca_senha():
-    mat: str = get_request_input("matricula")
-    try:
-        if mat["erro"]:
-            return mat
-    
-    if not mat.isnumeric():
-        return {
-            "erro": ERRO_MATRICULA
-        }
-
-    usuario = get_user(mat)
-    
-    try:
-        if usuario["erro"]:
-            print(usuario)
-            return {
-                "erro": ERRO_MATRICULA
-            }
-    
-    senha_antiga = usuario["senha"]
-
-    senha_atual = get_request_input("senhaAtual")
-    try:
-        if senha_atual["erro"]:
-            return senha_atual
-    
-    senha_nova = get_request_input("senhaNova")
-    try:
-        if senha_nova["erro"]:
-            return senha_nova
-
-    if not senha_antiga == senha_atual:
-        return {
-            "erro": "Senha inválida"
-        }, 400
-
-    if senha_atual == senha_nova:
-        return {
-            "erro": "A senha nova tem que ser diferente"
-        }, 400
-
-    banco = get_db_connection()
-    db = banco.cursor()
-
-    db.execute(
-        "UPDATE users SET senha = %s WHERE matricula = %s"
-        (senha_nova, matriucla)
-    )
-
-    banco.commit()
-
-    db.close()
-    banco.close()
 
 
 if __name__ == "__main__":

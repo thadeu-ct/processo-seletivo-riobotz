@@ -54,7 +54,7 @@ function Calendario() {
   };
 
   const onlines = workshopsFiltrados.filter(ws => ws.tipo === "Online");
-  const presenciais = workshopsFiltrados.filter(ws => ws.tipo === "Presencial" && ws.dia); // Filtra só os que têm 'dia' definido
+  const presenciais = workshopsFiltrados.filter(ws => ws.tipo === "Presencial" && ws.dia); 
 
   const renderWorkshopBlock = (dia, horario) => {
     const workshop = presenciais.find(ws => ws.dia === dia && ws.hora === horario);
@@ -64,12 +64,12 @@ function Calendario() {
     const estaInscrito = inscricoes[workshop.id];
 
     return (
-      <div className={`p-2 h-full border-r border-b border-gray-200 relative group overflow-hidden transition-all ${estaInscrito ? "bg-[#e6f4ea] border-l-4 border-l-green-500" : "bg-white hover:bg-gray-50"}`}>
+      <div className={`p-2 h-full border-r border-b border-gray-200 relative group overflow-hidden transition-all ${estaInscrito ? "bg-yellow-50/50 border-l-4 border-l-yellow-500" : "bg-white hover:bg-gray-50"}`}>
         
         {!estaInscrito && (
-          <div className="absolute inset-0 bg-white/80 backdrop-blur-[1px] z-10 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" onClick={() => handleToggleInscricao(workshop.id)}>
+          <div className="absolute inset-0 bg-[#0a1945]/90 backdrop-blur-[1px] z-10 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" onClick={() => handleToggleInscricao(workshop.id)}>
             <svg className="w-8 h-8 text-yellow-500 mb-1" fill="currentColor" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/></svg>
-            <span className="text-[#0a1945] font-bold text-xs uppercase text-center leading-tight">Clique para<br/>Inscrever-se</span>
+            <span className="text-white font-bold text-xs uppercase text-center leading-tight">Clique para<br/>Inscrever-se</span>
           </div>
         )}
 
@@ -78,7 +78,7 @@ function Calendario() {
           <span className="text-gray-500 text-xs">{workshop.local}</span>
           
           {estaInscrito && (
-             <button onClick={() => handleToggleInscricao(workshop.id)} className="mt-2 text-[10px] bg-red-100 text-red-600 px-2 py-1 rounded font-bold hover:bg-red-200 z-20 relative">
+             <button onClick={() => handleToggleInscricao(workshop.id)} className="mt-2 text-[10px] bg-red-100 text-red-600 px-2 py-1 rounded font-bold hover:bg-red-200 z-20 relative transition-colors">
                Cancelar Inscrição
              </button>
           )}
@@ -89,13 +89,12 @@ function Calendario() {
 
   return (
     <div className="min-h-screen bg-[#f4f6f8] flex flex-col font-sans">
-      <div className="bg-[#0a1945] w-full pb-16 pt-4 relative z-50">
-         <PrivateHeader />
-      </div>
+      
+      <PrivateHeader />
 
-      <main className="flex-grow flex flex-col lg:flex-row max-w-[1600px] mx-auto w-full px-4 py-8 gap-6 -mt-10 relative z-40">
+      <main className="flex-grow flex flex-col lg:flex-row max-w-[1600px] mx-auto w-full px-4 py-12 gap-8 items-start">
         
-        <aside className="w-full lg:w-64 bg-white rounded-xl shadow-lg p-6 h-fit shrink-0 border border-gray-100">
+        <aside className="w-full lg:w-64 bg-white rounded-2xl shadow-2xl p-6 h-fit shrink-0 border border-gray-100 lg:my-auto">
           <h2 className="text-[#0a1945] font-extrabold text-lg mb-6 border-b pb-2">
             Filtrar por Área
           </h2>
@@ -107,7 +106,7 @@ function Calendario() {
                 className={`text-left px-4 py-2.5 rounded-lg text-sm font-bold transition-all ${
                   filtroArea === area.id
                     ? "bg-[#0a1945] text-yellow-400 shadow-md"
-                    : "bg-gray-50 text-gray-600 hover:bg-gray-100"
+                    : "bg-transparent text-gray-500 hover:bg-gray-100 hover:text-[#0a1945]"
                 }`}
               >
                 {area.nome}
@@ -122,10 +121,10 @@ function Calendario() {
             <div className="overflow-x-auto">
               <div className="min-w-[800px]">
                 
-                <div className="grid grid-cols-[100px_1fr_1fr_1fr_1fr_1fr] bg-[#34495e] text-white text-xs font-bold text-center">
-                  <div className="p-3 border-r border-white/20">HORÁRIO</div>
+                <div className="grid grid-cols-[100px_1fr_1fr_1fr_1fr_1fr] bg-[#0a1945] text-white text-xs font-bold text-center">
+                  <div className="p-3 border-r border-white/10">HORÁRIO</div>
                   {DIAS_SEMANA.map(dia => (
-                    <div key={dia} className="p-3 border-r border-white/20 last:border-0">{dia}</div>
+                    <div key={dia} className="p-3 border-r border-white/10 last:border-0">{dia}</div>
                   ))}
                 </div>
 
@@ -136,7 +135,6 @@ function Calendario() {
                         {horario}
                       </div>
                       
-                      {/* Células dos Dias */}
                       {DIAS_SEMANA.map(dia => (
                         <div key={`${dia}-${horario}`}>
                            {renderWorkshopBlock(dia, horario)}
@@ -150,9 +148,10 @@ function Calendario() {
           </div>
 
           <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden flex flex-col md:flex-row min-h-[120px]">
-             <div className="bg-[#34495e] text-white font-bold flex items-center justify-center w-full md:w-[100px] p-4 md:p-0">
+             <div className="bg-[#0a1945] text-yellow-400 font-black tracking-widest flex items-center justify-center w-full md:w-[100px] p-4 md:p-0">
                 ONLINE
              </div>
+             
              <div className="flex-grow p-4 flex flex-wrap gap-4 items-center">
                 {onlines.length > 0 ? (
                   onlines.map((ws) => (
@@ -161,7 +160,7 @@ function Calendario() {
                         <h4 className="font-bold text-sm text-[#0a1945]">{ws.titulo}</h4>
                         <span className="text-xs text-gray-500">{ws.areas.join(", ")}</span>
                       </div>
-                      <button className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-1.5 px-4 rounded transition-colors shrink-0">
+                      <button className="bg-yellow-500 hover:bg-yellow-600 text-[#0a1945] text-xs font-bold py-2 px-5 rounded transition-colors shrink-0">
                         Assistir
                       </button>
                     </div>

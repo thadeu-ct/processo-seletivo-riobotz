@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import PrivateNavBar from "../components/PrivateNavBar";
+import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
 import workshopsData from "../services/workshops.json";
 
@@ -90,7 +90,7 @@ function Calendario() {
   return (
     <div className="min-h-screen bg-[#f4f6f8] flex flex-col font-sans">
       <div className="bg-[#0a1945] w-full pb-16 pt-4 relative z-50">
-         <PrivateNavBar />
+         <PrivateHeader />
       </div>
 
       <main className="flex-grow flex flex-col lg:flex-row max-w-[1600px] mx-auto w-full px-4 py-8 gap-6 -mt-10 relative z-40">

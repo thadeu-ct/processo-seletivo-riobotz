@@ -15,6 +15,11 @@ ERRO_EMAIL = 3
 ERRO_TEL = 4
 ERRO_SENHA = 5
 
+EMAIL_ADDRESS = os.getenv('EMAIL_ADDRESS')
+EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD')
+SMTP_SERVER = os.getenv('SMTP_SERVER')
+SMTP_PORT = int(os.getenv('SMTP_PORT'))
+
 
 '''
     Funções auxiliares
@@ -45,3 +50,27 @@ def create_hash(texto: str):
 
 def compare_hash(texto: str, hash: str):
     return check_password_hash(hash, texto)
+
+
+def send_verification_email(to_email, code):
+    # Compose the email
+    msg = MIMEMultipart()
+    msg['From'] = EMAIL_ADDRESS
+    msg['To'] = to_email
+    msg['Subject'] = 'Your Password Reset Code'
+
+    body = f"Your verification code is: {code}"
+    msg.attach(MIMEText(body, 'plain'))
+
+    # Connect to SMTP server and send email
+    try:
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+        server.starttls()  # Secure connection
+        server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+        server.send_message(msg)
+        server.quit()
+        print(f"Verification code sent to {to_email}")
+        return 0
+    except Exception as e:
+        print("Failed to send email:", e)
+        return e

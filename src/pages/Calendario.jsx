@@ -27,16 +27,14 @@ const MAPA_HORARIOS_MOCK = {
   "microcontroladores-2-pratica": { dia: "SEXTA", hora: "13:00 15:00" },
 };
 
-// --- PALETA DE CORES DAS ÁREAS (RioBotz/Mentor Gradus) ---
 const CORES_AREAS = {
-  mecanica: "#f16c21",   // Laranja
-  autonomos: "#0aa14c", // Verde
-  eletronica: "#f1aa1b", // Amarelo
-  gestao: "#026be1",    // Azul
-  comunicacao: "#6f29e1" // Roxo
+  mecanica: "#f16c21",  
+  autonomos: "#0aa14c",
+  eletronica: "#f1aa1b", 
+  gestao: "#026be1",  
+  comunicacao: "#6f29e1"
 };
 
-// Função auxiliar para calcular luminância e ordenar cores
 const calcularLuminancia = (hex) => {
   const c = hex.substring(1).split('').map(function (c) {
     return parseInt(c + c, 16);
@@ -44,26 +42,24 @@ const calcularLuminancia = (hex) => {
   return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
 };
 
-// Função para gerar o estilo de gradiente complexo
-const obterEstiloBorda = (areas) => {
-  if (!areas || areas.length === 0) return { background: "#e5e7eb" }; // Cinza padrão se sem área
+const obterEstiloFaixaLado = (areas) => {
+  if (!areas || areas.length === 0) return { background: "#e5e7eb" };
 
   const coresValidas = areas
     .filter(areaId => CORES_AREAS[areaId])
     .map(areaId => ({ id: areaId, hex: CORES_AREAS[areaId], lumi: calcularLuminancia(CORES_AREAS[areaId]) }));
 
   if (coresValidas.length === 1) {
-    return { background: coresValidas[0].hex }; // Cor sólida exata
+    return { background: coresValidas[0].hex };
   } else if (coresValidas.length > 1) {
-    // Ordenar por luminância (da mais escura para a mais clara)
     coresValidas.sort((a, b) => a.lumi - b.lumi);
-
     return {
-      backgroundImage: `linear-gradient(to right, ${coresValidas.map(c => c.hex).join(", ")})`
+      backgroundImage: `linear-gradient(to bottom, ${coresValidas.map(c => c.hex).join(", ")})`
     };
   }
-  return {}; // Retorno padrão
+  return { background: "#e5e7eb" }; 
 };
+
 
 function Calendario() {
   const [filtroArea, setFiltroArea] = useState("todas");
@@ -94,6 +90,7 @@ function Calendario() {
 
   const presenciais = workshopsFiltrados.filter(ws => ws.tipo === "Presencial" && ws.dia); 
   const todosOnlines = workshopsFiltrados.filter(ws => ws.tipo === "Online");
+
   const onlinesDisponiveis = todosOnlines.filter(ws => !alocadosOnline[ws.id]);
 
   const handleDragStart = (e, id) => {
@@ -121,38 +118,37 @@ function Calendario() {
     });
   };
 
-  // --- RENDERIZAÇÃO DA CÉLULA (GRADE) ---
   const renderCellContent = (dia, horario) => {
     const presencial = presenciais.find(ws => ws.dia === dia && ws.hora === horario);
     const onlinesAqui = todosOnlines.filter(ws => alocadosOnline[ws.id]?.dia === dia && alocadosOnline[ws.id]?.hora === horario);
 
     return (
       <div 
-        className="h-full w-full flex flex-col relative z-0"
+        className="h-full w-full flex flex-col gap-2 relative z-0"
         onDragOver={handleDragOver}
         onDrop={(e) => handleDrop(e, dia, horario)}
       >
-        {/* --- RENDERIZAÇÃO DO PRESENCIAL (MUDANÇAS AQUI) --- */}
         {presencial && (() => {
           const estaInscrito = inscricoes[presencial.id];
-          const estiloBorda = obterEstiloBorda(presencial.areas); // Calcula o gradiente/cor sólido
-          
+          const estiloFaixa = obterEstiloFaixaLado(presencial.areas);
+
           return (
-            <div 
-              style={estiloBorda}
-              className={`h-full w-full relative z-10 overflow-hidden transition-all group`}
-            >
+            <div className={`p-2 rounded relative group transition-all overflow-hidden border border-gray-100 shadow-sm ${estaInscrito ? "bg-yellow-50/80" : "bg-white hover:bg-gray-50"}`}>
+              
+              <div style={estiloFaixa} className="absolute left-0 top-0 bottom-0 w-[4px]" />
+
               {!estaInscrito && (
-                <div className="absolute inset-0 bg-white/90 backdrop-blur-[1px] z-10 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded" onClick={() => handleToggleInscricao(presencial.id)}>
+                <div className="absolute inset-0 bg-[#0a1945]/90 backdrop-blur-[1px] z-10 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded" onClick={() => handleToggleInscricao(presencial.id)}>
                   <svg className="w-6 h-6 text-yellow-500 mb-1" fill="currentColor" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/></svg>
-                  <span className="text-[#0a1945] font-bold text-[10px] uppercase text-center leading-tight">Clique para<br/>Inscrever-se</span>
+                  <span className="text-white font-bold text-[10px] uppercase text-center leading-tight">Inscrever-se</span>
                 </div>
               )}
-              <div className="flex flex-col h-full text-center items-center justify-center p-2">
-                <span className="font-extrabold text-white text-xs leading-tight mb-1">{presencial.titulo}</span>
-                <span className="text-yellow-100 text-[10px]">{presencial.local}</span>
+              
+              <div className="flex flex-col text-center items-center justify-center pl-1">
+                <span className="font-extrabold text-[#0a1945] text-xs leading-tight mb-1">{presencial.titulo}</span>
+                <span className="text-gray-400 text-[10px]">{presencial.local}</span>
                 {estaInscrito && (
-                  <button onClick={() => handleToggleInscricao(presencial.id)} className="mt-2 text-[9px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold hover:bg-red-200 z-20 relative transition-colors">
+                  <button onClick={() => handleToggleInscricao(presencial.id)} className="mt-1 text-[9px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold hover:bg-red-200 z-20 relative">
                     Cancelar
                   </button>
                 )}
@@ -161,30 +157,34 @@ function Calendario() {
           );
         })()}
 
-        {/* Renderiza os Online arrastados pra cá (Mantido sem alteração) */}
-        {onlinesAqui.map(ws => (
-          <div 
-            key={ws.id} 
-            draggable
-            onDragStart={(e) => handleDragStart(e, ws.id)}
-            className="p-2 rounded bg-blue-50 border border-blue-200 border-l-4 border-l-blue-500 relative shadow-sm cursor-grab active:cursor-grabbing group"
-          >
-            <button 
-              onClick={(e) => removerAlocacao(e, ws.id)}
-              className="absolute -top-1 -right-1 bg-red-500 hover:bg-red-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity z-20"
-              title="Remover do calendário"
-            >
-              ×
-            </button>
-            <div className="flex flex-col text-center items-center justify-center">
-              <span className="font-bold text-blue-900 text-[10px] uppercase mb-0.5">💻 Online</span>
-              <span className="font-extrabold text-[#0a1945] text-xs leading-tight">{ws.titulo}</span>
-            </div>
-          </div>
-        ))}
+        {onlinesAqui.map(ws => {
+           const estiloFaixa = obterEstiloFaixaLado(ws.areas);
+           return (
+              <div 
+                key={ws.id} 
+                draggable
+                onDragStart={(e) => handleDragStart(e, ws.id)}
+                className="p-2 rounded bg-blue-50 border border-blue-200 relative shadow-sm cursor-grab active:cursor-grabbing group overflow-hidden"
+              >
+                <div style={estiloFaixa} className="absolute left-0 top-0 bottom-0 w-[4px]" />
+
+                <button 
+                  onClick={(e) => removerAlocacao(e, ws.id)}
+                  className="absolute -top-1 -right-1 bg-red-500 hover:bg-red-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity z-20"
+                  title="Remover do calendário"
+                >
+                  ×
+                </button>
+                <div className="flex flex-col text-center items-center justify-center pl-1">
+                  <span className="font-bold text-blue-900 text-[10px] uppercase mb-0.5">💻 Online</span>
+                  <span className="font-extrabold text-[#0a1945] text-xs leading-tight">{ws.titulo}</span>
+                </div>
+              </div>
+           );
+        })}
 
         {!presencial && onlinesAqui.length === 0 && (
-           <div className="w-full h-full flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity p-2">
+           <div className="w-full h-full flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
               <span className="text-gray-300 text-[10px] font-bold uppercase border-2 border-dashed border-gray-200 rounded p-1">Soltar Aqui</span>
            </div>
         )}
@@ -199,7 +199,6 @@ function Calendario() {
 
       <main className="flex-grow flex flex-col xl:flex-row max-w-[1800px] mx-auto w-full px-4 py-12 gap-6 items-start">
         
-        {/* --- COLUNA 1: BARRA LATERAL (FILTROS) --- */}
         <aside className="w-full xl:w-64 bg-white rounded-2xl shadow-xl p-6 h-fit shrink-0 border border-gray-100 xl:my-auto">
           <h2 className="text-[#0a1945] font-extrabold text-lg mb-6 border-b pb-2">
             Filtrar por Área
@@ -221,12 +220,10 @@ function Calendario() {
           </div>
         </aside>
 
-        {/* --- COLUNA 2: CONTEÚDO PRINCIPAL (A GRADE) --- */}
         <section className="w-full xl:flex-grow bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden">
           <div className="overflow-x-auto">
             <div className="min-w-[700px]">
               
-              {/* CABEÇALHO DA TABELA */}
               <div className="grid grid-cols-[90px_1fr_1fr_1fr_1fr_1fr] bg-[#0a1945] text-white text-xs font-bold text-center">
                 <div className="p-3 border-r border-white/10">HORÁRIO</div>
                 {DIAS_SEMANA.map(dia => (
@@ -234,7 +231,6 @@ function Calendario() {
                 ))}
               </div>
 
-              {/* CORPO DA TABELA (Padding alterado para 0) */}
               <div className="flex flex-col bg-white">
                 {HORARIOS.map((horario, index) => (
                   <div key={horario} className={`grid grid-cols-[90px_1fr_1fr_1fr_1fr_1fr] min-h-[120px] ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
@@ -243,7 +239,7 @@ function Calendario() {
                     </div>
                     
                     {DIAS_SEMANA.map(dia => (
-                      <div key={`${dia}-${horario}`} className="border-r border-b border-gray-200 p-0">
+                      <div key={`${dia}-${horario}`} className="p-1 border-r border-b border-gray-200">
                          {renderCellContent(dia, horario)}
                       </div>
                     ))}
@@ -254,7 +250,6 @@ function Calendario() {
           </div>
         </section>
 
-        {/* --- COLUNA 3: WORKSHOPS ONLINE (DRAGGABLE) --- */}
         <aside className="w-full xl:w-80 flex flex-col bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden shrink-0 h-[650px]">
            <div className="bg-[#0a1945] text-yellow-400 font-black tracking-widest flex flex-col items-center justify-center w-full p-4 border-b-4 border-yellow-500 shrink-0">
               <span>WORKSHOPS ONLINE</span>
@@ -263,23 +258,28 @@ function Calendario() {
            
            <div className="flex-grow p-4 overflow-y-auto flex flex-col gap-3 custom-scrollbar bg-gray-50/50">
               {onlinesDisponiveis.length > 0 ? (
-                onlinesDisponiveis.map((ws) => (
-                  <div 
-                    key={ws.id} 
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, ws.id)}
-                    className="bg-white border-2 border-dashed border-gray-300 hover:border-blue-400 hover:shadow-md rounded-lg p-4 flex flex-col gap-3 transition-all cursor-grab active:cursor-grabbing"
-                  >
-                    <div>
-                      <h4 className="font-extrabold text-[#0a1945] leading-tight mb-1">{ws.titulo}</h4>
-                      <p className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">{ws.areas.join(", ")}</p>
+                onlinesDisponiveis.map((ws) => {
+                  const estiloFaixa = obterEstiloFaixaLado(ws.areas);
+                  return (
+                    <div 
+                      key={ws.id} 
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, ws.id)}
+                      className="bg-white border border-gray-200 hover:border-blue-400 hover:shadow-md rounded-lg p-4 flex flex-col gap-3 transition-all cursor-grab active:cursor-grabbing relative overflow-hidden"
+                    >
+                      <div style={estiloFaixa} className="absolute left-0 top-0 bottom-0 w-[4px]" />
+
+                      <div className="pl-2">
+                        <h4 className="font-extrabold text-[#0a1945] leading-tight mb-1">{ws.titulo}</h4>
+                        <p className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">{ws.areas.join(", ")}</p>
+                      </div>
+                      <div className="text-blue-500 text-xs font-bold flex items-center justify-center gap-2 mt-1">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11"></path></svg>
+                        Arraste para a grade
+                      </div>
                     </div>
-                    <div className="text-blue-500 text-xs font-bold flex items-center gap-2">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11"></path></svg>
-                      Arraste-me
-                    </div>
-                  </div>
-                ))
+                  );
+                })
               ) : (
                 <div className="h-full flex flex-col items-center justify-center text-center p-4 opacity-50">
                    <svg className="w-12 h-12 text-green-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -292,7 +292,6 @@ function Calendario() {
 
       </main>
       
-      {/* Wrapper escuro para o Footer */}
       <div className="w-full bg-[#0a1945] mt-auto">
         <Footer />
       </div>

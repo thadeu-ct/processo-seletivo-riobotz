@@ -170,7 +170,7 @@ function Login() {
 
             <div className="text-right -mt-2 mb-4">
               <Link
-                to="/redefinir"
+                to="/trocar-senha"
                 className="text-sm text-gray-500 hover:text-[#0a1945] underline font-medium"
               >
                 Esqueci minha senha?

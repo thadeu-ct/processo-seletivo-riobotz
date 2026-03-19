@@ -92,9 +92,9 @@ function Calendario() {
       
       <PrivateHeader />
 
-      <main className="flex-grow flex flex-col lg:flex-row max-w-[1600px] mx-auto w-full px-4 py-12 gap-8 items-start">
+      <main className="flex-grow flex flex-col xl:flex-row max-w-[1800px] mx-auto w-full px-4 py-12 gap-6 items-start">
         
-        <aside className="w-full lg:w-64 bg-white rounded-2xl shadow-2xl p-6 h-fit shrink-0 border border-gray-100 lg:my-auto">
+        <aside className="w-full xl:w-64 bg-white rounded-2xl shadow-xl p-6 h-fit shrink-0 border border-gray-100 xl:my-auto">
           <h2 className="text-[#0a1945] font-extrabold text-lg mb-6 border-b pb-2">
             Filtrar por Área
           </h2>
@@ -115,63 +115,64 @@ function Calendario() {
           </div>
         </aside>
 
-        <section className="w-full flex-grow flex flex-col gap-6">
-          
-          <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-            <div className="overflow-x-auto">
-              <div className="min-w-[800px]">
-                
-                <div className="grid grid-cols-[100px_1fr_1fr_1fr_1fr_1fr] bg-[#0a1945] text-white text-xs font-bold text-center">
-                  <div className="p-3 border-r border-white/10">HORÁRIO</div>
-                  {DIAS_SEMANA.map(dia => (
-                    <div key={dia} className="p-3 border-r border-white/10 last:border-0">{dia}</div>
-                  ))}
-                </div>
+        <section className="w-full xl:flex-grow bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden">
+          <div className="overflow-x-auto">
+            <div className="min-w-[700px]">
+              
+              <div className="grid grid-cols-[90px_1fr_1fr_1fr_1fr_1fr] bg-[#0a1945] text-white text-xs font-bold text-center">
+                <div className="p-3 border-r border-white/10">HORÁRIO</div>
+                {DIAS_SEMANA.map(dia => (
+                  <div key={dia} className="p-3 border-r border-white/10 last:border-0">{dia}</div>
+                ))}
+              </div>
 
-                <div className="flex flex-col bg-white">
-                  {HORARIOS.map((horario, index) => (
-                    <div key={horario} className={`grid grid-cols-[100px_1fr_1fr_1fr_1fr_1fr] min-h-[100px] ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
-                      <div className="flex items-center justify-center p-2 border-r border-b border-gray-200 text-xs font-medium text-gray-500">
-                        {horario}
-                      </div>
-                      
-                      {DIAS_SEMANA.map(dia => (
-                        <div key={`${dia}-${horario}`}>
-                           {renderWorkshopBlock(dia, horario)}
-                        </div>
-                      ))}
+              <div className="flex flex-col bg-white">
+                {HORARIOS.map((horario, index) => (
+                  <div key={horario} className={`grid grid-cols-[90px_1fr_1fr_1fr_1fr_1fr] min-h-[100px] ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                    <div className="flex items-center justify-center p-2 border-r border-b border-gray-200 text-xs font-medium text-gray-500">
+                      {horario}
                     </div>
-                  ))}
-                </div>
+                    
+                    {DIAS_SEMANA.map(dia => (
+                      <div key={`${dia}-${horario}`}>
+                         {renderWorkshopBlock(dia, horario)}
+                      </div>
+                    ))}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
-
-          <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden flex flex-col md:flex-row min-h-[120px]">
-             <div className="bg-[#0a1945] text-yellow-400 font-black tracking-widest flex items-center justify-center w-full md:w-[100px] p-4 md:p-0">
-                ONLINE
-             </div>
-             
-             <div className="flex-grow p-4 flex flex-wrap gap-4 items-center">
-                {onlines.length > 0 ? (
-                  onlines.map((ws) => (
-                    <div key={ws.id} className="bg-gray-50 border border-gray-200 rounded p-3 flex-grow min-w-[250px] flex justify-between items-center gap-4">
-                      <div>
-                        <h4 className="font-bold text-sm text-[#0a1945]">{ws.titulo}</h4>
-                        <span className="text-xs text-gray-500">{ws.areas.join(", ")}</span>
-                      </div>
-                      <button className="bg-yellow-500 hover:bg-yellow-600 text-[#0a1945] text-xs font-bold py-2 px-5 rounded transition-colors shrink-0">
-                        Assistir
-                      </button>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-gray-400 italic text-sm w-full text-center">Nenhum workshop online filtrado.</p>
-                )}
-             </div>
-          </div>
-
         </section>
+
+        <aside className="w-full xl:w-80 flex flex-col bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden shrink-0 h-[650px]">
+           <div className="bg-[#0a1945] text-yellow-400 font-black tracking-widest flex items-center justify-center w-full p-4 border-b-4 border-yellow-500 shrink-0">
+              WORKSHOPS ONLINE
+           </div>
+           
+           <div className="flex-grow p-4 overflow-y-auto flex flex-col gap-3 custom-scrollbar">
+              {onlines.length > 0 ? (
+                onlines.map((ws) => (
+                  <div key={ws.id} className="bg-gray-50 border border-gray-200 hover:border-[#0a1945] rounded-lg p-4 flex flex-col gap-3 transition-colors">
+                    <div>
+                      <h4 className="font-extrabold text-[#0a1945] leading-tight mb-1">{ws.titulo}</h4>
+                      <p className="text-xs text-gray-500 uppercase tracking-wide font-semibold">{ws.areas.join(", ")}</p>
+                    </div>
+                    <button className="bg-yellow-500 hover:bg-yellow-600 text-[#0a1945] text-sm font-bold py-2 px-4 rounded transition-colors w-full flex items-center justify-center gap-2">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                      Assistir Agora
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <div className="h-full flex flex-col items-center justify-center text-center p-4">
+                   <svg className="w-12 h-12 text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                   <p className="text-gray-400 italic text-sm">Nenhum workshop online filtrado para esta área.</p>
+                </div>
+              )}
+           </div>
+        </aside>
+
       </main>
       
       <Footer />

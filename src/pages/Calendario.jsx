@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import PrivateNavBar from "../components/PrivateNavBar";
 import Footer from "../components/Footer";
-import workshopsData from "../data/workshops.json";
+import workshopsData from "../services/workshops.json";
 
 const AREAS = [
   { id: "todas", nome: "Todas as Áreas" },

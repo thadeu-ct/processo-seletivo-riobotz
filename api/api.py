@@ -6,12 +6,15 @@ import psycopg2
 import psycopg2.extras
 import os
 
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
 app.config["SESSION_PERMANENT"] = False
-
 
 
 @app.route("/api/data")
@@ -224,6 +227,45 @@ def registrar():
     return {
         "erro": 0
     }
+
+
+@app.route("/api/trocar-senha")
+def trocarSenha():
+    mat: str = request.form.get("matricula")
+    email: str = request.form.get("email")
+
+    if not mat.isnumeric():
+        return {
+            "erro": ERRO_MATRICULA
+        }, 400
+
+    if verifica_texto(email):
+        return {
+            "erro": ERRO_EMAIL
+        }, 400
+    
+    codigo: str = str(random.randint(100000, 999999))
+
+    res = send_verification_email(email, code)
+    if not res == 0:
+        retunr {
+            "erro": "Erro ao tentar enviar email"
+        }, 400
+
+    banco = get_db_connection()
+    db = banco.cursor()
+
+    db.execute(
+        "INSERT INTO codigos VALUES (%s, %s)",
+        (mat, codigo)
+    )
+
+    banco.commit()
+
+    db.close()
+    banco.close()
+
+    return {}
 
 
 if __name__ == "__main__":

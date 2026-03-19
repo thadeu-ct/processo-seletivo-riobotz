@@ -5,6 +5,7 @@ from .functions import *
 import psycopg2
 import psycopg2.extras
 import os
+import random
 
 import smtplib
 from email.mime.text import MIMEText
@@ -246,9 +247,9 @@ def trocarSenha():
     
     codigo: str = str(random.randint(100000, 999999))
 
-    res = send_verification_email(email, code)
+    res = send_verification_email(email, codigo)
     if not res == 0:
-        retunr {
+        return {
             "erro": "Erro ao tentar enviar email"
         }, 400
 

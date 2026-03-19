@@ -21,6 +21,7 @@ import RegistroAdmin from "./pages/RegistroAdmin";
 import Perfil from "./pages/Perfil";
 import AdminRoute from "./components/AdminRoute";
 import ForgotPassword from "./features/ForgotPassword";
+import Calendario from "./pages/Calendario";
 
 const router = createBrowserRouter([
   {
@@ -87,10 +88,13 @@ const router = createBrowserRouter([
     path: "/perfil",
     element: <Perfil />,
   },
-  
   {
     path: "/trocar-senha",
     element: <ForgotPassword />,
+  },
+  {
+    path: "/calendario",
+    element: <Calendario />,
   },
 ]);
 

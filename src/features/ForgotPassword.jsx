@@ -23,10 +23,9 @@ function ForgotPassword() {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setMensagem({ texto: "", tipo: "" }); // Limpa erros ao digitar
+    setMensagem({ texto: "", tipo: "" });
   };
 
-  // --- PASSO 1: SOLICITAR O CÓDIGO ---
   const handleSolicitarCodigo = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -206,7 +205,7 @@ function ForgotPassword() {
             to="/login"
             className="text-sm text-gray-500 hover:text-[#0a1945] underline font-medium"
           >
-            Lembrei minha senha! Voltar.
+            Lembrei minha senha!
           </Link>
         </div>
       </div>

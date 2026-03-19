@@ -4,7 +4,6 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import "./index.css";
 
-/* PÁGINAS QUE TERÃO ROTAS */
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Cadastro from "./pages/Cadastro";
@@ -23,7 +22,6 @@ import Perfil from "./pages/Perfil";
 import AdminRoute from "./components/AdminRoute";
 import ForgotPassword from "./features/ForgotPassword";
 
-/* Criação das rotas de cada arquivo e mapeamento das URLs */
 const router = createBrowserRouter([
   {
     path: "/",
@@ -96,7 +94,6 @@ const router = createBrowserRouter([
   },
 ]);
 
-/* Renderização das rotas para conexão das vias */
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <RouterProvider router={router} />

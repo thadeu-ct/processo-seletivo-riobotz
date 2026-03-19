@@ -158,7 +158,7 @@ def escolha():
         return jsonify({"erro": str(e)}), 500
 
 
-@app.route("/api/candidatos")
+@app.route("/api/candidatos", methods=["POST"])
 def candidatos():
     try:
         banco = get_db_connection()
@@ -229,7 +229,7 @@ def registrar():
     }
 
 
-@app.route("/api/trocar-senha")
+@app.route("/api/trocar-senha", methods=["POST"])
 def trocarSenha():
     mat: str = request.form.get("matricula")
     email: str = request.form.get("email")

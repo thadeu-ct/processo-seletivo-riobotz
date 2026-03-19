@@ -4,7 +4,7 @@ import Footer from "../components/Footer";
 import LogoRioBotz from "../assets/logo-riobotz.svg";
 import Input from "../components/Input";
 import CBCTC from "../components/CBCTC";
-import TermosCond from "../features/TermosCond"; // IMPORT NOVO
+import TermosCond from "../features/TermosCond";
 import { FORM_FIELDS } from "../services/formFields";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
@@ -32,10 +32,9 @@ function Cadastro() {
   const [errorMessage, setErrorMessage] = useState("");
   const [showCTCModal, setShowCTCModal] = useState(false);
 
-  // --- NOVOS ESTADOS PARA A LGPD ---
   const [showTermosModal, setShowTermosModal] = useState(false);
-  const [leuTermos, setLeuTermos] = useState(false); // Só vira true depois que abrir o modal
-  const [aceitouTermos, setAceitouTermos] = useState(false); // O checkbox em si
+  const [leuTermos, setLeuTermos] = useState(false);
+  const [aceitouTermos, setAceitouTermos] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,14 +46,13 @@ function Cadastro() {
   };
 
   const abrirTermos = (e) => {
-    e.preventDefault(); // Evita que clique no link envie o form acidentalmente
+    e.preventDefault();
     setShowTermosModal(true);
-    setLeuTermos(true); // O usuário cumpriu o requisito de ler!
+    setLeuTermos(true);
   };
 
   const handleCheckboxChange = (e) => {
     if (!leuTermos) {
-      // Se não leu, não deixa marcar e mostra um aviso
       setErrorMessage(
         "Por favor, clique no link e leia os Termos e Condições antes de concordar.",
       );
@@ -67,7 +65,6 @@ function Cadastro() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validação extra por segurança, embora o botão vá estar desabilitado
     if (!aceitouTermos) {
       setErrorMessage(
         "Você precisa aceitar os termos e condições para prosseguir.",
@@ -127,7 +124,6 @@ function Cadastro() {
 
   return (
     <div className="min-h-screen bg-[#0a1945] flex flex-col items-center py-10 relative">
-      {/* RENDENRIZA OS MODAIS */}
       {showCTCModal && <CBCTC onConfirm={handleCTCConfirm} />}
       {showTermosModal && (
         <TermosCond onClose={() => setShowTermosModal(false)} />
@@ -163,7 +159,6 @@ function Cadastro() {
             />
           ))}
 
-          {/* NOVO BLOCO: CHECKBOX DOS TERMOS */}
           <div className="flex items-start mt-4 mb-2">
             <div className="flex items-center h-5">
               <input
@@ -192,7 +187,6 @@ function Cadastro() {
 
           <button
             type="submit"
-            // O BOTÃO SÓ FICA ATIVADO SE A PESSOA TIVER ACEITADO O CHECKBOX (E NÃO ESTIVER CARREGANDO)
             disabled={loading || !aceitouTermos}
             className={`bg-[#0a1945] hover:bg-blue-900 text-white font-bold py-3 px-8 rounded mt-6 w-1/2 mx-auto transition-colors ${loading || !aceitouTermos ? "opacity-50 cursor-not-allowed" : ""}`}
           >

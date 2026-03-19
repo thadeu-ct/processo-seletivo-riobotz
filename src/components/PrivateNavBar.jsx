@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import UserDropdown from "../components/UserDropdown"; // <-- IMPORT NOVO
+import UserDropdown from "../components/UserDropdown";
 
 function PrivateNavBar() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -10,7 +10,6 @@ function PrivateNavBar() {
 
   return (
     <>
-      {/* 1. Esconde os links principais no desktop se estiver na tela de espera */}
       {location.pathname !== "/espera" && (
         <nav className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 items-center gap-10 text-white font-bold whitespace-nowrap">
           <Link
@@ -32,7 +31,6 @@ function PrivateNavBar() {
       )}
 
       <div className="flex items-center gap-3 md:gap-6 z-50">
-        {/* O Botcoin já estava escondido na espera, perfeito! */}
         {location.pathname !== "/espera" && (
           <div className="flex items-center gap-1.5 md:gap-2 font-black text-yellow-400 bg-yellow-400/10 px-3 md:px-4 py-1.5 rounded-full border border-yellow-400/30">
             <svg
@@ -60,13 +58,11 @@ function PrivateNavBar() {
             </svg>
           </button>
 
-          {/* RENDENRIZA O DROPDOWN AQUI, PASSANDO A FUNÇÃO DE FECHAR */}
           {isProfileOpen && (
             <UserDropdown onClose={() => setIsProfileOpen(false)} />
           )}
         </div>
 
-        {/* 2. Esconde o botão hambúrguer do mobile na espera */}
         {location.pathname !== "/espera" && (
           <button
             className="text-white hover:text-yellow-400 transition-colors md:hidden block"
@@ -105,7 +101,6 @@ function PrivateNavBar() {
         )}
       </div>
 
-      {/* 3. Garante que o menu suspenso do mobile também não renderize */}
       {location.pathname !== "/espera" && isMenuOpen && (
         <div className="absolute top-full left-0 w-full bg-[#0a1945] flex flex-col items-center py-6 gap-6 md:hidden shadow-2xl border-t border-white/10 z-40">
           <Link

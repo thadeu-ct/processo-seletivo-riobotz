@@ -34,8 +34,8 @@
   },
   {
     "id": "easyeda-pratica",
-    "titulo": "Oficina de EasyEDA",
-    "descricao": "Mão na massa no design de PCBs! Prática intensiva de desenho e roteamento de placas de circuito impresso usando o EasyEDA.",
+    "titulo": "Placas de Circuito Impresso e EasyEDA",
+    "descricao": "Descubra como funcionam as PCBs! Prática intensiva em desenvolvimento de PCBs usando o EasyEDA.",
     "tipo": "Presencial",
     "dataHora": "09/04, QUI, 17:00-18:30",
     "local": "Sala Reservada",
@@ -81,16 +81,16 @@
     "titulo": "Competições de Robótica",
     "descricao": "Conheça as arenas! Apresentação das regras gerais das competições e exposição física de vários robôs de combate e autônomos da equipe.",
     "tipo": "Presencial",
-    "dataHora": "08/04, QUA, 19:00 - 20:30",
+    "dataHora": "01/04, QUA, 19:00 - 20:30",
     "local": "Auditório / Espaço Aberto",
     "areas": ["gestao", "comunicacao", "mecanica", "eletronica", "autonomos"],
     "videoId": null,
     "quizLink": null
   },
   {
-    "id": "resolucao-problemas-eletronicos",
-    "titulo": "Resolução de Problemas Eletrônicos",
-    "descricao": "Dinâmica de troubleshooting. Teste seus conhecimentos com perguntas dinâmicas e situações reais focadas em encontrar e corrigir falhas eletrônicas.",
+    "id": "solda-eletronicos",
+    "titulo": "Oficina de solda eletrônica",
+    "descricao": "Aula prática de solda eletrônica voltada ao aprendizado de técnicas, manuseio seguro do ferro de solda e aplicação correta de estanho em componentes.",
     "tipo": "Presencial",
     "dataHora": "08/04, QUI, 18:30-20:30",
     "local": "Laboratório de Robótica",
@@ -138,7 +138,7 @@
     "tipo": "Online",
     "dataHora": null,
     "local": null,
-    "areas": ["mecanica", "eletronica", "autonomos"],
+    "areas": ["mecanica", "eletronica"],
     "videoId": "dQw4w9WgXcQ",
     "quizLink": "/quiz/sistemas-transmissao"
   }

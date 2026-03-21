@@ -1,13 +1,43 @@
+import { useMemo } from "react";
 import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
 import Workshop from "../components/Workshop";
 import workshopsDB from "../services/workshops.json";
 import { Link } from "react-router-dom";
 
+const extrairValorTempo = (dataHoraStr) => {
+  if (!dataHoraStr) return 0;
+
+  try {
+    const partes = dataHoraStr.split(",");
+    const [dia, mes] = partes[0].trim().split("/");
+    const horaInicial = partes[2].split("-")[0].trim();
+    const [hora, minuto] = horaInicial.split(":");
+
+    return new Date(
+      2026,
+      parseInt(mes) - 1,
+      parseInt(dia),
+      parseInt(hora),
+      parseInt(minuto),
+    ).getTime();
+  } catch (error) {
+    console.error(
+      `Erro ao tentar processar a data/hora "${dataHoraStr}":`,
+      error,
+    );
+    return Infinity;
+  }
+};
+
 function Autonomos() {
-  const trilhaAutonomos = workshopsDB.filter((workshop) =>
-    workshop.areas.includes("autonomos"),
-  );
+  const trilhaAutonomos = useMemo(() => {
+    return workshopsDB
+      .filter((workshop) => workshop.areas.includes("autonomos"))
+      .sort(
+        (a, b) => extrairValorTempo(a.dataHora) - extrairValorTempo(b.dataHora),
+      );
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#0a1945] flex flex-col font-sans">

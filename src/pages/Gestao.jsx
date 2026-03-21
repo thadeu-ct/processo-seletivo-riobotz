@@ -1,13 +1,43 @@
+import { useMemo } from "react";
 import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
 import Workshop from "../components/Workshop";
 import workshopsDB from "../services/workshops.json";
 import { Link } from "react-router-dom";
 
+const extrairValorTempo = (dataHoraStr) => {
+  if (!dataHoraStr) return 0;
+
+  try {
+    const partes = dataHoraStr.split(",");
+    const [dia, mes] = partes[0].trim().split("/");
+    const horaInicial = partes[2].split("-")[0].trim();
+    const [hora, minuto] = horaInicial.split(":");
+
+    return new Date(
+      2026,
+      parseInt(mes) - 1,
+      parseInt(dia),
+      parseInt(hora),
+      parseInt(minuto),
+    ).getTime();
+  } catch (error) {
+    console.error(
+      `Erro ao tentar processar a data/hora "${dataHoraStr}":`,
+      error,
+    );
+    return Infinity;
+  }
+};
+
 function Gestao() {
-  const trilhaGestao = workshopsDB.filter((workshop) =>
-    workshop.areas.includes("gestao"),
-  );
+  const trilhaGestao = useMemo(() => {
+    return workshopsDB
+      .filter((workshop) => workshop.areas.includes("gestao"))
+      .sort(
+        (a, b) => extrairValorTempo(a.dataHora) - extrairValorTempo(b.dataHora),
+      );
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#0a1945] flex flex-col font-sans">
@@ -37,7 +67,7 @@ function Gestao() {
         </div>
 
         <div className="mb-12 w-full max-w-4xl flex items-center gap-4 md:gap-6">
-          <div className="flex-shrink-0 flex justify-center items-center w-16 h-16 md:w-20 md:h-20 bg-cyan-400/10 rounded-2xl border border-cyan-400/30 shadow-[0_0_15px_rgba(250,204,21,0.2)]">
+          <div className="flex-shrink-0 flex justify-center items-center w-16 h-16 md:w-20 md:h-20 bg-cyan-400/10 rounded-2xl border border-cyan-400/30 shadow-[0_0_15px_rgba(34,211,238,0.2)]">
             <svg
               className="w-8 h-8 md:w-10 md:h-10 text-cyan-400"
               fill="none"
@@ -66,7 +96,7 @@ function Gestao() {
 
               return (
                 <div key={item.id} className="relative flex items-start group">
-                  <div className="absolute left-0 md:left-5 top-8 w-10 h-10 rounded-full bg-[#0a1945] border-4 border-cyan-400 z-10 flex items-center justify-center group-hover:scale-125 transition-transform shadow-[0_0_15px_rgba(250,204,21,0.5)]">
+                  <div className="absolute left-0 md:left-5 top-8 w-10 h-10 rounded-full bg-[#0a1945] border-4 border-cyan-400 z-10 flex items-center justify-center group-hover:scale-125 transition-transform shadow-[0_0_15px_rgba(34,211,238,0.5)]">
                     <span className="text-cyan-400 font-black text-sm font-mono">
                       {index + 1}
                     </span>

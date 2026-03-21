@@ -22,7 +22,7 @@ const generateSlots = () => {
 };
 
 const SLOTS = generateSlots();
-const SLOT_HEIGHT = 60;
+const SLOT_HEIGHT = 30;
 
 const CORES_AREAS = {
   mecanica: "#f16c21",

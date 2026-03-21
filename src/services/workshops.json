@@ -92,7 +92,7 @@
     "titulo": "Oficina de solda eletrônica",
     "descricao": "Aula prática de solda eletrônica voltada ao aprendizado de técnicas, manuseio seguro do ferro de solda e aplicação correta de estanho em componentes.",
     "tipo": "Presencial",
-    "dataHora": "08/04, QUI, 18:30-20:30",
+    "dataHora": "09/04, QUI, 18:30-20:30",
     "local": "Laboratório de Robótica",
     "areas": ["eletronica"],
     "videoId": null,

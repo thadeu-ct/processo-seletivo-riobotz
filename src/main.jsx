@@ -22,6 +22,7 @@ import Perfil from "./pages/Perfil";
 import AdminRoute from "./components/AdminRoute";
 import ForgotPassword from "./features/ForgotPassword";
 import Calendario from "./pages/Calendario";
+import Botcoins from "./features/Botcoins";
 
 const router = createBrowserRouter([
   {
@@ -95,6 +96,10 @@ const router = createBrowserRouter([
   {
     path: "/calendario",
     element: <Calendario />,
+  },
+  {
+    path: "/botcoins",
+    element: <Botcoins />,
   },
 ]);
 

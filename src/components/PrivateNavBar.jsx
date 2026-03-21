@@ -32,7 +32,10 @@ function PrivateNavBar() {
 
       <div className="flex items-center gap-3 md:gap-6 z-50">
         {location.pathname !== "/espera" && (
-          <div className="flex items-center gap-1.5 md:gap-2 font-black text-yellow-400 bg-yellow-400/10 px-3 md:px-4 py-1.5 rounded-full border border-yellow-400/30">
+          <Link
+            to="/botcoins"
+            className="flex items-center gap-1.5 md:gap-2 font-black text-yellow-400 bg-yellow-400/10 hover:bg-yellow-400/20 px-3 md:px-4 py-1.5 rounded-full border border-yellow-400/30 transition-colors cursor-pointer"
+          >
             <svg
               className="w-4 h-4 md:w-5 md:h-5"
               fill="currentColor"
@@ -41,7 +44,7 @@ function PrivateNavBar() {
               <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zm1-13h-2v2H9v2h2v2H9v2h2v2h2v-2h2v-2h-2v-2h2V9h-2V7z" />
             </svg>
             <span className="text-sm md:text-base">150 ₿</span>
-          </div>
+          </Link>
         )}
 
         <div className="relative">

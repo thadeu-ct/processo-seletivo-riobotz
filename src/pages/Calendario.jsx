@@ -13,6 +13,17 @@ const AREAS = [
 ];
 
 const DIAS_SEMANA = ["SEG", "TER", "QUA", "QUI", "SEX"];
+const SLOTS = [
+  "17:00",
+  "17:30",
+  "18:00",
+  "18:30",
+  "19:00",
+  "19:30",
+  "20:00",
+  "20:30",
+];
+const SLOT_HEIGHT = 80;
 
 const CORES_AREAS = {
   mecanica: "#f16c21",
@@ -54,15 +65,38 @@ const obterEstiloFaixaLado = (areas) => {
   return { background: "#e5e7eb" };
 };
 
-const processarDataHora = (dataHoraStr) => {
-  if (!dataHoraStr) return { diaDaSemana: null, hora: null };
-  const partes = dataHoraStr.split(",").map((p) => p.trim());
-  if (partes.length < 3) return { diaDaSemana: null, hora: null };
+const parseTime = (timeStr) => {
+  const [h, m] = timeStr.split(":").map(Number);
+  return h * 60 + m;
+};
 
-  return {
-    diaDaSemana: partes[1],
-    hora: partes[2],
-  };
+const getEventStyle = (inicio, fim) => {
+  const baseMinutes = parseTime("17:00");
+  const startMin = parseTime(inicio);
+  const endMin = parseTime(fim);
+  const top = ((startMin - baseMinutes) / 30) * SLOT_HEIGHT;
+  const height = ((endMin - startMin) / 30) * SLOT_HEIGHT;
+  return { top: `${top}px`, height: `${height}px` };
+};
+
+const calcularFimOnline = (inicio) => {
+  const mins = parseTime(inicio) + 90;
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
+};
+
+const processarDataHora = (dataHoraStr) => {
+  if (!dataHoraStr)
+    return { diaDaSemana: null, inicio: null, fim: null, horaLimpa: null };
+  const partes = dataHoraStr.split(",").map((p) => p.trim());
+  if (partes.length < 3)
+    return { diaDaSemana: null, inicio: null, fim: null, horaLimpa: null };
+
+  const horaLimpa = partes[2].replace(/\s/g, "");
+  const [inicio, fim] = horaLimpa.split("-");
+
+  return { diaDaSemana: partes[1], horaLimpa, inicio, fim };
 };
 
 function Calendario() {
@@ -75,14 +109,11 @@ function Calendario() {
     if (filtroArea !== "todas") {
       filtrados = workshopsData.filter((ws) => ws.areas.includes(filtroArea));
     }
-
     return filtrados.map((ws) => {
-      const { diaDaSemana, hora } = processarDataHora(ws.dataHora);
-      return {
-        ...ws,
-        dia: diaDaSemana,
-        horaLimpa: hora ? hora.replace(/\s/g, "") : null,
-      };
+      const { diaDaSemana, inicio, fim, horaLimpa } = processarDataHora(
+        ws.dataHora,
+      );
+      return { ...ws, dia: diaDaSemana, inicio, fim, horaLimpa };
     });
   }, [filtroArea]);
 
@@ -93,21 +124,19 @@ function Calendario() {
   const presenciais = workshopsFiltrados.filter(
     (ws) => ws.tipo === "Presencial" && ws.dia,
   );
-  const todosOnlines = workshopsFiltrados.filter((ws) => ws.tipo === "Online");
+  const onlinesPuros = workshopsFiltrados.filter((ws) => ws.tipo === "Online");
 
-  const onlinesDisponiveis = todosOnlines.filter(
+  const onlinesDisponiveis = onlinesPuros.filter(
     (ws) => !alocadosOnline[ws.id],
   );
-
-  const gerarHorariosDinamicos = () => {
-    const todosHorarios = presenciais.map((ws) => ws.horaLimpa);
-    const horariosUnicos = [...new Set(todosHorarios)].sort();
-
-    if (horariosUnicos.length === 0) return ["17:00-18:30"];
-    return horariosUnicos;
-  };
-
-  const horariosAtuais = gerarHorariosDinamicos();
+  const onlinesAlocados = onlinesPuros
+    .filter((ws) => alocadosOnline[ws.id])
+    .map((ws) => ({
+      ...ws,
+      dia: alocadosOnline[ws.id].dia,
+      inicio: alocadosOnline[ws.id].inicio,
+      fim: alocadosOnline[ws.id].fim,
+    }));
 
   const handleDragStart = (e, id) => {
     e.dataTransfer.setData("wsId", id);
@@ -117,11 +146,15 @@ function Calendario() {
     e.preventDefault();
   };
 
-  const handleDrop = (e, dia, hora) => {
+  const handleDrop = (e, dia, horaSlot) => {
     e.preventDefault();
     const wsId = e.dataTransfer.getData("wsId");
     if (wsId) {
-      setAlocadosOnline((prev) => ({ ...prev, [wsId]: { dia, hora } }));
+      const fim = calcularFimOnline(horaSlot);
+      setAlocadosOnline((prev) => ({
+        ...prev,
+        [wsId]: { dia, inicio: horaSlot, fim },
+      }));
     }
   };
 
@@ -134,125 +167,115 @@ function Calendario() {
     });
   };
 
-  const renderCellContent = (dia, horario) => {
-    const presenciaisAqui = presenciais.filter(
-      (ws) => ws.dia === dia && ws.horaLimpa === horario,
-    );
-    const onlinesAqui = todosOnlines.filter(
-      (ws) =>
-        alocadosOnline[ws.id]?.dia === dia &&
-        alocadosOnline[ws.id]?.hora === horario,
-    );
+  const renderWorkshopCard = (ws) => {
+    const isOnline = ws.tipo === "Online";
+    const estaInscrito = inscricoes[ws.id];
+    const estiloFaixa = obterEstiloFaixaLado(ws.areas);
 
     return (
       <div
-        className="h-full w-full flex flex-col gap-1 relative z-0 p-1"
-        onDragOver={handleDragOver}
-        onDrop={(e) => handleDrop(e, dia, horario)}
+        key={ws.id}
+        draggable={isOnline}
+        onDragStart={(e) => isOnline && handleDragStart(e, ws.id)}
+        className={`flex-1 rounded-md relative group transition-all overflow-hidden border shadow-sm flex flex-col items-center justify-center p-2
+          ${
+            isOnline
+              ? "bg-blue-50 border-blue-200 cursor-grab active:cursor-grabbing"
+              : estaInscrito
+                ? "bg-yellow-50/90 border-yellow-300"
+                : "bg-white hover:bg-gray-50 border-gray-200"
+          }
+        `}
       >
-        {presenciaisAqui.length > 0 && (
-          <div className="flex flex-row gap-1 h-full w-full">
-            {presenciaisAqui.map((presencial) => {
-              const estaInscrito = inscricoes[presencial.id];
-              const estiloFaixa = obterEstiloFaixaLado(presencial.areas);
+        <div
+          style={estiloFaixa}
+          className="absolute left-0 top-0 bottom-0 w-[4px]"
+        />
 
-              return (
-                <div
-                  key={presencial.id}
-                  className={`flex-1 p-2 rounded relative group transition-all overflow-hidden border border-gray-100 shadow-sm ${
-                    estaInscrito
-                      ? "bg-yellow-50/80"
-                      : "bg-white hover:bg-gray-50"
-                  }`}
-                >
-                  <div
-                    style={estiloFaixa}
-                    className="absolute left-0 top-0 bottom-0 w-[4px]"
-                  />
+        {isOnline && (
+          <button
+            onClick={(e) => removerAlocacao(e, ws.id)}
+            className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity z-20"
+          >
+            ×
+          </button>
+        )}
 
-                  {!estaInscrito && (
-                    <div
-                      className="absolute inset-0 bg-[#0a1945]/90 backdrop-blur-[1px] z-10 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded"
-                      onClick={() => handleToggleInscricao(presencial.id)}
-                    >
-                      <svg
-                        className="w-5 h-5 text-yellow-500 mb-1"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z" />
-                      </svg>
-                      <span className="text-white font-bold text-[9px] uppercase text-center leading-tight">
-                        Inscrever-se
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="flex flex-col text-center items-center justify-center pl-1 h-full">
-                    <span className="font-extrabold text-[#0a1945] text-[10px] leading-tight mb-1 line-clamp-2">
-                      {presencial.titulo}
-                    </span>
-                    <span className="text-gray-400 text-[9px] line-clamp-1">
-                      {presencial.local}
-                    </span>
-                    {estaInscrito && (
-                      <button
-                        onClick={() => handleToggleInscricao(presencial.id)}
-                        className="mt-1 text-[8px] bg-red-100 text-red-600 px-1 py-0.5 rounded font-bold hover:bg-red-200 z-20 relative"
-                      >
-                        Cancelar
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+        {!isOnline && !estaInscrito && (
+          <div
+            className="absolute inset-0 bg-[#0a1945]/95 backdrop-blur-[1px] z-10 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded"
+            onClick={() => handleToggleInscricao(ws.id)}
+          >
+            <svg
+              className="w-6 h-6 text-yellow-500 mb-1"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z" />
+            </svg>
+            <span className="text-white font-bold text-[10px] uppercase text-center leading-tight">
+              Inscrever-se
+            </span>
           </div>
         )}
 
-        {onlinesAqui.map((ws) => {
-          const estiloFaixa = obterEstiloFaixaLado(ws.areas);
-          return (
-            <div
-              key={ws.id}
-              draggable
-              onDragStart={(e) => handleDragStart(e, ws.id)}
-              className="p-1 rounded bg-blue-50 border border-blue-200 relative shadow-sm cursor-grab active:cursor-grabbing group overflow-hidden"
-            >
-              <div
-                style={estiloFaixa}
-                className="absolute left-0 top-0 bottom-0 w-[4px]"
-              />
+        {isOnline && (
+          <span className="font-bold text-blue-900 text-[9px] uppercase mb-0.5 tracking-wider">
+            💻 Online
+          </span>
+        )}
+        <span
+          className={`font-extrabold text-[11px] leading-tight mb-1 text-center line-clamp-3 ${isOnline ? "text-blue-950" : "text-[#0a1945]"}`}
+        >
+          {ws.titulo}
+        </span>
+        {!isOnline && (
+          <span className="text-gray-400 text-[9px] text-center line-clamp-2">
+            {ws.local}
+          </span>
+        )}
 
-              <button
-                onClick={(e) => removerAlocacao(e, ws.id)}
-                className="absolute -top-1 -right-1 bg-red-500 hover:bg-red-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity z-20"
-                title="Remover do calendário"
-              >
-                ×
-              </button>
-              <div className="flex flex-col text-center items-center justify-center pl-1">
-                <span className="font-bold text-blue-900 text-[9px] uppercase mb-0.5">
-                  💻 Online
-                </span>
-                <span className="font-extrabold text-[#0a1945] text-[10px] leading-tight truncate w-full">
-                  {ws.titulo}
-                </span>
-              </div>
-            </div>
-          );
-        })}
-
-        {presenciaisAqui.length === 0 && onlinesAqui.length === 0 && (
-          <div className="w-full h-full flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-            <span className="text-gray-300 text-[10px] font-bold uppercase border-2 border-dashed border-gray-200 rounded p-1">
-              Soltar Aqui
-            </span>
-          </div>
+        {!isOnline && estaInscrito && (
+          <button
+            onClick={() => handleToggleInscricao(ws.id)}
+            className="mt-1.5 text-[8px] bg-red-100 text-red-600 px-1.5 py-1 rounded font-bold hover:bg-red-200 z-20 relative uppercase tracking-wider"
+          >
+            Cancelar
+          </button>
         )}
       </div>
     );
   };
+
+  const renderEventosDoDia = (dia) => {
+    const eventosNoDia = [...presenciais, ...onlinesAlocados].filter(
+      (ws) => ws.dia === dia,
+    );
+    const grouped = {};
+
+    eventosNoDia.forEach((ws) => {
+      const key = `${ws.inicio}-${ws.fim}`;
+      if (!grouped[key]) grouped[key] = [];
+      grouped[key].push(ws);
+    });
+
+    return Object.entries(grouped).map(([key, eventos]) => {
+      const [inicio, fim] = key.split("-");
+      const style = getEventStyle(inicio, fim);
+
+      return (
+        <div
+          key={key}
+          className="absolute w-full flex flex-row gap-1 p-1 z-10 transition-all"
+          style={style}
+        >
+          {eventos.map((ws) => renderWorkshopCard(ws))}
+        </div>
+      );
+    });
+  };
+
+  const totalGridHeight = SLOTS.length * SLOT_HEIGHT;
 
   return (
     <div className="min-h-screen bg-[#f4f6f8] flex flex-col font-sans">
@@ -280,39 +303,56 @@ function Calendario() {
           </div>
         </aside>
 
-        <section className="w-full xl:flex-grow bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden">
-          <div className="overflow-x-auto">
-            <div className="min-w-[700px]">
-              <div className="grid grid-cols-[100px_1fr_1fr_1fr_1fr_1fr] bg-[#0a1945] text-white text-xs font-bold text-center">
-                <div className="p-3 border-r border-white/10">HORÁRIO</div>
+        <section className="w-full xl:flex-grow bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden flex flex-col">
+          <div className="overflow-x-auto custom-scrollbar">
+            <div className="min-w-[700px] flex flex-col">
+              <div className="flex flex-row bg-[#0a1945] text-white font-bold text-xs text-center z-20">
+                <div className="w-[80px] p-3 border-r border-white/10 shrink-0">
+                  HORÁRIO
+                </div>
                 {DIAS_SEMANA.map((dia) => (
                   <div
                     key={dia}
-                    className="p-3 border-r border-white/10 last:border-0"
+                    className="flex-1 p-3 border-r border-white/10 last:border-0"
                   >
                     {dia}
                   </div>
                 ))}
               </div>
 
-              <div className="flex flex-col bg-white">
-                {horariosAtuais.map((horario, index) => (
-                  <div
-                    key={horario}
-                    className={`grid grid-cols-[100px_1fr_1fr_1fr_1fr_1fr] min-h-[120px] ${index % 2 === 0 ? "bg-white" : "bg-gray-50"}`}
-                  >
-                    <div className="flex items-center justify-center p-2 border-r border-b border-gray-200 text-[10px] font-bold text-gray-500">
-                      {horario}
+              <div
+                className="flex flex-row relative"
+                style={{ height: `${totalGridHeight}px` }}
+              >
+                <div className="w-[80px] shrink-0 border-r border-gray-200 bg-gray-50 flex flex-col relative z-20">
+                  {SLOTS.map((slot, idx) => (
+                    <div
+                      key={slot}
+                      className="absolute w-full text-center text-[10px] font-bold text-gray-400 border-b border-gray-200"
+                      style={{ top: idx * SLOT_HEIGHT, height: SLOT_HEIGHT }}
+                    >
+                      <span className="relative top-[-8px] bg-gray-50 px-1">
+                        {slot}
+                      </span>
                     </div>
+                  ))}
+                </div>
 
-                    {DIAS_SEMANA.map((dia) => (
+                {DIAS_SEMANA.map((dia) => (
+                  <div
+                    key={dia}
+                    className="flex-1 relative border-r border-gray-200 last:border-0"
+                  >
+                    {SLOTS.map((slot, idx) => (
                       <div
-                        key={`${dia}-${horario}`}
-                        className="border-r border-b border-gray-200"
-                      >
-                        {renderCellContent(dia, horario)}
-                      </div>
+                        key={`drop-${dia}-${slot}`}
+                        className="absolute w-full border-b border-gray-100 hover:bg-blue-50/30 transition-colors"
+                        style={{ top: idx * SLOT_HEIGHT, height: SLOT_HEIGHT }}
+                        onDragOver={handleDragOver}
+                        onDrop={(e) => handleDrop(e, dia, slot)}
+                      />
                     ))}
+                    {renderEventosDoDia(dia)}
                   </div>
                 ))}
               </div>

@@ -15,7 +15,7 @@
     "titulo": "Eletrônica 2: Sistemas Completos",
     "descricao": "Conheça o sistema nervoso do robô! Demonstração física de eletrônicas completas, passando por ESC, Receiver, Rádio, Mixer, BEC e Chave Geral.",
     "tipo": "Presencial",
-    "dataHora": "07/04, TER, 17:30-18:30",
+    "dataHora": "07/04, TER, 17:00-18:30",
     "local": "Laboratório de Robótica",
     "areas": ["eletronica", "autonomos"],
     "videoId": null,

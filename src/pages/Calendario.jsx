@@ -12,18 +12,17 @@ const AREAS = [
   { id: "gestao", nome: "Gestão" },
 ];
 
-const DIAS_SEMANA = ["SEG", "TER", "QUA", "QUI", "SEX"];
-const SLOTS = [
-  "17:00",
-  "17:30",
-  "18:00",
-  "18:30",
-  "19:00",
-  "19:30",
-  "20:00",
-  "20:30",
-];
-const SLOT_HEIGHT = 80;
+const generateSlots = () => {
+  const slots = [];
+  for (let h = 13; h <= 21; h++) {
+    slots.push(`${h.toString().padStart(2, "0")}:00`);
+    slots.push(`${h.toString().padStart(2, "0")}:30`);
+  }
+  return slots;
+};
+
+const SLOTS = generateSlots();
+const SLOT_HEIGHT = 60;
 
 const CORES_AREAS = {
   mecanica: "#f16c21",
@@ -71,7 +70,7 @@ const parseTime = (timeStr) => {
 };
 
 const getEventStyle = (inicio, fim) => {
-  const baseMinutes = parseTime("17:00");
+  const baseMinutes = parseTime("13:00");
   const startMin = parseTime(inicio);
   const endMin = parseTime(fim);
   const top = ((startMin - baseMinutes) / 30) * SLOT_HEIGHT;
@@ -88,41 +87,114 @@ const calcularFimOnline = (inicio) => {
 
 const processarDataHora = (dataHoraStr) => {
   if (!dataHoraStr)
-    return { diaDaSemana: null, inicio: null, fim: null, horaLimpa: null };
+    return {
+      diaData: null,
+      diaNome: null,
+      inicio: null,
+      fim: null,
+      horaLimpa: null,
+    };
   const partes = dataHoraStr.split(",").map((p) => p.trim());
   if (partes.length < 3)
-    return { diaDaSemana: null, inicio: null, fim: null, horaLimpa: null };
+    return {
+      diaData: null,
+      diaNome: null,
+      inicio: null,
+      fim: null,
+      horaLimpa: null,
+    };
 
+  const diaData = partes[0];
+  const diaNome = partes[1];
   const horaLimpa = partes[2].replace(/\s/g, "");
   const [inicio, fim] = horaLimpa.split("-");
 
-  return { diaDaSemana: partes[1], horaLimpa, inicio, fim };
+  return { diaData, diaNome, horaLimpa, inicio, fim };
+};
+
+const getWeeks = (data) => {
+  const dateStrs = data
+    .map((ws) => processarDataHora(ws.dataHora).diaData)
+    .filter(Boolean);
+  const uniqueDates = [...new Set(dateStrs)];
+
+  if (uniqueDates.length === 0) {
+    return [
+      [
+        { diaNome: "SEG", dataStr: "01/01" },
+        { diaNome: "TER", dataStr: "02/01" },
+        { diaNome: "QUA", dataStr: "03/01" },
+        { diaNome: "QUI", dataStr: "04/01" },
+        { diaNome: "SEX", dataStr: "05/01" },
+      ],
+    ];
+  }
+
+  const dates = uniqueDates
+    .map((dStr) => {
+      const [d, m] = dStr.split("/");
+      return new Date(2026, parseInt(m) - 1, parseInt(d));
+    })
+    .sort((a, b) => a - b);
+
+  const minDate = dates[0];
+  const maxDate = dates[dates.length - 1];
+
+  const startMonday = new Date(minDate);
+  const dayOfWeek = startMonday.getDay();
+  const diff = startMonday.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+  startMonday.setDate(diff);
+
+  const weeks = [];
+  let currentMonday = new Date(startMonday);
+
+  while (currentMonday <= maxDate || weeks.length === 0) {
+    const weekDays = [];
+    for (let i = 0; i < 5; i++) {
+      const d = new Date(currentMonday);
+      d.setDate(d.getDate() + i);
+      const dd = String(d.getDate()).padStart(2, "0");
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const diaNome = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SAB"][
+        d.getDay()
+      ];
+      weekDays.push({ dataStr: `${dd}/${mm}`, diaNome });
+    }
+    weeks.push(weekDays);
+    currentMonday.setDate(currentMonday.getDate() + 7);
+  }
+  return weeks;
 };
 
 function Calendario() {
   const [filtroArea, setFiltroArea] = useState("todas");
   const [inscricoes, setInscricoes] = useState({});
   const [alocadosOnline, setAlocadosOnline] = useState({});
+  const [semanaAtual, setSemanaAtual] = useState(0);
 
-  const workshopsFiltrados = useMemo(() => {
-    let filtrados = workshopsData;
-    if (filtroArea !== "todas") {
-      filtrados = workshopsData.filter((ws) => ws.areas.includes(filtroArea));
-    }
-    return filtrados.map((ws) => {
-      const { diaDaSemana, inicio, fim, horaLimpa } = processarDataHora(
+  const workshopsProcessados = useMemo(() => {
+    return workshopsData.map((ws) => {
+      const { diaData, diaNome, inicio, fim, horaLimpa } = processarDataHora(
         ws.dataHora,
       );
-      return { ...ws, dia: diaDaSemana, inicio, fim, horaLimpa };
+      return { ...ws, diaData, diaNome, inicio, fim, horaLimpa };
     });
-  }, [filtroArea]);
+  }, []);
+
+  const weeks = useMemo(() => getWeeks(workshopsData), []);
+  const diasDaSemana = weeks[semanaAtual] || [];
+
+  const workshopsFiltrados = useMemo(() => {
+    if (filtroArea === "todas") return workshopsProcessados;
+    return workshopsProcessados.filter((ws) => ws.areas.includes(filtroArea));
+  }, [filtroArea, workshopsProcessados]);
 
   const handleToggleInscricao = (id) => {
     setInscricoes((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   const presenciais = workshopsFiltrados.filter(
-    (ws) => ws.tipo === "Presencial" && ws.dia,
+    (ws) => ws.tipo === "Presencial" && ws.diaData,
   );
   const onlinesPuros = workshopsFiltrados.filter((ws) => ws.tipo === "Online");
 
@@ -133,7 +205,7 @@ function Calendario() {
     .filter((ws) => alocadosOnline[ws.id])
     .map((ws) => ({
       ...ws,
-      dia: alocadosOnline[ws.id].dia,
+      diaData: alocadosOnline[ws.id].diaData,
       inicio: alocadosOnline[ws.id].inicio,
       fim: alocadosOnline[ws.id].fim,
     }));
@@ -146,14 +218,14 @@ function Calendario() {
     e.preventDefault();
   };
 
-  const handleDrop = (e, dia, horaSlot) => {
+  const handleDrop = (e, diaData, horaSlot) => {
     e.preventDefault();
     const wsId = e.dataTransfer.getData("wsId");
     if (wsId) {
       const fim = calcularFimOnline(horaSlot);
       setAlocadosOnline((prev) => ({
         ...prev,
-        [wsId]: { dia, inicio: horaSlot, fim },
+        [wsId]: { diaData, inicio: horaSlot, fim },
       }));
     }
   };
@@ -247,9 +319,9 @@ function Calendario() {
     );
   };
 
-  const renderEventosDoDia = (dia) => {
+  const renderEventosDoDia = (diaData) => {
     const eventosNoDia = [...presenciais, ...onlinesAlocados].filter(
-      (ws) => ws.dia === dia,
+      (ws) => ws.diaData === diaData,
     );
     const grouped = {};
 
@@ -304,18 +376,43 @@ function Calendario() {
         </aside>
 
         <section className="w-full xl:flex-grow bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden flex flex-col">
+          <div className="flex justify-between items-center bg-[#0a1945] text-white p-4 border-b border-white/10">
+            <button
+              onClick={() => setSemanaAtual((s) => Math.max(0, s - 1))}
+              disabled={semanaAtual === 0}
+              className="px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed font-bold transition-all text-xs uppercase tracking-wider"
+            >
+              &larr; Semana Anterior
+            </button>
+            <span className="font-black uppercase tracking-widest text-yellow-400">
+              Semana {semanaAtual + 1}
+            </span>
+            <button
+              onClick={() =>
+                setSemanaAtual((s) => Math.min(weeks.length - 1, s + 1))
+              }
+              disabled={semanaAtual === weeks.length - 1}
+              className="px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed font-bold transition-all text-xs uppercase tracking-wider"
+            >
+              Próxima Semana &rarr;
+            </button>
+          </div>
+
           <div className="overflow-x-auto custom-scrollbar">
             <div className="min-w-[700px] flex flex-col">
               <div className="flex flex-row bg-[#0a1945] text-white font-bold text-xs text-center z-20">
                 <div className="w-[80px] p-3 border-r border-white/10 shrink-0">
                   HORÁRIO
                 </div>
-                {DIAS_SEMANA.map((dia) => (
+                {diasDaSemana.map((dia) => (
                   <div
-                    key={dia}
-                    className="flex-1 p-3 border-r border-white/10 last:border-0"
+                    key={dia.dataStr}
+                    className="flex-1 p-2 border-r border-white/10 last:border-0 flex flex-col justify-center items-center"
                   >
-                    {dia}
+                    <span>{dia.diaNome}</span>
+                    <span className="text-[10px] text-gray-400 font-normal">
+                      {dia.dataStr}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -338,21 +435,21 @@ function Calendario() {
                   ))}
                 </div>
 
-                {DIAS_SEMANA.map((dia) => (
+                {diasDaSemana.map((dia) => (
                   <div
-                    key={dia}
+                    key={dia.dataStr}
                     className="flex-1 relative border-r border-gray-200 last:border-0"
                   >
                     {SLOTS.map((slot, idx) => (
                       <div
-                        key={`drop-${dia}-${slot}`}
+                        key={`drop-${dia.dataStr}-${slot}`}
                         className="absolute w-full border-b border-gray-100 hover:bg-blue-50/30 transition-colors"
                         style={{ top: idx * SLOT_HEIGHT, height: SLOT_HEIGHT }}
                         onDragOver={handleDragOver}
-                        onDrop={(e) => handleDrop(e, dia, slot)}
+                        onDrop={(e) => handleDrop(e, dia.dataStr, slot)}
                       />
                     ))}
-                    {renderEventosDoDia(dia)}
+                    {renderEventosDoDia(dia.dataStr)}
                   </div>
                 ))}
               </div>

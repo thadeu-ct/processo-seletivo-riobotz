@@ -1,17 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
 
 function Botcoins() {
-  const [botcoins, setBotcoins] = useState(0);
-
-  useEffect(() => {
+  const [botcoins] = useState(() => {
     const storedBotcoins = localStorage.getItem("botcoinUsuario");
-    if (storedBotcoins) {
-      setBotcoins(storedBotcoins);
-    }
-  }, []);
+    return storedBotcoins ? parseInt(storedBotcoins, 10) : 0;
+  });
 
   return (
     <div className="min-h-screen bg-[#0a1945] flex flex-col font-sans">

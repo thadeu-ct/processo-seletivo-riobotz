@@ -2,18 +2,19 @@ import { Link } from "react-router-dom";
 import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
 
-// Função auxiliar para renderizar os rastros de esteira do robô
 const renderTrack = (type) => {
-  if (type === "mobile") {
+  // Rastros verticais padrão (Mobile e Desktop agora usam a mesma lógica de linha reta)
+  if (type === "vertical") {
     return (
-      <>
-        <div className="md:hidden absolute top-0 bottom-0 left-[26px] border-l-[6px] border-dashed border-black/60 z-0 pointer-events-none"></div>
-        <div className="md:hidden absolute top-0 bottom-0 left-[42px] border-l-[6px] border-dashed border-black/60 z-0 pointer-events-none"></div>
-      </>
+      <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-12 flex justify-between z-0 opacity-40 pointer-events-none">
+        <div className="w-3 h-full border-l-[6px] border-dashed border-black"></div>
+        <div className="w-3 h-full border-r-[6px] border-dashed border-black"></div>
+      </div>
     );
   }
 
-  if (type === "curve-right") {
+  // Curvas comentadas para implementação futura
+  /* if (type === "curve-right") {
     return (
       <>
         <div className="hidden md:block absolute top-1/2 left-1/2 w-[25vw] max-w-[240px] h-[calc(100%+8rem)] border-t-[8px] border-r-[8px] border-b-[8px] border-dashed border-black/50 rounded-r-[120px] pointer-events-none z-0"></div>
@@ -30,6 +31,7 @@ const renderTrack = (type) => {
       </>
     );
   }
+  */
 
   return null;
 };
@@ -50,12 +52,11 @@ function Botcoins() {
         </div>
 
         <div className="relative w-full max-w-4xl flex flex-col mt-4 pb-32">
-          {renderTrack("mobile")}
+          {/* Renderiza a trilha vertical contínua por trás de tudo */}
+          {renderTrack("vertical")}
 
           {/* ESTAÇÃO 1: O COMBUSTÍVEL */}
           <div className="relative w-full flex flex-col md:flex-row md:items-center h-auto md:h-[250px] mb-16 md:mb-32 group pl-20 md:pl-0">
-            {renderTrack("curve-right")}
-
             <div className="absolute top-1/2 -translate-y-1/2 md:translate-y-0 left-[18px] md:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-blue-500 border-4 border-[#0a1945] z-20 shadow-[0_0_15px_rgba(59,130,246,0.6)]"></div>
 
             <div className="md:w-1/2 flex justify-end md:pr-16 z-20 w-full">
@@ -92,8 +93,6 @@ function Botcoins() {
 
           {/* ESTAÇÃO 2: COMO FARMAR */}
           <div className="relative w-full flex flex-col md:flex-row md:items-center h-auto md:h-[250px] mb-16 md:mb-32 group pl-20 md:pl-0">
-            {renderTrack("curve-left")}
-
             <div className="absolute top-1/2 -translate-y-1/2 md:translate-y-0 left-[18px] md:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-green-500 border-4 border-[#0a1945] z-20 shadow-[0_0_15px_rgba(34,197,94,0.6)]"></div>
 
             <div className="hidden md:block md:w-1/2"></div>
@@ -173,7 +172,6 @@ function Botcoins() {
                 </p>
               </div>
             </div>
-            <div className="hidden md:block md:w-1/2"></div>
           </div>
 
           {/* BOTÃO FINAL */}

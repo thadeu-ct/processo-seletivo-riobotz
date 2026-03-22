@@ -2,6 +2,38 @@ import { Link } from "react-router-dom";
 import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
 
+// Função auxiliar para renderizar os rastros de esteira do robô
+const renderTrack = (type) => {
+  if (type === "mobile") {
+    return (
+      <>
+        <div className="md:hidden absolute top-0 bottom-0 left-[26px] border-l-[6px] border-dashed border-black/60 z-0 pointer-events-none"></div>
+        <div className="md:hidden absolute top-0 bottom-0 left-[42px] border-l-[6px] border-dashed border-black/60 z-0 pointer-events-none"></div>
+      </>
+    );
+  }
+
+  if (type === "curve-right") {
+    return (
+      <>
+        <div className="hidden md:block absolute top-1/2 left-1/2 w-[25vw] max-w-[240px] h-[calc(100%+8rem)] border-t-[8px] border-r-[8px] border-b-[8px] border-dashed border-black/50 rounded-r-[120px] pointer-events-none z-0"></div>
+        <div className="hidden md:block absolute top-[calc(50%+20px)] left-1/2 w-[calc(25vw-20px)] max-w-[220px] h-[calc(100%+8rem-40px)] border-t-[8px] border-r-[8px] border-b-[8px] border-dashed border-black/50 rounded-r-[100px] pointer-events-none z-0"></div>
+      </>
+    );
+  }
+
+  if (type === "curve-left") {
+    return (
+      <>
+        <div className="hidden md:block absolute top-1/2 right-1/2 w-[25vw] max-w-[240px] h-[calc(100%+8rem)] border-t-[8px] border-l-[8px] border-b-[8px] border-dashed border-black/50 rounded-l-[120px] pointer-events-none z-0"></div>
+        <div className="hidden md:block absolute top-[calc(50%+20px)] right-1/2 w-[calc(25vw-20px)] max-w-[220px] h-[calc(100%+8rem-40px)] border-t-[8px] border-l-[8px] border-b-[8px] border-dashed border-black/50 rounded-l-[100px] pointer-events-none z-0"></div>
+      </>
+    );
+  }
+
+  return null;
+};
+
 function Botcoins() {
   return (
     <div className="min-h-screen bg-[#0a1945] flex flex-col font-sans overflow-hidden">
@@ -18,12 +50,11 @@ function Botcoins() {
         </div>
 
         <div className="relative w-full max-w-4xl flex flex-col mt-4 pb-32">
-          <div className="md:hidden absolute top-0 bottom-0 left-[26px] border-l-[6px] border-dashed border-black/60 z-0 pointer-events-none"></div>
-          <div className="md:hidden absolute top-0 bottom-0 left-[42px] border-l-[6px] border-dashed border-black/60 z-0 pointer-events-none"></div>
+          {renderTrack("mobile")}
 
+          {/* ESTAÇÃO 1: O COMBUSTÍVEL */}
           <div className="relative w-full flex flex-col md:flex-row md:items-center h-auto md:h-[250px] mb-16 md:mb-32 group pl-20 md:pl-0">
-            <div className="hidden md:block absolute top-1/2 left-1/2 w-[25vw] max-w-[240px] h-[calc(100%+8rem)] border-t-[8px] border-r-[8px] border-b-[8px] border-dashed border-black/50 rounded-r-[120px] pointer-events-none z-0"></div>
-            <div className="hidden md:block absolute top-[calc(50%+20px)] left-1/2 w-[calc(25vw-20px)] max-w-[220px] h-[calc(100%+8rem-40px)] border-t-[8px] border-r-[8px] border-b-[8px] border-dashed border-black/50 rounded-r-[100px] pointer-events-none z-0"></div>
+            {renderTrack("curve-right")}
 
             <div className="absolute top-1/2 -translate-y-1/2 md:translate-y-0 left-[18px] md:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-blue-500 border-4 border-[#0a1945] z-20 shadow-[0_0_15px_rgba(59,130,246,0.6)]"></div>
 
@@ -59,9 +90,9 @@ function Botcoins() {
             <div className="hidden md:block md:w-1/2"></div>
           </div>
 
+          {/* ESTAÇÃO 2: COMO FARMAR */}
           <div className="relative w-full flex flex-col md:flex-row md:items-center h-auto md:h-[250px] mb-16 md:mb-32 group pl-20 md:pl-0">
-            <div className="hidden md:block absolute top-1/2 right-1/2 w-[25vw] max-w-[240px] h-[calc(100%+8rem)] border-t-[8px] border-l-[8px] border-b-[8px] border-dashed border-black/50 rounded-l-[120px] pointer-events-none z-0"></div>
-            <div className="hidden md:block absolute top-[calc(50%+20px)] right-1/2 w-[calc(25vw-20px)] max-w-[220px] h-[calc(100%+8rem-40px)] border-t-[8px] border-l-[8px] border-b-[8px] border-dashed border-black/50 rounded-l-[100px] pointer-events-none z-0"></div>
+            {renderTrack("curve-left")}
 
             <div className="absolute top-1/2 -translate-y-1/2 md:translate-y-0 left-[18px] md:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-green-500 border-4 border-[#0a1945] z-20 shadow-[0_0_15px_rgba(34,197,94,0.6)]"></div>
 
@@ -106,6 +137,7 @@ function Botcoins() {
             </div>
           </div>
 
+          {/* ESTAÇÃO 3: A ELIMINAÇÃO */}
           <div className="relative w-full flex flex-col md:flex-row md:items-center h-auto md:h-[250px] group pl-20 md:pl-0">
             <div className="absolute top-1/2 -translate-y-1/2 md:translate-y-0 left-[18px] md:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-purple-500 border-4 border-[#0a1945] z-20 shadow-[0_0_15px_rgba(168,85,247,0.6)]"></div>
 
@@ -141,8 +173,10 @@ function Botcoins() {
                 </p>
               </div>
             </div>
+            <div className="hidden md:block md:w-1/2"></div>
           </div>
 
+          {/* BOTÃO FINAL */}
           <div className="relative z-20 mt-24 flex flex-col items-center">
             <div className="w-16 h-16 bg-[#0a1945] border-[6px] border-[#0a1945] rounded-full flex items-center justify-center z-20 mb-[-32px]">
               <div className="w-full h-full bg-yellow-400 rounded-full animate-bounce shadow-[0_0_20px_rgba(250,204,21,0.6)]"></div>

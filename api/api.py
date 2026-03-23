@@ -94,7 +94,7 @@ def login():
     
     user = get_user(matricula)
     
-    if "error" in user.keys():
+    if "erro" in user.keys():
         return user, 500
     
     hash_senha = user["senha"]
@@ -219,17 +219,24 @@ def registrar():
     }
 
 
-@app.route("/api/trocar-senha", methods=["POST"])
+@app.route("/api/solicitar-codigo", methods=["POST"])
 def trocarSenha():
-    mat: str = request.form.get("matricula")
-    email: str = request.form.get("email")
+    data = request.get_json(silent=True)
+
+    if not data:
+        return jsonify({"erro": "JSON inválido ou ausente"}), 400
+    
+    mat: str = data.get("matricula")
+    email: str = data.get("email")
 
     if not mat.isnumeric():
         return {
             "erro": ERRO_MATRICULA
         }, 400
 
-    if verifica_texto(email):
+    if (
+        not email.find("@") or verifica_texto(email)
+    ):
         return {
             "erro": ERRO_EMAIL
         }, 400
@@ -242,20 +249,28 @@ def trocarSenha():
             "erro": "Erro ao tentar enviar email"
         }, 400
 
-    banco = get_db_connection()
-    db = banco.cursor()
+    try:
+        banco = get_db_connection()
+        db = banco.cursor()
 
-    db.execute(
-        "INSERT INTO codigos VALUES (%s, %s)",
-        (mat, codigo)
-    )
+        db.execute(
+            "INSERT INTO codigos VALUES (%s, %s, %s)",
+            (mat, codigo, datetime.now())
+        )
 
-    banco.commit()
+        banco.commit()
 
-    db.close()
-    banco.close()
+        db.close()
+        banco.close()
+    except Exception as e:
+        print(e)
+        return {
+            "erro": str(e)
+        }
 
-    return {}
+    return {
+        "erro": 0
+    }
 
 
 if __name__ == "__main__":

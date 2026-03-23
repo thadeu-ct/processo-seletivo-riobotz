@@ -16,7 +16,9 @@ function RegistroAdmin() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const resp = await fetch(`${API_URL}/candidatos`);
+        const resp = await fetch(`${API_URL}/candidatos`, {
+          method: "POST",
+        });
         const data = await resp.json();
         setUsuarios(data);
       } catch (error) {

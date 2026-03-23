@@ -60,19 +60,24 @@ def cadastro():
             "erro": ERRO_SENHA
         }
 
-    banco = get_db_connection()
+    try:
+        banco = get_db_connection()
+        db = banco.cursor()
 
-    db = banco.cursor()
-    
-    db.execute(
-        "INSERT INTO users VALUES (%s, %s, %s, %s, %s, False, 0)",
-        (matricula, nome, email, tel, create_hash(senha))
-    )
+        db.execute(
+            "INSERT INTO users VALUES (%s, %s, %s, %s, %s, False, 0)",
+            (matricula, nome, email, tel, create_hash(senha))
+        )
 
-    banco.commit()
+        banco.commit()
 
-    db.close()
-    banco.close()
+        db.close()
+        banco.close()
+    except Exception as e:
+        print(f"Erro no banco: {e}")
+        return {
+            "erro": str(e)
+        }
 
     return {
         "erro": 0
@@ -91,25 +96,6 @@ def login():
     
     if "error" in user.keys():
         return user, 500
-    
-    # try:
-    #     banco = get_db_connection()
-    #     db = banco.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-
-    #     db.execute(
-    #         "SELECT senha, nome, matricula, registrado, botcoin FROM users WHERE matricula = %s",
-    #         (matricula,)
-    #     )
-
-    #     resultados = db.fetchmany(1)
-
-    #     db.close()
-    #     banco.close()
-    # except Exception as e:
-    #     print(f"Erro no banco: {e}")
-    #     return {
-    #         "erro": str(e)
-    #     }, 500
     
     hash_senha = user["senha"]
 

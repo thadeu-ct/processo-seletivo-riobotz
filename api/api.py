@@ -7,9 +7,6 @@ import psycopg2.extras
 import os
 import random
 
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 
 load_dotenv()
 
@@ -90,25 +87,31 @@ def login():
             "erro": ERRO_MATRICULA
         }
     
-    banco = get_db_connection()
-
-    db = banco.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-
-    db.execute(
-        "SELECT senha, nome, matricula, registrado, botcoin FROM users WHERE matricula = %s",
-        (matricula,)
-    )
-
-    resultados = db.fetchmany(1)
-
-    db.close()
-    banco.close()
-
-    if len(resultados) == 0:
-        return {"erro": ERRO_SENHA}
+    user = get_user(matricula)
     
-    row = resultados[0]
-    hash_senha = row["senha"]
+    if "error" in user.keys():
+        return user, 500
+    
+    # try:
+    #     banco = get_db_connection()
+    #     db = banco.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+    #     db.execute(
+    #         "SELECT senha, nome, matricula, registrado, botcoin FROM users WHERE matricula = %s",
+    #         (matricula,)
+    #     )
+
+    #     resultados = db.fetchmany(1)
+
+    #     db.close()
+    #     banco.close()
+    # except Exception as e:
+    #     print(f"Erro no banco: {e}")
+    #     return {
+    #         "erro": str(e)
+    #     }, 500
+    
+    hash_senha = user["senha"]
 
     senha = request.form.get("senha")
     if (
@@ -118,10 +121,10 @@ def login():
         return {"erro": ERRO_SENHA}
     
     return {
-        "nome": row["nome"],
-        "matricula": row["matricula"],
-        "botcoin": row["botcoin"],
-        "registrado": row["registrado"]
+        "nome": user["nome"],
+        "matricula": user["matricula"],
+        "botcoin": user["botcoin"],
+        "registrado": user["registrado"]
     }
 
 

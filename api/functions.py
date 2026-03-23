@@ -4,6 +4,11 @@ import os
 import psycopg2
 from werkzeug.security import generate_password_hash, check_password_hash
 
+
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
 '''
     Constantes
 '''
@@ -50,6 +55,34 @@ def create_hash(texto: str):
 
 def compare_hash(texto: str, hash: str):
     return check_password_hash(hash, texto)
+
+
+def get_user(mat: str) -> dict:
+    try:
+        banco = get_db_connection()
+        db = banco.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+        db.execute(
+            "SELECT * FROM users WHERE matricula = %s",
+            (mat,)
+        )
+
+        resultados = db.fetchmany(1)
+
+        if len(resultados) != 1:
+            return {
+                "erro": ERRO_MATRICULA
+            }
+
+        db.close()
+        banco.close()
+    except Exception as e:
+        print(f"Erro no banco: {e}")
+        return {
+            "erro": str(e)
+        }
+    
+    return resultados[0]
 
 
 def send_verification_email(to_email, code):

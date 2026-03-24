@@ -58,7 +58,7 @@ function MateriaisExtras() {
               <div className="w-2 h-12 bg-blue-500 rounded-full"></div>
               <div className="text-left">
                 <p className="text-white font-bold italic uppercase text-sm">Status do Sistema</p>
-                <p className="text-blue-400 font-black">CALIBRANDO SENSORES</p>
+                <p className="text-blue-400 font-black">EM PITCH-STOP</p>
               </div>
             </div>
             <div className="bg-white/5 border border-white/10 p-6 rounded-2xl flex items-center gap-4">

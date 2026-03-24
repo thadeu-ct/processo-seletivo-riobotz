@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify
 import os
 import psycopg2
 from werkzeug.security import generate_password_hash, check_password_hash
+from zoneinfo import ZoneInfo
 
 
 import smtplib
@@ -12,7 +13,7 @@ from email.mime.multipart import MIMEMultipart
 '''
     Constantes
 '''
-DATA_INICIO: datetime = datetime(2026, 3, 30)
+DATA_INICIO: datetime = datetime(2026, 3, 25, 19, 0, 0, 0, tzinfo=ZoneInfo("America/Sao_Paulo"))
 DANGEROUS_CHARS: set = set(""",'";?""")
 ERRO_NOME = 1
 ERRO_MATRICULA = 2
@@ -36,7 +37,7 @@ def get_db_connection():
 
 
 def comecou_processo(data: datetime):
-    return data.date() >= DATA_INICIO.date()
+    return data >= DATA_INICIO 
 
 
 def verifica_texto(texto: str):

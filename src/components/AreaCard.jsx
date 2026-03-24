@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-function AreaCard({ id, titulo, descricao, bgClass, textClass, hoverShadowClass, isLocked }) {
+function AreaCard({ id, titulo, descricao, bgClass, textClass, hoverShadowClass, iconeBg, isLocked }) {
   const cardContent = (
     <div
       className={`relative group rounded-3xl p-8 flex flex-col h-full transition-all duration-300 ${bgClass} ${

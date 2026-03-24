@@ -53,7 +53,7 @@
     "areas": ["mecanica"],
     "videoId": null,
     "quizLink": null
-  },
+  }, 
   {
     "id": "solidworks-pratica",
     "titulo": "SolidWorks: Mão na Massa",
@@ -141,5 +141,16 @@
     "areas": ["mecanica", "eletronica"],
     "videoId": "dQw4w9WgXcQ",
     "quizLink": "/quiz/sistemas-transmissao"
+  },
+  {
+    "id": "excel-teoria",
+    "titulo": "Excel: Básico a Avançados",
+    "descricao": "Aprenda a usar o básico do google sheets, e avançar para formulas e atribuição de formulas",
+    "tipo": "Online",
+    "dataHora": null,
+    "local": null,
+    "areas": ["gestao", "comunicacao"],
+    "videoId": "dQw4w9WgXcQ",
+    "quizLink": "/quiz/excel-1"
   }
 ]

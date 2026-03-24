@@ -127,7 +127,7 @@ function Home() {
           {paineis.map((painel) => {
             // Definindo a lógica aqui dentro para não dar erro de "not defined"
             const isLockedDate = new Date() < new Date("2026-04-01T00:00:00");
-            const shouldBeLocked = painel.id !== "tarefas_extras" && isLockedDate;
+            const shouldBeLocked = painel.id !== "materiais-extras" && isLockedDate;
             
             return (
               <AreaCard 

@@ -89,7 +89,7 @@ const paineis = [
     ),
   },
   {
-    id: "tarefas_extras",
+    id: "materiais-extras",
     titulo: "Missões Extras",
     descricao: "Desafios gerais e dinâmicas surpresa do processo.",
     bgClass:

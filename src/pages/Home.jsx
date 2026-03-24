@@ -123,9 +123,13 @@ function Home() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-6xl">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-6xl relative z-10">
           {paineis.map((painel) => (
-            <AreaCard key={painel.id} {...painel} />
+            <AreaCard 
+              key={painel.id} 
+              {...painel} 
+              isLocked={painel.id !== "tarefas_extras" && isLockedDate} 
+            />
           ))}
         </div>
       </main>

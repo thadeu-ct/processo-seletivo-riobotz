@@ -194,15 +194,6 @@ def registrar():
             "UPDATE users SET registrado = %s WHERE matricula = %s",
             valores
         )
-
-        # for d in data:
-        #     matricula = d.get("matricula")
-        #     registrado = d.get("registrado")
-
-        #     db.execute(
-        #         "UPDATE users SET registrado = %s WHERE matricula = %s",
-        #         (registrado, matricula)
-        #     )
         
         banco.commit()
 
@@ -271,6 +262,65 @@ def geraCodigo():
     return {
         "erro": 0
     }
+
+@app.route("/api/alteracaoBotcoin/", methods=["POST"])
+def alteracaoBotcoin():
+    mat: str = request.form.get("matricula")
+    ganho: int = int(request.form.get("botcoin"))
+
+    try:
+        banco = get_db_connection()
+        db = banco.cursor()
+
+        db.execute(
+            "UPDATE users SET botcoins = botcoins + %s WHERE matricula = %s",
+            (ganho, mat)
+        )
+
+        banco.commit()
+
+        db.close()
+        banco.close()
+    except Exception as e:
+        print(e)
+        return {
+            "erro": str(e)
+        }
+
+    user = get_user(mat)
+    if ("erro" in user.keys()):
+        return user, 400
+
+    return {
+        "botcoin": user["botcoin"]
+    }
+
+
+@app.route("/api/workshops", methods=["POST"])
+def getworkshops():
+    try:
+        banco = get_db_connection()
+        db = banco.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+        db.execute(
+            """"
+                SELECT w.nome, w.descricao AS desc, w.link, w.data, w.data_fim, w.is_online AS online, JSON_AGG(wa.area_nome) AS areas
+                FROM workshops w JOIN workshops_areas wa ON w.id = wa.workshop_id
+                GROUP BY w.id;
+            """
+        )
+
+        rows = db.fetchall()
+
+        db.close()
+        banco.close()
+
+        return rows
+    except Exception as e:
+        print(e)
+        return {
+            "erro": str(e)
+        }
 
 
 @app.route("/api/trocar-senha", methods=["POST"])

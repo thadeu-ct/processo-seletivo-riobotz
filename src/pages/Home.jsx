@@ -89,7 +89,7 @@ const paineis = [
     ),
   },
   {
-    id: "tarefas_extras",
+    id: "materiais-extras",
     titulo: "Missões Extras",
     descricao: "Desafios gerais e dinâmicas surpresa do processo.",
     bgClass:
@@ -123,10 +123,20 @@ function Home() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-6xl">
-          {paineis.map((painel) => (
-            <AreaCard key={painel.id} {...painel} />
-          ))}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-6xl relative z-10">
+          {paineis.map((painel) => {
+            // Definindo a lógica aqui dentro para não dar erro de "not defined"
+            const isLockedDate = new Date() < new Date("2026-04-01T00:00:00");
+            const shouldBeLocked = painel.id !== "materiais-extras" && isLockedDate;
+            
+            return (
+              <AreaCard 
+                key={painel.id} 
+                {...painel} 
+                isLocked={shouldBeLocked} 
+              />
+            );
+          })}
         </div>
       </main>
 

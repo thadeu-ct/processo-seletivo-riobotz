@@ -23,6 +23,7 @@ import AdminRoute from "./components/AdminRoute";
 import ForgotPassword from "./features/ForgotPassword";
 import Calendario from "./pages/Calendario";
 import Botcoins from "./features/Botcoins";
+import MateriaisExtras from "./pages/MateriaisExtras";
 
 const router = createBrowserRouter([
   {
@@ -68,6 +69,10 @@ const router = createBrowserRouter([
   {
     path: "/workshops/mecanica",
     element: <Mecanica />,
+  },
+  {
+    path: "/workshops/materiais-extras",
+    element: <MateriaisExtras />,
   },
   {
     path: "/quiz/:id",

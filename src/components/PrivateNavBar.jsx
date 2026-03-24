@@ -1,12 +1,36 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import UserDropdown from "../components/UserDropdown";
 
 function PrivateNavBar() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [botcoins, setBotcoins] = useState(0);
 
   const location = useLocation();
+
+  useEffect(() => {
+    const updateBotcoins = () => {
+      const storedBotcoins = localStorage.getItem("botcoinUsuario");
+      if (storedBotcoins) {
+        setBotcoins(parseInt(storedBotcoins, 10));
+      }
+    };
+
+    // Atualiza ao montar o componente
+    updateBotcoins();
+
+    // Listener para atualizar caso mude em outra aba ou parte do app
+    window.addEventListener("storage", updateBotcoins);
+    
+    // Evento customizado caso você atualize o storage manualmente no mesmo documento
+    window.addEventListener("botcoinsUpdated", updateBotcoins);
+
+    return () => {
+      window.removeEventListener("storage", updateBotcoins);
+      window.removeEventListener("botcoinsUpdated", updateBotcoins);
+    };
+  }, []);
 
   return (
     <>
@@ -43,7 +67,7 @@ function PrivateNavBar() {
             >
               <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zm1-13h-2v2H9v2h2v2H9v2h2v2h2v-2h2v-2h-2v-2h2V9h-2V7z" />
             </svg>
-            <span className="text-sm md:text-base">150 ₿</span>
+            <span className="text-sm md:text-base">{botcoins} ₿</span>
           </Link>
         )}
 

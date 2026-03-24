@@ -20,12 +20,12 @@ function AreaCard({ id, titulo, descricao, bgClass, textClass, hoverShadowClass,
       </div>
 
       <div className="mb-4 relative z-10">
-        <h3 className={`font-black text-3xl tracking-tighter uppercase ${textClass}`}>
+        <h2 className={`font-black text-3xl tracking-tighter uppercase ${textClass}`}>
           {titulo}
-        </h3>
+        </h2>
       </div>
 
-      <p className="text-gray-100 font-medium text-base leading-relaxed flex-grow mb-8 relative z-10">
+      <p className="text-gray-100 font-medium text-base leading-relaxed flex-grow mb-6 relative z-10">
         {descricao}
       </p>
 

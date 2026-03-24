@@ -306,5 +306,24 @@ def alteracaoBotcoin():
     }
 
 
+@app.route("/api/workshops", methods=["POST"])
+def getworkshops():
+    try:
+        banco = get_db_connection()
+        db = banco.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+        db.execute(
+            "SELECT * FROM workshops"
+        )
+
+        db.close()
+        banco.close()
+    except Exception as e:
+        print(e)
+        return {
+            "erro": str(e)
+        }
+
+
 if __name__ == "__main__":
     app.run(debug=False)

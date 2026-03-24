@@ -273,5 +273,30 @@ def trocarSenha():
     }
 
 
+@app.route("/api/alteracaoBotcoin/", methods=["POST"])
+def alteracaoBotcoin():
+    mat: str = request.form.get("matricula")
+    ganho: int = int(request.form.get("botcoin"))
+
+    try:
+        banco = get_db_connection()
+        db = banco.cursor()
+
+        db.execute(
+            "UPDATE users SET botcoins = botcoins + %s WHERE matricula = %s",
+            (ganho, mat)
+        )
+
+        banco.commit()
+
+        db.close()
+        banco.close()
+    except Exception as e:
+        print(e)
+        return {
+            "erro": str(e)
+        }
+
+
 if __name__ == "__main__":
     app.run(debug=False)

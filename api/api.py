@@ -220,7 +220,7 @@ def registrar():
 
 
 @app.route("/api/solicitar-codigo", methods=["POST"])
-def trocarSenha():
+def geraCodigo():
     data = request.get_json(silent=True)
 
     if not data:
@@ -271,6 +271,19 @@ def trocarSenha():
     return {
         "erro": 0
     }
+
+
+@app.route("/api/trocar-senha", methods=["POST"])
+def trocarSenha():
+    data = request.get_json(silent=True)
+
+    if not data:
+        return jsonify({"erro": "JSON inválido ou ausente"}), 400
+    
+    mat: str = data.get("matricula")
+    cod = data.get("codigo")
+    senha = data.get("senha")
+    return
 
 
 if __name__ == "__main__":

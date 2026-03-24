@@ -297,6 +297,14 @@ def alteracaoBotcoin():
             "erro": str(e)
         }
 
+    user = get_user(mat)
+    if ("erro" in user.keys()):
+        return user, 400
+
+    return {
+        "botcoin": user["botcoin"]
+    }
+
 
 if __name__ == "__main__":
     app.run(debug=False)

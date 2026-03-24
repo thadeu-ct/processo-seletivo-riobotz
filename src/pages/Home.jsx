@@ -2,6 +2,8 @@ import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
 import AreaCard from "../components/AreaCard";
 
+const DATA_LIBERACAO = new Date("2026-04-01T00:00:00");
+
 const paineis = [
   {
     id: "mecanica",
@@ -108,8 +110,11 @@ const paineis = [
 ];
 
 function Home() {
+  const agora = new Date();
+  const isLockedDate = agora < DATA_LIBERACAO;
+
   return (
-    <div className="min-h-screen bg-[#0a1945] flex flex-col font-sans">
+    <div className="min-h-screen bg-[#0a1945] flex flex-col font-sans overflow-x-hidden">
       <PrivateHeader />
 
       <main className="flex-grow flex flex-col items-center py-12 px-6">
@@ -124,9 +129,16 @@ function Home() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-6xl">
-          {paineis.map((painel) => (
-            <AreaCard key={painel.id} {...painel} />
-          ))}
+          {paineis.map((painel) => {
+            const shouldBeLocked = painel.id !== "tarefas_extras" && isLockedDate;
+            return (
+              <AreaCard 
+                key={painel.id} 
+                {...painel} 
+                isLocked={shouldBeLocked} 
+              />
+            );
+          })}
         </div>
       </main>
 

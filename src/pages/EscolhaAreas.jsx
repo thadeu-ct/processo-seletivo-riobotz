@@ -142,9 +142,14 @@ function EscolhaAreas() {
   useEffect(() => {
     const fetchAreas = async () => {
       try {
-        const matricula = localStorage.getItem("matriculaUsuario");
+        const dataToSend = new FormData();
+        dataToSend.append("matricula", localStorage.getItem("matriculaUsuario"));
 
-        const response = await fetch(`${apiUrl}/areas?matricula=${matricula}`);
+        const response = await fetch(`${apiUrl}/areas?matricula=${matricula}`, {
+          method: "POST",
+          body: dataToSend,
+        });
+
         const data = await response.json();
 
         if (data.erro) {

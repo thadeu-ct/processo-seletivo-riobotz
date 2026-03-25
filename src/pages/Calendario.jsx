@@ -182,29 +182,29 @@ function Calendario() {
   const [workshopsData, setWorkshopsData] = useState([]);
 
   useEffect(() => {
-    const navigate = useNavigate();
-    fetch(`${API_URL}/workshops`, {
-      method: "POST",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setWorkshopsData(data);
-      })
-      .catch((err) => console.error("Erro ao buscar workshops:", err));
-  }, []);
+    fetch(`${API_URL}/workshops`, {
+      method: "POST",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setWorkshopsData(Array.isArray(data) ? data : []);
+      })
+      .catch((err) => {
+        console.error("Erro ao buscar workshops:", err);
+        setWorkshopsData([]);
+      });
+  }, []);
 
   const workshopsProcessados = useMemo(() => {
-    if (!workshopsData.length) {
-      return <div className="p-10">Carregando workshops...</div>;
-    }
-    
-    return workshopsData.map((ws) => {
-      const { diaData, diaNome, inicio, fim, horaLimpa } =
-        processarDataHora(ws.dataHora);
-  
-      return { ...ws, diaData, diaNome, inicio, fim, horaLimpa };
-    });
-  }, [workshopsData]);
+    if (!Array.isArray(workshopsData) || !workshopsData.length) return [];
+    
+    return workshopsData.map((ws) => {
+      const { diaData, diaNome, inicio, fim, horaLimpa } =
+        processarDataHora(ws.dataHora);
+  
+      return { ...ws, diaData, diaNome, inicio, fim, horaLimpa };
+    });
+  }, [workshopsData]);
 
   const weeks = useMemo(() => getWeeks(workshopsData), [workshopsData]);
   const diasDaSemana = weeks[semanaAtual] || [];

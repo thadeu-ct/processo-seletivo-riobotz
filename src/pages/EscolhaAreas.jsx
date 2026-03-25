@@ -145,7 +145,7 @@ function EscolhaAreas() {
         const dataToSend = new FormData();
         dataToSend.append("matricula", localStorage.getItem("matriculaUsuario"));
 
-        const response = await fetch(`${apiUrl}/areas?matricula=${matricula}`, {
+        const response = await fetch(`${apiUrl}/areas`, {
           method: "POST",
           body: dataToSend,
         });

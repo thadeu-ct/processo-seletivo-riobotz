@@ -383,11 +383,29 @@ def getworkshops():
         banco = get_db_connection()
         db = banco.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
+        #  SELECT w.id, w.nome, w.descricao AS desc, w.link, w.data, w.data_fim, w.is_online AS online, JSON_AGG(wa.area_nome) AS areas
+        # FROM workshops w JOIN workshops_areas wa ON w.id = wa.workshop_id
+        # GROUP BY w.id;
+
         db.execute(
-            """"
-                SELECT w.nome, w.descricao AS desc, w.link, w.data, w.data_fim, w.is_online AS online, JSON_AGG(wa.area_nome) AS areas
-                FROM workshops w JOIN workshops_areas wa ON w.id = wa.workshop_id
-                GROUP BY w.id;
+            """
+            SELECT 
+                w.id,
+                w.nome AS titulo,
+                w.descricao,
+                w.link,
+                CASE 
+                    WHEN w.is_online THEN 'Online'
+                    ELSE 'Presencial'
+                END AS tipo,
+                JSON_AGG(wa.area_nome) AS areas,
+                TO_CHAR(w.data, 'DD/MM') || ', ' ||
+                TO_CHAR(w.data, 'Dy') || ', ' ||
+                TO_CHAR(w.data, 'HH24:MI') || '-' ||
+                TO_CHAR(w.data_fim, 'HH24:MI') AS "dataHora"
+            FROM workshops w
+            JOIN workshops_areas wa ON w.id = wa.workshop_id
+            GROUP BY w.id;
             """
         )
 
@@ -396,7 +414,32 @@ def getworkshops():
         db.close()
         banco.close()
 
-        return rows
+        return jsonify(rows)
+    except Exception as e:
+        print(e)
+        return {
+            "erro": str(e)
+        }
+    
+
+@app.route("/api/workshops/inscrever")
+def inscrever_workshops():
+    mat: str = request.form.get("matricula")
+    id_w: int = int(request.form.get("id"))
+
+    if not mat.isnumeric():
+        return {
+            "erro": ERRO_MATRICULA
+        }
+    
+    try:
+        banco = get_db_connection()
+        db = banco.cursor()
+
+
+
+        db.close()
+        banco.close()
     except Exception as e:
         print(e)
         return {

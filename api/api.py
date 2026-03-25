@@ -138,7 +138,7 @@ def escolha():
         db = banco.cursor()
 
         db.execute(
-            "SELECT area FROM user_area WHERE matricula=%s",
+            "SELECT area_nome FROM user_area WHERE matricula=%s",
             (matricula,)
         )
 
@@ -183,7 +183,7 @@ def areas():
         db = banco.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
         db.execute(
-            "SELECT area FROM user_area WHERE matricula = %s",
+            "SELECT area_nome FROM user_area WHERE matricula = %s",
             (mat,)
         )
 

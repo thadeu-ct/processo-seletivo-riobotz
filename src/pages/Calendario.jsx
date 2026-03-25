@@ -77,6 +77,7 @@ const getEventStyle = (inicio, fim) => {
   const endMin = parseTime(fim);
   const top = ((startMin - baseMinutes) / 30) * SLOT_HEIGHT;
   const height = ((endMin - startMin) / 30) * SLOT_HEIGHT;
+  if (height <= 0) height = SLOT_HEIGHT;
   return { top: `${top}px`, height: `${height}px` };
 };
 
@@ -112,6 +113,11 @@ const processarDataHora = (dataHoraStr) => {
   const [inicio, fim] = horaLimpa.split("-");
 
   return { diaData, diaNome, horaLimpa, inicio, fim };
+};
+
+const horaPartes = (horaStr) => {
+    if(!horaStr.includes('-')) return ["13:00", "14:30"];
+    return horaStr.split("-");
 };
 
 const getWeeks = (data) => {

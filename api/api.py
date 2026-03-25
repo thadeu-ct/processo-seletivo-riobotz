@@ -21,6 +21,9 @@ def date():
         "date": comecou_processo(datetime.now())
     }
 
+'''
+------------------ Funções de Login/Cadastro ------------------
+'''
 
 @app.route("/api/cadastro", methods=["POST"])
 def cadastro():
@@ -114,6 +117,9 @@ def login():
     }
 
 
+'''
+------------------ Funções de Áreas da Equipe ------------------
+'''
 @app.route("/api/escolha", methods=["POST"])
 def escolha():
     data = request.get_json(silent=True)
@@ -131,9 +137,26 @@ def escolha():
         banco = get_db_connection()
         db = banco.cursor()
 
-        for area in areas:
+        db.execute(
+            "SELECT area FROM user_area WHERE matricula=%s",
+            (matricula,)
+        )
+
+        areas_atuais = {row[0] for row in db.fetchall()}
+        areas_novas = set(areas)
+
+        insert_areas = areas_novas - areas_atuais
+        remove_areas = areas_atuais - areas_novas 
+
+        for area in insert_areas:
             db.execute(
                 "INSERT INTO user_area VALUES(%s, %s)",
+                (matricula, area)
+            )
+
+        for area in remove_areas:
+            db.execute(
+                "DELETE FROM user_area WHERE matricula = %s AND area = %s",
                 (matricula, area)
             )
         
@@ -142,12 +165,46 @@ def escolha():
         banco.close()
 
         return jsonify({"erro": 0})
-
     except Exception as e:
         print(f"Erro no banco: {e}")  # This will appear in your server logs
         return jsonify({"erro": str(e)}), 500
 
 
+@app.route("/api/areas", methods=["POST"])
+def areas():
+    mat: str = request.form.get("matricula")
+    if not matricula.isnumeric():
+        return {
+            "erro": ERRO_MATRICULA
+        }
+    
+    try:
+        banco = get_db_connection()
+        db = banco.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+        db.execute(
+            "SELECT area FROM user_area WHERE matricula = %s",
+            (mat,)
+        )
+
+        areas = {row[0] for row in db.fetchall()}
+
+        db.close()
+        banco.close()
+
+        return {
+            "areas": areas
+        }
+    except Exception as e:
+        print(e)
+        return {
+            "erro": str(e)
+        }
+
+
+'''
+------------------ Funções de Admin ------------------
+'''
 @app.route("/api/candidatos", methods=["POST"])
 def candidatos():
     try:
@@ -167,7 +224,6 @@ def candidatos():
     except Exception as e:
         print(f"Erro no banco: {e}")
         return jsonify({"erro": str(e)}), 500
-
 
 
 @app.route("/api/registrar", methods=["POST"])
@@ -210,6 +266,9 @@ def registrar():
     }
 
 
+'''
+------------------ Funções de Trocar senha ------------------
+'''
 @app.route("/api/solicitar-codigo", methods=["POST"])
 def geraCodigo():
     data = request.get_json(silent=True)
@@ -263,6 +322,24 @@ def geraCodigo():
         "erro": 0
     }
 
+
+# Incompleto
+@app.route("/api/trocar-senha", methods=["POST"])
+def trocarSenha():
+    data = request.get_json(silent=True)
+
+    if not data:
+        return jsonify({"erro": "JSON inválido ou ausente"}), 400
+    
+    mat: str = data.get("matricula")
+    cod = data.get("codigo")
+    senha = data.get("senha")
+    return
+
+
+'''
+------------------ Funções de Botcoin ------------------
+'''
 @app.route("/api/alteracaoBotcoin/", methods=["POST"])
 def alteracaoBotcoin():
     mat: str = request.form.get("matricula")
@@ -296,6 +373,9 @@ def alteracaoBotcoin():
     }
 
 
+'''
+------------------ Funções dos Workshops ------------------
+'''
 @app.route("/api/workshops", methods=["POST"])
 def getworkshops():
     try:
@@ -321,19 +401,6 @@ def getworkshops():
         return {
             "erro": str(e)
         }
-
-
-@app.route("/api/trocar-senha", methods=["POST"])
-def trocarSenha():
-    data = request.get_json(silent=True)
-
-    if not data:
-        return jsonify({"erro": "JSON inválido ou ausente"}), 400
-    
-    mat: str = data.get("matricula")
-    cod = data.get("codigo")
-    senha = data.get("senha")
-    return
 
 
 if __name__ == "__main__":

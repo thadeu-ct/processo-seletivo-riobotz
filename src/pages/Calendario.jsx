@@ -1,7 +1,9 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
-import workshopsData from "../services/workshops.json";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
 
 const AREAS = [
   { id: "todas", nome: "Todas as Áreas" },
@@ -171,17 +173,32 @@ function Calendario() {
   const [inscricoes, setInscricoes] = useState({});
   const [alocadosOnline, setAlocadosOnline] = useState({});
   const [semanaAtual, setSemanaAtual] = useState(0);
+  const [workshopsData, setWorkshopsData] = useState([]);
 
-  const workshopsProcessados = useMemo(() => {
-    return workshopsData.map((ws) => {
-      const { diaData, diaNome, inicio, fim, horaLimpa } = processarDataHora(
-        ws.dataHora,
-      );
-      return { ...ws, diaData, diaNome, inicio, fim, horaLimpa };
-    });
+  useEffect(() => {
+    const navigate = useNavigate();
+    fetch(`${API_URL}/workshops`, {
+      method: "POST",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setWorkshopsData(data);
+      })
+      .catch((err) => console.error("Erro ao buscar workshops:", err));
   }, []);
 
-  const weeks = useMemo(() => getWeeks(workshopsData), []);
+  const workshopsProcessados = useMemo(() => {
+    if (!workshopsData.length) return [];
+    
+    return workshopsData.map((ws) => {
+      const { diaData, diaNome, inicio, fim, horaLimpa } =
+        processarDataHora(ws.dataHora);
+  
+      return { ...ws, diaData, diaNome, inicio, fim, horaLimpa };
+    });
+  }, [workshopsData]);
+
+  const weeks = useMemo(() => getWeeks(workshopsData), [workshopsData]);
   const diasDaSemana = weeks[semanaAtual] || [];
 
   const workshopsFiltrados = useMemo(() => {

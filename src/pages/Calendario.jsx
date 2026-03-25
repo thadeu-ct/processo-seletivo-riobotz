@@ -125,7 +125,6 @@ const getWeeks = (data) => {
     .map((ws) => processarDataHora(ws.dataHora).diaData)
     .filter(Boolean);
   const uniqueDates = [...new Set(dateStrs)];
-  const baseDate = new Date(2026, 3, 6);
   if (uniqueDates.length === 0) {
     return [
       [
@@ -163,7 +162,7 @@ const getWeeks = (data) => {
   const weeks = [];
   let currentMonday = new Date(startMonday);
 
-  while (currentMonday <= maxDate || weeks.length === 0) {
+  while (currentMonday <= maxDate || weeks.length < 2) {
     const weekDays = [];
     for (let i = 0; i < 5; i++) {
       const d = new Date(currentMonday);

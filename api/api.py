@@ -193,7 +193,7 @@ def areas():
         banco.close()
 
         return {
-            "erro": 0
+            "erro": 0,
             "areas": areas
         }
     except Exception as e:

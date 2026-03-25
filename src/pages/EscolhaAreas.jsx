@@ -158,7 +158,6 @@ function EscolhaAreas() {
         }
 
         // Adjust depending on your API format
-        alert(areas);
         setSelecionadas(data.areas || []);
       } catch (error) {
         console.error("Erro ao buscar áreas:", error);

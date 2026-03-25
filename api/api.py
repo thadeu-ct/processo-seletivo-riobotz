@@ -173,7 +173,7 @@ def escolha():
 @app.route("/api/areas", methods=["POST"])
 def areas():
     mat: str = request.form.get("matricula")
-    if not matricula.isnumeric():
+    if not mat.isnumeric():
         return {
             "erro": ERRO_MATRICULA
         }

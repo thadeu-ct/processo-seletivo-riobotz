@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect  } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import PrivateHeader from "../components/PrivateHeader";
 
@@ -138,6 +138,29 @@ function EscolhaAreas() {
 
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchAreas = async () => {
+      try {
+        const matricula = localStorage.getItem("matriculaUsuario");
+
+        const response = await fetch(`${apiUrl}/areas?matricula=${matricula}`);
+        const data = await response.json();
+
+        if (data.erro) {
+          console.error("Erro ao buscar áreas:", data.erro);
+          return;
+        }
+
+        // Adjust depending on your API format
+        setSelecionadas(data.areas || []);
+      } catch (error) {
+        console.error("Erro ao buscar áreas:", error);
+      }
+    };
+
+    fetchAreas();
+  }, []);
 
   const toggleArea = (id) => {
     setSelecionadas((prev) =>

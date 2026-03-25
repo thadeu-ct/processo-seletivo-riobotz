@@ -398,7 +398,7 @@ def getworkshops():
                     WHEN w.is_online THEN 'Online'
                     ELSE 'Presencial'
                 END AS tipo,
-                JSON_AGG(wa.area_nome) AS areas,
+                JSON_AGG(wa.area_nome) FILTER (WHERE wa.area_nome IS NOT NULL) AS areas,
                 TO_CHAR(w.data, 'DD/MM') || ', ' ||
                 TO_CHAR(w.data, 'Dy') || ', ' ||
                 TO_CHAR(w.data, 'HH24:MI') || '-' ||

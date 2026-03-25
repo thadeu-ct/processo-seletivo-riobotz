@@ -187,19 +187,20 @@ def areas():
             (mat,)
         )
 
-        areas = {row[0] for row in db.fetchall()}
+        areas = [row["area_nome"] for row in db.fetchall()]
 
         db.close()
         banco.close()
 
         return {
+            "erro": 0
             "areas": areas
         }
     except Exception as e:
         print(e)
         return {
             "erro": str(e)
-        }
+        }, 500
 
 
 '''

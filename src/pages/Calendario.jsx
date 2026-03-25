@@ -188,7 +188,9 @@ function Calendario() {
   }, []);
 
   const workshopsProcessados = useMemo(() => {
-    if (!workshopsData.length) return [];
+    if (!workshopsData.length) {
+      return <div className="p-10">Carregando workshops...</div>;
+    }
     
     return workshopsData.map((ws) => {
       const { diaData, diaNome, inicio, fim, horaLimpa } =
@@ -203,7 +205,10 @@ function Calendario() {
 
   const workshopsFiltrados = useMemo(() => {
     if (filtroArea === "todas") return workshopsProcessados;
-    return workshopsProcessados.filter((ws) => ws.areas.includes(filtroArea));
+  
+    return workshopsProcessados.filter(
+      (ws) => Array.isArray(ws.areas) && ws.areas.includes(filtroArea)
+    );
   }, [filtroArea, workshopsProcessados]);
 
   const handleToggleInscricao = (id) => {

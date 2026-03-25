@@ -125,17 +125,24 @@ const getWeeks = (data) => {
     .map((ws) => processarDataHora(ws.dataHora).diaData)
     .filter(Boolean);
   const uniqueDates = [...new Set(dateStrs)];
-
+  const baseDate = new Date(2026, 3, 6);
   if (uniqueDates.length === 0) {
     return [
-      [
-        { diaNome: "SEG", dataStr: "01/01" },
-        { diaNome: "TER", dataStr: "02/01" },
-        { diaNome: "QUA", dataStr: "03/01" },
-        { diaNome: "QUI", dataStr: "04/01" },
-        { diaNome: "SEX", dataStr: "05/01" },
-      ],
-    ];
+      [
+        { diaNome: "SEG", dataStr: "06/04" },
+        { diaNome: "TER", dataStr: "07/04" },
+        { diaNome: "QUA", dataStr: "08/04" },
+        { diaNome: "QUI", dataStr: "09/04" },
+        { diaNome: "SEX", dataStr: "10/04" },
+      ],
+      [
+        { diaNome: "SEG", dataStr: "13/04" },
+        { diaNome: "TER", dataStr: "14/04" },
+        { diaNome: "QUA", dataStr: "15/04" },
+        { diaNome: "QUI", dataStr: "16/04" },
+        { diaNome: "SEX", dataStr: "17/04" },
+      ]
+    ];
   }
 
   const dates = uniqueDates

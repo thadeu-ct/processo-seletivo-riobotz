@@ -416,10 +416,19 @@ def inscrever_workshops():
         banco = get_db_connection()
         db = banco.cursor()
 
+        db.execute(
+            "INSERT INTO user_workshop VALUES (%s, %s)",
+            (mat, id_w)
+        )
 
+        banco.commit()
 
         db.close()
         banco.close()
+
+        return {
+            "erro": 0
+        }
     except Exception as e:
         return handle_error(e)
 

@@ -1,9 +1,7 @@
-import { useState, useEffect, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useMemo } from "react";
 import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
+import workshopsData from "../services/workshops.json";
 
 const AREAS = [
   { id: "todas", nome: "Todas as Áreas" },
@@ -67,7 +65,6 @@ const obterEstiloFaixaLado = (areas) => {
 };
 
 const parseTime = (timeStr) => {
-  if (!timeStr) return 0;
   const [h, m] = timeStr.split(":").map(Number);
   return h * 60 + m;
 };
@@ -77,8 +74,7 @@ const getEventStyle = (inicio, fim) => {
   const startMin = parseTime(inicio);
   const endMin = parseTime(fim);
   const top = ((startMin - baseMinutes) / 30) * SLOT_HEIGHT;
-  let height = ((endMin - startMin) / 30) * SLOT_HEIGHT;
-  if (height <= 0) height = SLOT_HEIGHT;
+  const height = ((endMin - startMin) / 30) * SLOT_HEIGHT;
   return { top: `${top}px`, height: `${height}px` };
 };
 
@@ -117,7 +113,7 @@ const processarDataHora = (dataHoraStr) => {
 };
 
 const getWeeks = (data) => {
-  const dateStrs = (Array.isArray(data) ? data : [])
+  const dateStrs = data
     .map((ws) => processarDataHora(ws.dataHora).diaData)
     .filter(Boolean);
   const uniqueDates = [...new Set(dateStrs)];
@@ -125,19 +121,12 @@ const getWeeks = (data) => {
   if (uniqueDates.length === 0) {
     return [
       [
-        { diaNome: "SEG", dataStr: "06/04" },
-        { diaNome: "TER", dataStr: "07/04" },
-        { diaNome: "QUA", dataStr: "08/04" },
-        { diaNome: "QUI", dataStr: "09/04" },
-        { diaNome: "SEX", dataStr: "10/04" },
+        { diaNome: "SEG", dataStr: "01/01" },
+        { diaNome: "TER", dataStr: "02/01" },
+        { diaNome: "QUA", dataStr: "03/01" },
+        { diaNome: "QUI", dataStr: "04/01" },
+        { diaNome: "SEX", dataStr: "05/01" },
       ],
-      [
-        { diaNome: "SEG", dataStr: "13/04" },
-        { diaNome: "TER", dataStr: "14/04" },
-        { diaNome: "QUA", dataStr: "15/04" },
-        { diaNome: "QUI", dataStr: "16/04" },
-        { diaNome: "SEX", dataStr: "17/04" },
-      ]
     ];
   }
 
@@ -148,24 +137,27 @@ const getWeeks = (data) => {
     })
     .sort((a, b) => a - b);
 
-  const startMonday = new Date(dates[0]);
+  const minDate = dates[0];
+  const maxDate = dates[dates.length - 1];
+
+  const startMonday = new Date(minDate);
   const dayOfWeek = startMonday.getDay();
   const diff = startMonday.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
   startMonday.setDate(diff);
 
   const weeks = [];
   let currentMonday = new Date(startMonday);
-  const maxDate = dates[dates.length - 1];
 
-  // Garante pelo menos 2 semanas para navegação
-  while (currentMonday <= maxDate || weeks.length < 2) {
+  while (currentMonday <= maxDate || weeks.length === 0) {
     const weekDays = [];
     for (let i = 0; i < 5; i++) {
       const d = new Date(currentMonday);
       d.setDate(d.getDate() + i);
       const dd = String(d.getDate()).padStart(2, "0");
       const mm = String(d.getMonth() + 1).padStart(2, "0");
-      const diaNome = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SAB"][d.getDay()];
+      const diaNome = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SAB"][
+        d.getDay()
+      ];
       weekDays.push({ dataStr: `${dd}/${mm}`, diaNome });
     }
     weeks.push(weekDays);
@@ -179,45 +171,22 @@ function Calendario() {
   const [inscricoes, setInscricoes] = useState({});
   const [alocadosOnline, setAlocadosOnline] = useState({});
   const [semanaAtual, setSemanaAtual] = useState(0);
-  const [workshopsData, setWorkshopsData] = useState([]);
-  const navigate = useNavigate(); // CORREÇÃO: Tirado do useEffect
-
-  useEffect(() => {
-    fetch(`${API_URL}/workshops`, {
-      method: "POST",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        // Blindagem para não dar erro de .filter se a API falhar
-        setWorkshopsData(Array.isArray(data) ? data : []);
-      })
-      .catch((err) => {
-        console.error("Erro ao buscar workshops:", err);
-        setWorkshopsData([]);
-      });
-  }, []);
 
   const workshopsProcessados = useMemo(() => {
-    if (!Array.isArray(workshopsData) || !workshopsData.length) return [];
-    
     return workshopsData.map((ws) => {
-      const { diaData, diaNome, inicio, fim, horaLimpa } =
-        processarDataHora(ws.dataHora);
-  
+      const { diaData, diaNome, inicio, fim, horaLimpa } = processarDataHora(
+        ws.dataHora,
+      );
       return { ...ws, diaData, diaNome, inicio, fim, horaLimpa };
     });
-  }, [workshopsData]);
+  }, []);
 
-  const weeks = useMemo(() => getWeeks(workshopsData), [workshopsData]);
-  const diasDaSemana = weeks[semanaAtual] || weeks[0] || [];
+  const weeks = useMemo(() => getWeeks(workshopsData), []);
+  const diasDaSemana = weeks[semanaAtual] || [];
 
   const workshopsFiltrados = useMemo(() => {
-    const base = Array.isArray(workshopsProcessados) ? workshopsProcessados : [];
-    if (filtroArea === "todas") return base;
-  
-    return base.filter(
-      (ws) => Array.isArray(ws.areas) && ws.areas.includes(filtroArea)
-    );
+    if (filtroArea === "todas") return workshopsProcessados;
+    return workshopsProcessados.filter((ws) => ws.areas.includes(filtroArea));
   }, [filtroArea, workshopsProcessados]);
 
   const handleToggleInscricao = (id) => {
@@ -236,11 +205,19 @@ function Calendario() {
     .filter((ws) => alocadosOnline[ws.id])
     .map((ws) => ({
       ...ws,
-      ...alocadosOnline[ws.id]
+      diaData: alocadosOnline[ws.id].diaData,
+      inicio: alocadosOnline[ws.id].inicio,
+      fim: alocadosOnline[ws.id].fim,
     }));
 
-  const handleDragStart = (e, id) => { e.dataTransfer.setData("wsId", id); };
-  const handleDragOver = (e) => { e.preventDefault(); };
+  const handleDragStart = (e, id) => {
+    e.dataTransfer.setData("wsId", id);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
   const handleDrop = (e, diaData, horaSlot) => {
     e.preventDefault();
     const wsId = e.dataTransfer.getData("wsId");
@@ -414,7 +391,7 @@ function Calendario() {
               onClick={() =>
                 setSemanaAtual((s) => Math.min(weeks.length - 1, s + 1))
               }
-              disabled={semanaAtual >= weeks.length - 1}
+              disabled={semanaAtual === weeks.length - 1}
               className="px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed font-bold transition-all text-xs uppercase tracking-wider"
             >
               Próxima Semana &rarr;
@@ -509,7 +486,7 @@ function Calendario() {
                         {ws.titulo}
                       </h4>
                       <p className="text-[10px] text-gray-500 uppercase tracking-wide font-bold">
-                        {Array.isArray(ws.areas) ? ws.areas.join(", ") : "Geral"}
+                        {ws.areas.join(", ")}
                       </p>
                     </div>
                     <div className="text-blue-500 text-xs font-bold flex items-center justify-center gap-2 mt-1">

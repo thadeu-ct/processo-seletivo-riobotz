@@ -1,95 +1,105 @@
+import { useState } from "react";
 import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
-import { Link } from "react-router-dom";
 
 function MateriaisExtras() {
+  const [isPdfOpen, setIsPdfOpen] = useState(false);
+
+  // Link do seu PDF (substitua pelo link real ou arquivo em /public)
+  const pdfUrl = "../services/riobotz_combot_tutorial.pdf";
+
   return (
-    <div className="min-h-screen bg-[#0a1945] flex flex-col font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-[#0a1945] flex flex-col font-sans overflow-hidden">
       <PrivateHeader />
 
-      <main className="flex-grow flex flex-col items-center justify-center py-12 px-6 relative">
-        {/* Elementos Decorativos de Fundo */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
-          <div className="absolute top-20 left-10 transform -rotate-12">
-            <svg className="w-64 h-64 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M13.325 3.05a2.1 2.1 0 012.35 0l5.85 4.15a2.1 2.1 0 01.8 1.6v6.4a2.1 2.1 0 01-.8 1.6l-5.85 4.15a2.1 2.1 0 01-2.35 0l-5.85-4.15a2.1 2.1 0 01-.8-1.6V8.8a2.1 2.1 0 01.8-1.6l5.85-4.15z" />
-            </svg>
-          </div>
-          <div className="absolute bottom-20 right-10 transform rotate-45">
-            <svg className="w-80 h-80 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-            </svg>
-          </div>
-        </div>
-
-        <div className="max-w-3xl w-full text-center relative z-10">
-          {/* Ícone Animado de Construção */}
-          <div className="mb-8 flex justify-center">
-            <div className="relative">
-              <div className="bg-yellow-500 p-8 rounded-full shadow-[0_0_50px_rgba(250,204,21,0.3)] animate-pulse">
-                <svg className="w-20 h-20 text-[#0a1945]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 011-1h1a2 2 0 100-4H7a1 1 0 01-1-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" />
-                </svg>
-              </div>
-              {/* Mini Robô "trabalhando" */}
-              <div className="absolute -bottom-4 -right-4 bg-blue-600 p-3 rounded-xl border-4 border-[#0a1945] animate-bounce">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <h1 className="text-white font-black text-4xl md:text-6xl uppercase tracking-tighter mb-4">
-            Missões Extras
-          </h1>
-          
-          <div className="inline-block bg-yellow-500 text-[#0a1945] font-black px-4 py-1 uppercase tracking-widest text-sm mb-8 transform -rotate-1">
-            Área em Manutenção
-          </div>
-
-          <p className="text-gray-300 font-medium text-lg md:text-xl leading-relaxed mb-12">
-            Nossos engenheiros estão ajustando os últimos parafusos desta seção. 
-            Em breve, você terá acesso a desafios surpresa que valem <span className="text-yellow-400 font-bold">Botcoins bônus!</span>
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
-            <div className="bg-white/5 border border-white/10 p-6 rounded-2xl flex items-center gap-4">
-              <div className="w-2 h-12 bg-blue-500 rounded-full"></div>
-              <div className="text-left">
-                <p className="text-white font-bold italic uppercase text-sm">Status do Sistema</p>
-                <p className="text-blue-400 font-black">EM PITCH-STOP</p>
-              </div>
-            </div>
-            <div className="bg-white/5 border border-white/10 p-6 rounded-2xl flex items-center gap-4">
-              <div className="w-2 h-12 bg-yellow-500 rounded-full"></div>
-              <div className="text-left">
-                <p className="text-white font-bold italic uppercase text-sm">Próxima Atualização</p>
-                <p className="text-yellow-400 font-black italic">EM BREVE</p>
-              </div>
-            </div>
-          </div>
-
-          <Link
-            to="/home"
-            className="inline-flex items-center gap-2 bg-transparent hover:bg-white/5 text-white font-bold py-3 px-8 rounded-full border-2 border-white/20 transition-all hover:border-white/40"
+      <main className="flex-grow flex relative">
+        {/* Lado Esquerdo: Painel do PDF (Estilo Gaveta) */}
+        <div
+          className={`fixed inset-y-0 left-0 z-40 transition-all duration-500 ease-in-out bg-white shadow-[10px_0_30px_rgba(0,0,0,0.5)] flex
+            ${isPdfOpen ? "w-full md:w-[50%]" : "w-0"}`}
+        >
+          {/* Botão de Trigger (O Livro) - Posicionado na borda do painel */}
+          <button
+            onClick={() => setIsPdfOpen(!isPdfOpen)}
+            className={`absolute top-1/2 -right-14 transform -translate-y-1/2 bg-yellow-500 text-[#0a1945] p-4 rounded-r-3xl shadow-xl hover:bg-yellow-400 transition-all z-50 flex flex-col items-center gap-3 border-y-2 border-r-2 border-[#0a1945]/10
+              ${isPdfOpen ? "rotate-0" : ""}`}
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            {/* Ícone de Livro SVG */}
+            <svg
+              className={`w-8 h-8 transition-transform duration-500 ${isPdfOpen ? "rotate-180" : ""}`}
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path d="M12 21l-8-4.5v-13l8 4.5 8-4.5v13l-8 4.5zm0-2.165l6-3.375v-9.43l-6 3.375v9.43z" />
             </svg>
-            Voltar para a Jornada
-          </Link>
+            <span className="[writing-mode:vertical-lr] font-black text-[10px] uppercase tracking-[0.3em] py-2">
+              {isPdfOpen ? "FECHAR" : "TUTORIAL"}
+            </span>
+          </button>
+
+          {/* Iframe do PDF */}
+          <div className="w-full h-full">
+            {isPdfOpen && (
+              <iframe
+                src={`${pdfUrl}#view=FitH`}
+                className="w-full h-full border-none"
+                title="Tutorial RioBotz"
+              />
+            )}
+          </div>
         </div>
 
-        {/* Fita de isolamento no rodapé da main */}
-        <div className="absolute bottom-0 w-full overflow-hidden whitespace-nowrap opacity-20 h-8 flex">
-           {[...Array(10)].map((_, i) => (
-             <div key={i} className="flex flex-shrink-0">
-               <div className="bg-yellow-500 w-12 h-full transform -skew-x-12 mx-2"></div>
-               <div className="bg-black w-12 h-full transform -skew-x-12 mx-2"></div>
-             </div>
-           ))}
-        </div>
+        {/* Lado Direito: Conteúdo das Questões */}
+        <section
+          className={`flex-grow transition-all duration-500 ease-in-out p-6 md:p-12 overflow-y-auto
+            ${isPdfOpen ? "md:ml-[50%] opacity-20 md:opacity-100" : "ml-0"}`}
+        >
+          <div className="max-w-3xl mx-auto">
+            <div className="mb-12">
+              <h1 className="text-white font-black text-4xl uppercase tracking-tighter mb-4">
+                Missões Extras
+              </h1>
+              <div className="h-1 w-20 bg-yellow-500 mb-6"></div>
+              <p className="text-blue-200 text-lg leading-relaxed">
+                Abra o{" "}
+                <span className="text-yellow-400 font-bold">
+                  Tutorial RioBotz
+                </span>{" "}
+                na aba ao lado para consultar os dados técnicos e responder os
+                desafios abaixo.
+              </p>
+            </div>
+
+            <div className="grid gap-8">
+              {[1, 2, 3].map((num) => (
+                <div
+                  key={num}
+                  className="bg-white/5 border border-white/10 p-8 rounded-[2rem] hover:border-yellow-500/30 transition-all"
+                >
+                  <div className="flex gap-6">
+                    <div className="bg-yellow-500 text-[#0a1945] font-black w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-lg rotate-3">
+                      {num}
+                    </div>
+                    <div className="flex-grow">
+                      <h3 className="text-white font-bold text-xl mb-6">
+                        Baseado no capítulo de eletrônica, qual a principal
+                        diferença entre os motores citados?
+                      </h3>
+                      <textarea
+                        className="w-full bg-[#0a1945] border-2 border-white/10 rounded-2xl p-5 text-white placeholder:text-white/10 focus:outline-none focus:border-yellow-500 transition-all h-32 resize-none shadow-inner"
+                        placeholder="Escreva sua análise técnica..."
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              <button className="bg-yellow-500 hover:bg-yellow-400 text-[#0a1945] font-black py-5 rounded-2xl transition-all shadow-[0_10px_40px_rgba(234,179,8,0.2)] mt-4 uppercase tracking-widest text-lg">
+                Submeter Respostas
+              </button>
+            </div>
+          </div>
+        </section>
       </main>
 
       <Footer />

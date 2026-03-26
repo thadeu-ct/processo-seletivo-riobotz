@@ -442,13 +442,20 @@ def addPergunta():
     workshop_id: int = int(request.form.get("id"))
     image = request.file.get("image")
 
+    if not image:
+        return {
+            "erro": "Nenhuma imagem foi enviada"
+        }
+
+    image_bi = image.read()
+
     try:
         banco = get_db_connection()
         db = banco.cursor()
 
         db.execute(
             "INSERT INTO perguntas VALUES (%s, %s, %s)",
-            (texto, image, workshop_id)
+            (texto, image_bi, workshop_id)
         )
 
         banco.commit()

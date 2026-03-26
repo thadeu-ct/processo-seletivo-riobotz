@@ -5,26 +5,23 @@ import Footer from "../components/Footer";
 function MateriaisExtras() {
   const [isPdfOpen, setIsPdfOpen] = useState(false);
 
-  // Link do seu PDF (substitua pelo link real ou arquivo em /public)
-  const pdfUrl = "../services/riobotz_combot_tutorial.pdf";
+  const pdfUrl = "/riobotz_combot_tutorial.pdf";
 
   return (
     <div className="min-h-screen bg-[#0a1945] flex flex-col font-sans overflow-hidden">
       <PrivateHeader />
 
       <main className="flex-grow flex relative">
-        {/* Lado Esquerdo: Painel do PDF (Estilo Gaveta) */}
+        {/* Lado Esquerdo: Painel do PDF */}
         <div
           className={`fixed inset-y-0 left-0 z-40 transition-all duration-500 ease-in-out bg-white shadow-[10px_0_30px_rgba(0,0,0,0.5)] flex
             ${isPdfOpen ? "w-full md:w-[50%]" : "w-0"}`}
         >
-          {/* Botão de Trigger (O Livro) - Posicionado na borda do painel */}
+          {/* Botão de Trigger */}
           <button
             onClick={() => setIsPdfOpen(!isPdfOpen)}
-            className={`absolute top-1/2 -right-14 transform -translate-y-1/2 bg-yellow-500 text-[#0a1945] p-4 rounded-r-3xl shadow-xl hover:bg-yellow-400 transition-all z-50 flex flex-col items-center gap-3 border-y-2 border-r-2 border-[#0a1945]/10
-              ${isPdfOpen ? "rotate-0" : ""}`}
+            className={`absolute top-24 -right-14 bg-yellow-500 text-[#0a1945] p-4 rounded-r-3xl shadow-xl hover:bg-yellow-400 transition-all z-50 flex flex-col items-center gap-3 border-y-2 border-r-2 border-[#0a1945]/10`}
           >
-            {/* Ícone de Livro SVG */}
             <svg
               className={`w-8 h-8 transition-transform duration-500 ${isPdfOpen ? "rotate-180" : ""}`}
               fill="currentColor"
@@ -37,7 +34,6 @@ function MateriaisExtras() {
             </span>
           </button>
 
-          {/* Iframe do PDF */}
           <div className="w-full h-full">
             {isPdfOpen && (
               <iframe
@@ -49,7 +45,7 @@ function MateriaisExtras() {
           </div>
         </div>
 
-        {/* Lado Direito: Conteúdo das Questões */}
+        {/* Lado Direito: Conteúdo */}
         <section
           className={`flex-grow transition-all duration-500 ease-in-out p-6 md:p-12 overflow-y-auto
             ${isPdfOpen ? "md:ml-[50%] opacity-20 md:opacity-100" : "ml-0"}`}
@@ -65,38 +61,14 @@ function MateriaisExtras() {
                 <span className="text-yellow-400 font-bold">
                   Tutorial RioBotz
                 </span>{" "}
-                na aba ao lado para consultar os dados técnicos e responder os
-                desafios abaixo.
+                acima para consultar os dados técnicos.
               </p>
             </div>
 
-            <div className="grid gap-8">
-              {[1, 2, 3].map((num) => (
-                <div
-                  key={num}
-                  className="bg-white/5 border border-white/10 p-8 rounded-[2rem] hover:border-yellow-500/30 transition-all"
-                >
-                  <div className="flex gap-6">
-                    <div className="bg-yellow-500 text-[#0a1945] font-black w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-lg rotate-3">
-                      {num}
-                    </div>
-                    <div className="flex-grow">
-                      <h3 className="text-white font-bold text-xl mb-6">
-                        Baseado no capítulo de eletrônica, qual a principal
-                        diferença entre os motores citados?
-                      </h3>
-                      <textarea
-                        className="w-full bg-[#0a1945] border-2 border-white/10 rounded-2xl p-5 text-white placeholder:text-white/10 focus:outline-none focus:border-yellow-500 transition-all h-32 resize-none shadow-inner"
-                        placeholder="Escreva sua análise técnica..."
-                      ></textarea>
-                    </div>
-                  </div>
-                </div>
-              ))}
-
-              <button className="bg-yellow-500 hover:bg-yellow-400 text-[#0a1945] font-black py-5 rounded-2xl transition-all shadow-[0_10px_40px_rgba(234,179,8,0.2)] mt-4 uppercase tracking-widest text-lg">
-                Submeter Respostas
-              </button>
+            <div className="bg-white/5 border border-white/10 p-8 rounded-[2rem]">
+              <p className="text-white/50 italic text-center">
+                Área reservada para o conteúdo das missões...
+              </p>
             </div>
           </div>
         </section>

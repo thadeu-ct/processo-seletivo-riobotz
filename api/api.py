@@ -77,10 +77,7 @@ def cadastro():
         db.close()
         banco.close()
     except Exception as e:
-        print(f"Erro no banco: {e}")
-        return {
-            "erro": str(e)
-        }
+        return handle_error(e)
 
     return {
         "erro": 0
@@ -166,8 +163,7 @@ def escolha():
 
         return jsonify({"erro": 0})
     except Exception as e:
-        print(f"Erro no banco: {e}")  # This will appear in your server logs
-        return jsonify({"erro": str(e)}), 500
+        return handle_error(e)
 
 
 @app.route("/api/areas", methods=["POST"])
@@ -197,10 +193,7 @@ def areas():
             "areas": areas
         }
     except Exception as e:
-        print(e)
-        return {
-            "erro": str(e)
-        }, 500
+        return handle_error(e)
 
 
 '''
@@ -223,8 +216,7 @@ def candidatos():
 
         return rows
     except Exception as e:
-        print(f"Erro no banco: {e}")
-        return jsonify({"erro": str(e)}), 500
+        return handle_error(e)
 
 
 @app.route("/api/registrar", methods=["POST"])
@@ -257,10 +249,7 @@ def registrar():
         db.close()
         banco.close()
     except Exception as e:
-        print(f"Erro no banco: {e}")
-        return {
-            "erro": str(e)
-        }, 500
+        return handle_error(e)
     
     return {
         "erro": 0
@@ -314,10 +303,7 @@ def geraCodigo():
         db.close()
         banco.close()
     except Exception as e:
-        print(e)
-        return {
-            "erro": str(e)
-        }
+        return handle_error(e)
 
     return {
         "erro": 0
@@ -360,10 +346,7 @@ def alteracaoBotcoin():
         db.close()
         banco.close()
     except Exception as e:
-        print(e)
-        return {
-            "erro": str(e)
-        }
+        return handle_error(e)
 
     user = get_user(mat)
     if ("erro" in user.keys()):
@@ -416,10 +399,7 @@ def getworkshops():
 
         return jsonify(rows)
     except Exception as e:
-        print(e)
-        return {
-            "erro": str(e)
-        }
+        return handle_error(e)
     
 
 @app.route("/api/workshops/inscrever")
@@ -441,10 +421,75 @@ def inscrever_workshops():
         db.close()
         banco.close()
     except Exception as e:
-        print(e)
-        return {
-            "erro": str(e)
-        }
+        return handle_error(e)
+
+
+'''
+------------------ Funções das perguntas ------------------
+'''
+@app.route("/api/pergunta/add", methods=["POST"])
+def addPergunta():
+    texto: str = request.form.get("texto")
+    workshop_id: int = int(request.form.get("id"))
+    image = request.file.get("image")
+
+    try:
+        banco = get_db_connection()
+        db = banco.cursor()
+
+        db.execute(
+            "INSERT INTO perguntas VALUES (%s, %s, %s)",
+            (texto, image, workshop_id)
+        )
+
+        banco.commit()
+
+        db.close()
+        banco.close()
+    except Exception as e:
+        return handle_error(e)
+
+
+@app.route("/api/perguntas/get", methods=["POST"])
+def getPerguntas():
+    try:
+        banco = get_db_connection()
+        db = banco.cursor()
+
+        db.execute(
+            "SELECT texto FROM perguntas ORDER BY texto"
+        )
+
+        rows = db.fetchall()
+
+        db.close()
+        banco.close()
+
+        return jsonify(rows)
+    except Exception as e:
+        return handle_error(e)
+    
+
+@app.route("/api/opcoes/add", methdos=["POST"])
+def addOpcao():
+    pergunta: str = request.form.get("pergunta")
+    texto: str = request.form.get("opcao")
+
+    try:
+        banco = get_db_connection()
+        db = banco.cursor()
+
+        db.execute(
+            "INSERT INTO opcoes VALUES (%s, %s)",
+            (texto, pergunta)
+        )
+
+        banco.commit()
+
+        db.close()
+        banco.close()
+    except Exception as e:
+        return handle_error(e)
 
 
 if __name__ == "__main__":

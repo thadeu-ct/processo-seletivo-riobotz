@@ -27,15 +27,25 @@ function Login() {
   };
 
   const verificarDestino = async (matriculaUsuario) => {
-  const envAdmins = import.meta.env.VITE_ADMIN_MATRICULAS || "2610000"; 
-  const ADMIN_MATRICULAS = envAdmins.split(",");
+    const envAdmins = import.meta.env.VITE_ADMIN_MATRICULAS || "2610000";
+    const ADMIN_MATRICULAS = envAdmins.split(",");
 
-    if (ADMIN_MATRICULAS.includes(matriculaUsuario)) {
-      navigate("/home");
-      return;
-    }
+    const ehAdmin = ADMIN_MATRICULAS.includes(matriculaUsuario);
 
     try {
+      const respStatus = await fetch(`${API_URL}/status-sistema`);
+      const statusData = await respStatus.json();
+
+      if (statusData.manutencao && !ehAdmin) {
+        navigate("/em-constucao");
+        return;
+      }
+
+      if (ehAdmin) {
+        navigate("/home");
+        return;
+      }
+
       const resp = await fetch(`${API_URL}/data`);
       const data = await resp.json();
 
@@ -45,8 +55,8 @@ function Login() {
         navigate("/escolha");
       }
     } catch (error) {
-      console.error("Erro ao verificar data do processo:", error);
-      navigate("/home"); 
+      console.error("Erro ao verificar data/status:", error);
+      navigate("/home");
     }
   };
 
@@ -73,20 +83,21 @@ function Login() {
         console.log("Erro Login:", result.erro);
         setLoginStatus("invalid_credentials");
       } else if (result.registrado === false) {
-        console.log("Usuário ainda não oficializado no CTC.");
         setLoginStatus("pending_ctc");
       } else {
-        console.log("Bem-vindo,", result.nome);
+        // 5. PERSISTÊNCIA DE DADOS: Mantive seus dados e adicionei tel/email caso o Telhado mande na resposta
+        // Isso ajuda a preencher o Perfil.jsx automaticamente
         localStorage.setItem("nomeUsuario", result.nome);
         localStorage.setItem("matriculaUsuario", result.matricula);
         localStorage.setItem("botcoinUsuario", result.botcoin);
+        if (result.tel) localStorage.setItem("telUsuario", result.tel);
+        if (result.email) localStorage.setItem("emailUsuario", result.email);
+
         await verificarDestino(result.matricula);
       }
     } catch (error) {
       console.error("Erro de conexão:", error);
-      alert(
-        "Erro ao conectar com o servidor. Verifique se a API está rodando.",
-      );
+      alert("Erro ao conectar com o servidor.");
     } finally {
       setLoading(false);
     }

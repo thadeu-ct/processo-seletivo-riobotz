@@ -60,9 +60,9 @@ def compare_hash(texto: str, hash: str):
 
 def handle_error(e: Exception):
     print(e)
-    return {
+    return jsonify({
         "erro": str(e)
-    }, 500
+    }), 500
 
 
 def get_user(mat: str) -> dict:

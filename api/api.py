@@ -508,5 +508,11 @@ def addOpcao():
         return handle_error(e)
 
 
+@app.errorhandler(Exception)
+def errorPage(e):
+    print(e)
+    return {"erro": str(e)}, 500
+
+
 if __name__ == "__main__":
     app.run(debug=False)

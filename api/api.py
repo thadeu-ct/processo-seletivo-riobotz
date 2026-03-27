@@ -34,7 +34,7 @@ def cadastro():
         }
     
     matricula: str = request.form.get("mat")
-    if not matricula.isnumeric():
+    if not matricula or not matricula.isnumeric():
         return {
             "erro": ERRO_MATRICULA
         }
@@ -175,7 +175,7 @@ def escolha():
 @app.route("/api/areas", methods=["POST"])
 def areas():
     mat: str = request.form.get("matricula")
-    if not mat.isnumeric():
+    if not mat or not mat.isnumeric():
         return {
             "erro": ERRO_MATRICULA
         }
@@ -223,7 +223,7 @@ def candidatos():
         db.close()
         banco.close()
 
-        return rows
+        return jsonify(rows)
     except Exception as e:
         print(e)
         return jsonify({
@@ -339,7 +339,7 @@ def trocarSenha():
     mat: str = data.get("matricula")
     cod = data.get("codigo")
     senha = data.get("senha")
-    return
+    return {"erro": "Não implementado"}
 
 
 '''
@@ -467,7 +467,7 @@ def inscrever_workshops():
 def addPergunta():
     texto: str = request.form.get("texto")
     workshop_id: int = int(request.form.get("id"))
-    image = request.file.get("image")
+    image = request.files.get("image")
 
     if not image:
         return {
@@ -519,7 +519,7 @@ def getPerguntas():
         }), 500
     
 
-@app.route("/api/opcoes/add", methdos=["POST"])
+@app.route("/api/opcoes/add", methods=["POST"])
 def addOpcao():
     pergunta: str = request.form.get("pergunta")
     texto: str = request.form.get("opcao")

@@ -106,4 +106,7 @@ def send_verification_email(to_email, code):
         print(f"Verification code sent to {to_email}")
         return 0
     except Exception as e:
-        return handle_error(e)
+        print(e)
+        return {
+            "erro": str(e)
+        }

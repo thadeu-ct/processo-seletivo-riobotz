@@ -21,20 +21,25 @@ function Perfil() {
   const [emManutencao, setEmManutencao] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Começamos com campos vazios para preencher com o que vem do Banco
   const [dados, setDados] = useState({
     nome: "",
     matricula: localStorage.getItem("matriculaUsuario") || "",
     email: "",
-    tel: "",
+    tel: "", // Usaremos 'tel' internamente no estado
     areas: [],
+  });
+
+  // OBJETO DE SENHAS para a troca
+  const [senhas, setSenhas] = useState({
+    atual: "",
+    nova: "",
+    confirmacao: "",
   });
 
   const envAdmins = import.meta.env.VITE_ADMIN_MATRICULAS || "2610000";
   const isAdmin = envAdmins.split(",").includes(dados.matricula);
 
   useEffect(() => {
-    // 1. BUSCA DADOS COMPLETOS DO PERFIL (Users + Áreas)
     const carregarPerfil = async () => {
       try {
         const response = await fetch(`${API_URL}/perfil/get`, {
@@ -49,10 +54,9 @@ function Perfil() {
             nome: data.nome,
             matricula: data.matricula,
             email: data.email,
-            tel: data.tel,
+            tel: data.telefone || "", // MAPEADO: Back traz 'telefone', jogamos no 'tel' do front
             areas: data.areas || [],
           });
-          // Aproveitamos para atualizar o nome no localStorage caso tenha mudado
           localStorage.setItem("nomeUsuario", data.nome);
         }
       } catch (err) {
@@ -62,7 +66,6 @@ function Perfil() {
       }
     };
 
-    // 2. BUSCA STATUS DO SISTEMA (SÓ PARA ADMIN)
     const carregarStatus = async () => {
       if (isAdmin) {
         try {
@@ -83,6 +86,12 @@ function Perfil() {
     const value = e?.target ? e.target.value : e;
     const name = e?.target ? e.target.name : "nome";
     setDados((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Handler para o objeto de senhas
+  const handleSenhaChange = (e) => {
+    const { name, value } = e.target;
+    setSenhas((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleTelChange = (value) => {
@@ -153,108 +162,145 @@ function Perfil() {
             )}
           </aside>
 
-          <div className="lg:w-2/3 bg-white rounded-[2.5rem] shadow-2xl overflow-hidden p-8 md:p-10 text-[#0a1945]">
-            <div className="flex justify-between items-start mb-8">
-              <h2 className="font-black uppercase text-2xl">Dados Pessoais</h2>
-              <div className="relative">
-                <button
-                  onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="w-10 h-10 rounded-full bg-[#0a1945] flex items-center justify-center text-white"
-                >
-                  <svg
-                    className="w-6 h-6"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
+          <div className="lg:w-2/3 flex flex-col gap-8">
+            {/* SEÇÃO 1: DADOS PESSOAIS */}
+            <div className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden p-8 md:p-10 text-[#0a1945]">
+              <div className="flex justify-between items-start mb-8">
+                <h2 className="font-black uppercase text-2xl">
+                  Dados Pessoais
+                </h2>
+                <div className="relative">
+                  <button
+                    onClick={() => setIsProfileOpen(!isProfileOpen)}
+                    className="w-10 h-10 rounded-full bg-[#0a1945] flex items-center justify-center text-white border-2 border-transparent hover:border-yellow-500 transition-all"
                   >
-                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                  </svg>
-                </button>
-                {isProfileOpen && (
-                  <UserDropdown onClose={() => setIsProfileOpen(false)} />
-                )}
+                    <svg
+                      className="w-6 h-6"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                    </svg>
+                  </button>
+                  {isProfileOpen && (
+                    <UserDropdown onClose={() => setIsProfileOpen(false)} />
+                  )}
+                </div>
               </div>
+
+              <form className="flex flex-col gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+                  <Input
+                    {...FORM_FIELDS.nome}
+                    name="nome"
+                    value={dados.nome}
+                    onChange={handleChange}
+                  />
+                  <div className="opacity-50">
+                    <Input
+                      {...FORM_FIELDS.matricula}
+                      value={dados.matricula}
+                      readOnly
+                      disabled
+                      onChange={noop}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+                  <div className="opacity-50">
+                    <Input
+                      {...FORM_FIELDS.email}
+                      value={dados.email}
+                      readOnly
+                      disabled
+                      onChange={noop}
+                    />
+                  </div>
+                  <Input
+                    {...FORM_FIELDS.telefone}
+                    name="tel"
+                    value={dados.tel}
+                    onChange={handleTelChange}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-3">
+                  <h3 className="text-gray-400 font-bold uppercase text-[10px] tracking-widest">
+                    Suas Áreas
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {dados.areas.length > 0 ? (
+                      dados.areas.map((area) => (
+                        <span
+                          key={area}
+                          className={`${CORES_AREAS[area.toLowerCase()] || "bg-gray-500"} text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase flex items-center gap-2`}
+                        >
+                          {area} <span className="cursor-pointer">×</span>
+                        </span>
+                      ))
+                    ) : (
+                      <p className="text-gray-400 text-[10px] italic">
+                        Nenhuma área selecionada.
+                      </p>
+                    )}
+                    <Link
+                      to="/escolha"
+                      className="border-2 border-dashed border-gray-200 text-gray-400 px-4 py-2 rounded-xl font-bold text-[10px] uppercase hover:border-[#0a1945] transition-all"
+                    >
+                      + Editar
+                    </Link>
+                  </div>
+                </div>
+                <div className="flex justify-end pt-4">
+                  <button
+                    type="button"
+                    className="bg-[#0a1945] text-white font-black px-10 py-4 rounded-2xl uppercase text-xs tracking-widest hover:bg-blue-900 transition-all"
+                  >
+                    Salvar Dados
+                  </button>
+                </div>
+              </form>
             </div>
 
-            <form className="flex flex-col gap-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+            {/* SEÇÃO 2: SEGURANÇA (SENHA) */}
+            <div className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden p-8 md:p-10 text-[#0a1945]">
+              <h2 className="font-black uppercase text-2xl mb-8 border-b border-gray-100 pb-4">
+                Segurança
+              </h2>
+              <form className="flex flex-col gap-6">
                 <Input
-                  {...FORM_FIELDS.nome}
-                  name="nome"
-                  value={dados.nome}
-                  onChange={handleChange}
+                  {...FORM_FIELDS.senha}
+                  name="atual"
+                  placeholder="Senha atual"
+                  value={senhas.atual}
+                  onChange={handleSenhaChange}
                 />
-                <div className="opacity-50">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
                   <Input
-                    {...FORM_FIELDS.matricula}
-                    value={dados.matricula}
-                    readOnly
-                    disabled
-                    onChange={noop}
+                    {...FORM_FIELDS.senha}
+                    name="nova"
+                    placeholder="Nova senha (mín. 6 caracteres)"
+                    value={senhas.nova}
+                    onChange={handleSenhaChange}
+                  />
+                  <Input
+                    {...FORM_FIELDS.senha}
+                    name="confirmacao"
+                    placeholder="Confirme a nova senha"
+                    value={senhas.confirmacao}
+                    onChange={handleSenhaChange}
                   />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
-                <div className="opacity-50">
-                  <Input
-                    {...FORM_FIELDS.email}
-                    value={dados.email}
-                    readOnly
-                    disabled
-                    onChange={noop}
-                  />
-                </div>
-                <Input
-                  {...FORM_FIELDS.telefone}
-                  name="tel"
-                  value={dados.tel}
-                  onChange={handleTelChange}
-                />
-              </div>
-
-              <div className="flex flex-col gap-3">
-                <h3 className="text-gray-400 font-bold uppercase text-[10px] tracking-widest">
-                  Suas Áreas
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {dados.areas.length > 0 ? (
-                    dados.areas.map((area) => (
-                      <span
-                        key={area}
-                        className={`${CORES_AREAS[area.toLowerCase()] || "bg-gray-500"} text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase flex items-center gap-2`}
-                      >
-                        {area} <span className="cursor-pointer">×</span>
-                      </span>
-                    ))
-                  ) : (
-                    <p className="text-gray-400 text-[10px] italic">
-                      Nenhuma área selecionada.
-                    </p>
-                  )}
-                  <Link
-                    to="/escolha"
-                    className="border-2 border-dashed border-gray-200 text-gray-400 px-4 py-2 rounded-xl font-bold text-[10px] uppercase hover:border-[#0a1945] transition-all"
+                <div className="flex justify-end gap-4 mt-4">
+                  <button
+                    type="button"
+                    className="bg-yellow-500 text-[#0a1945] font-black px-10 py-4 rounded-2xl uppercase text-xs tracking-widest hover:bg-yellow-600 transition-all"
                   >
-                    + Editar
-                  </Link>
+                    Alterar Senha
+                  </button>
                 </div>
-              </div>
-
-              <div className="flex justify-end gap-4 mt-8 border-t pt-6">
-                <Link
-                  to="/home"
-                  className="px-8 py-4 font-bold text-gray-400 uppercase text-xs"
-                >
-                  Cancelar
-                </Link>
-                <button
-                  type="button"
-                  className="bg-[#0a1945] text-white font-black px-10 py-4 rounded-2xl uppercase text-xs tracking-widest hover:bg-blue-900 transition-all"
-                >
-                  Salvar Alterações
-                </button>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
         </div>
       </main>

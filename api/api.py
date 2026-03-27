@@ -614,24 +614,22 @@ def setManutencao():
 
 @app.route("/api/perfil/get", methods=["POST"])
 def get_perfil_completo():
-    # Recebe a matrícula via form ou json
-    mat = request.form.get("matricula")
-    if not mat:
-        data = request.get_json(silent=True)
-        mat = data.get("matricula") if data else None
+    # Tenta pegar do JSON (React costuma mandar assim no fetch com body)
+    data = request.get_json(silent=True)
+    mat = data.get("matricula") if data else request.form.get("matricula")
 
-    if not mat or not mat.isnumeric():
-        return jsonify({"erro": ERRO_MATRICULA}), 400
+    if not mat:
+        return jsonify({"erro": "Matrícula ausente"}), 400
 
     try:
         banco = get_db_connection()
-        # Usamos o RealDictCursor para o Python já montar o dicionário pra gente
+        # O RealDictCursor é ótimo, mas se falhar, o erro 500 aparece aqui
         db = banco.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-        # 1. Busca dados básicos na tabela 'users'
+        # 1. Busca dados básicos
         db.execute(
             "SELECT nome, matricula, email, tel FROM users WHERE matricula = %s",
-            (mat,)
+            (str(mat),) # Garantindo que vá como string
         )
         user_data = db.fetchone()
 
@@ -640,23 +638,24 @@ def get_perfil_completo():
             banco.close()
             return jsonify({"erro": "Usuário não encontrado"}), 404
 
-        # 2. Busca as áreas de interesse na tabela 'user_area'
+        # 2. Busca as áreas (Tratando o caso de não ter nenhuma)
         db.execute(
             "SELECT area_nome FROM user_area WHERE user_matricula = %s",
-            (mat,)
+            (str(mat),)
         )
-        # Extrai apenas os nomes das áreas em uma lista simples
         areas_rows = db.fetchall()
-        user_data["areas"] = [row["area_nome"] for row in areas_rows]
+        
+        # Se áreas_rows for None ou vazio, áreas vira uma lista vazia []
+        user_data["areas"] = [row["area_nome"] for row in areas_rows] if areas_rows else []
 
         db.close()
         banco.close()
 
-        # Retorna o objeto completo para o Front
         return jsonify(user_data)
 
     except Exception as e:
-        return handle_error(e), 500
+        print(f"ERRO NO PERFIL: {e}") # Isso vai aparecer no log do seu terminal/Vercel
+        return jsonify({"erro": str(e)}), 500
 
 @app.errorhandler(Exception)
 def errorPage(e):

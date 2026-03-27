@@ -24,6 +24,7 @@ import ForgotPassword from "./features/ForgotPassword";
 import Calendario from "./pages/Calendario";
 import Botcoins from "./features/Botcoins";
 import MateriaisExtras from "./pages/MateriaisExtras";
+import EmConstrucao from "./components/UnderConstruction";
 
 const router = createBrowserRouter([
   {
@@ -105,6 +106,10 @@ const router = createBrowserRouter([
   {
     path: "/botcoins",
     element: <Botcoins />,
+  },
+  {
+    path: "/em-constucao",
+    element: <EmConstrucao />,
   },
 ]);
 

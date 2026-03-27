@@ -58,6 +58,11 @@ def compare_hash(texto: str, hash: str):
     return check_password_hash(hash, texto)
 
 
+def handle_error(e: Exception):
+    print(e)
+    return {"erro": str(e)}, 500
+
+
 def get_user(mat: str) -> dict:
     try:
         banco = get_db_connection()
@@ -78,10 +83,11 @@ def get_user(mat: str) -> dict:
         db.close()
         banco.close()
     except Exception as e:
-        print(f"Erro no banco: {e}")
-        return {
-            "erro": str(e)
-        }
+        return handle_error(e)
+        # print(e)
+        # return {
+        #     "erro": str(e)
+        # }
     
     return resultados[0]
 
@@ -106,5 +112,8 @@ def send_verification_email(to_email, code):
         print(f"Verification code sent to {to_email}")
         return 0
     except Exception as e:
-        print("Failed to send email:", e)
-        return e
+        return handle_error(e), 500
+        # print(e)
+        # return {
+        #     "erro": str(e)
+        # }

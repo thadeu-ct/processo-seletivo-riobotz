@@ -607,6 +607,57 @@ def setManutencao():
     except Exception as e:
         return handle_error(e), 500
     
+
+'''
+------------------ Funções de Perfil (Dados Completos) ------------------
+'''
+
+@app.route("/api/perfil/get", methods=["POST"])
+def get_perfil_completo():
+    # Recebe a matrícula via form ou json
+    mat = request.form.get("matricula")
+    if not mat:
+        data = request.get_json(silent=True)
+        mat = data.get("matricula") if data else None
+
+    if not mat or not mat.isnumeric():
+        return jsonify({"erro": ERRO_MATRICULA}), 400
+
+    try:
+        banco = get_db_connection()
+        # Usamos o RealDictCursor para o Python já montar o dicionário pra gente
+        db = banco.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+        # 1. Busca dados básicos na tabela 'users'
+        db.execute(
+            "SELECT nome, matricula, email, tel FROM users WHERE matricula = %s",
+            (mat,)
+        )
+        user_data = db.fetchone()
+
+        if not user_data:
+            db.close()
+            banco.close()
+            return jsonify({"erro": "Usuário não encontrado"}), 404
+
+        # 2. Busca as áreas de interesse na tabela 'user_area'
+        db.execute(
+            "SELECT area_nome FROM user_area WHERE user_matricula = %s",
+            (mat,)
+        )
+        # Extrai apenas os nomes das áreas em uma lista simples
+        areas_rows = db.fetchall()
+        user_data["areas"] = [row["area_nome"] for row in areas_rows]
+
+        db.close()
+        banco.close()
+
+        # Retorna o objeto completo para o Front
+        return jsonify(user_data)
+
+    except Exception as e:
+        return handle_error(e), 500
+
 @app.errorhandler(Exception)
 def errorPage(e):
     print(e)

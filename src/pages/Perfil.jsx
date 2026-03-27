@@ -19,41 +19,76 @@ const CORES_AREAS = {
 function Perfil() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [emManutencao, setEmManutencao] = useState(false);
+  const [loading, setLoading] = useState(true);
 
+  // Começamos com campos vazios para preencher com o que vem do Banco
   const [dados, setDados] = useState({
-    nome: localStorage.getItem("nomeUsuario") || "",
+    nome: "",
     matricula: localStorage.getItem("matriculaUsuario") || "",
-    email: localStorage.getItem("emailUsuario") || "",
-    tel: localStorage.getItem("telUsuario") || "",
-    areas: ["eletronica", "mecanica"],
+    email: "",
+    tel: "",
+    areas: [],
   });
 
-  // Lógica de Admin baseada nos dados iniciais
   const envAdmins = import.meta.env.VITE_ADMIN_MATRICULAS || "2610000";
   const isAdmin = envAdmins.split(",").includes(dados.matricula);
 
   useEffect(() => {
-    if (isAdmin) {
-      fetch(`${API_URL}/status-sistema`)
-        .then((res) => res.json())
-        .then((data) => setEmManutencao(data.manutencao))
-        .catch((err) => console.error("Erro ao buscar status:", err));
-    }
-  }, [isAdmin]);
+    // 1. BUSCA DADOS COMPLETOS DO PERFIL (Users + Áreas)
+    const carregarPerfil = async () => {
+      try {
+        const response = await fetch(`${API_URL}/perfil/get`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ matricula: dados.matricula }),
+        });
+        const data = await response.json();
 
-  // Função para Inputs de texto simples
+        if (!data.erro) {
+          setDados({
+            nome: data.nome,
+            matricula: data.matricula,
+            email: data.email,
+            tel: data.tel,
+            areas: data.areas || [],
+          });
+          // Aproveitamos para atualizar o nome no localStorage caso tenha mudado
+          localStorage.setItem("nomeUsuario", data.nome);
+        }
+      } catch (err) {
+        console.error("Erro ao carregar dados do banco:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // 2. BUSCA STATUS DO SISTEMA (SÓ PARA ADMIN)
+    const carregarStatus = async () => {
+      if (isAdmin) {
+        try {
+          const res = await fetch(`${API_URL}/status-sistema`);
+          const data = await res.json();
+          setEmManutencao(data.manutencao);
+        } catch (err) {
+          console.error("Erro ao buscar status:", err);
+        }
+      }
+    };
+
+    carregarPerfil();
+    carregarStatus();
+  }, [isAdmin, dados.matricula]);
+
   const handleChange = (e) => {
     const value = e?.target ? e.target.value : e;
     const name = e?.target ? e.target.name : "nome";
     setDados((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Função para o Telefone (que usa Máscara)
   const handleTelChange = (value) => {
     setDados((prev) => ({ ...prev, tel: String(value) }));
   };
 
-  // Função vazia para blindar os campos ReadOnly contra o erro "c is not a function"
   const noop = () => {};
 
   const handleManutencaoToggle = async () => {
@@ -74,6 +109,14 @@ function Perfil() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0a1945] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-500"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#0a1945] text-white font-sans flex flex-col">
       <PrivateHeader />
@@ -85,7 +128,7 @@ function Perfil() {
               Configurações de <span className="text-yellow-500">Perfil</span>
             </h1>
             <p className="text-blue-200 font-medium">
-              Mantenha seus dados atualizados.
+              Dados sincronizados diretamente com o servidor da equipe.
             </p>
 
             {isAdmin && (
@@ -146,7 +189,7 @@ function Perfil() {
                     value={dados.matricula}
                     readOnly
                     disabled
-                    onChange={noop} // Evita erro de função no IMask
+                    onChange={noop}
                   />
                 </div>
               </div>
@@ -158,7 +201,7 @@ function Perfil() {
                     value={dados.email}
                     readOnly
                     disabled
-                    onChange={noop} // Evita erro de função no IMask
+                    onChange={noop}
                   />
                 </div>
                 <Input
@@ -174,17 +217,23 @@ function Perfil() {
                   Suas Áreas
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                  {dados.areas.map((area) => (
-                    <span
-                      key={area}
-                      className={`${CORES_AREAS[area] || "bg-gray-500"} text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase flex items-center gap-2`}
-                    >
-                      {area} <span className="cursor-pointer">×</span>
-                    </span>
-                  ))}
+                  {dados.areas.length > 0 ? (
+                    dados.areas.map((area) => (
+                      <span
+                        key={area}
+                        className={`${CORES_AREAS[area.toLowerCase()] || "bg-gray-500"} text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase flex items-center gap-2`}
+                      >
+                        {area} <span className="cursor-pointer">×</span>
+                      </span>
+                    ))
+                  ) : (
+                    <p className="text-gray-400 text-[10px] italic">
+                      Nenhuma área selecionada.
+                    </p>
+                  )}
                   <Link
                     to="/escolha"
-                    className="border-2 border-dashed border-gray-200 text-gray-400 px-4 py-2 rounded-xl font-bold text-[10px] uppercase"
+                    className="border-2 border-dashed border-gray-200 text-gray-400 px-4 py-2 rounded-xl font-bold text-[10px] uppercase hover:border-[#0a1945] transition-all"
                   >
                     + Editar
                   </Link>
@@ -200,7 +249,7 @@ function Perfil() {
                 </Link>
                 <button
                   type="button"
-                  className="bg-[#0a1945] text-white font-black px-10 py-4 rounded-2xl uppercase text-xs tracking-widest"
+                  className="bg-[#0a1945] text-white font-black px-10 py-4 rounded-2xl uppercase text-xs tracking-widest hover:bg-blue-900 transition-all"
                 >
                   Salvar Alterações
                 </button>

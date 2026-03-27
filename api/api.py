@@ -348,6 +348,45 @@ def trocarSenha():
     return {"erro": "Não implementado"}
 
 
+@app.route("/api/user/trocar-senha", methods=["POST"])
+def userTrocarSenha():
+    data = request.get_json(silent=True)
+    mat = data.get("matricula") if data else request.form.get("matricula")
+    if not mat or not mat.isnumeric():
+        return {
+            "erro": ERRO_MATRICULA
+        }
+    
+    user = get_user(mat)
+    if "erro" in user.keys():
+        return jsonify(user), 500
+    
+    senhaNova = data.get("senhaNova") if data else request.form.get("senhaNova")
+    if not senhaNova or verifica_texto(senhaNova) or compare_hash(senhaNova, user["senha"]):
+        return {
+            "erro": ERRO_SENHA
+        }
+    
+    try:
+        banco = get_db_connection()
+        db = banco.cursor()
+
+        db.execute(
+            "UPDATE users SET senha = %s WHERE matricula = %s",
+            (create_hash(senhaNova), mat)
+        )
+
+        banco.commit()
+
+        db.close()
+        banco.close()
+        return {
+            "msg": "Senha alterada com sucesso"
+        }
+    except Exception as e:
+        return handle_error(e), 500
+
+
 '''
 ------------------ Funções de Botcoin ------------------
 '''
@@ -558,7 +597,6 @@ def addOpcao():
 '''
 ------------------ Funções de Status do Sistema ------------------
 '''
-
 @app.route("/api/status-sistema", methods=["GET"])
 def getStatus():
     try:
@@ -611,7 +649,6 @@ def setManutencao():
 '''
 ------------------ Funções de Perfil (Dados Completos) ------------------
 '''
-
 @app.route("/api/perfil/get", methods=["POST"])
 def get_perfil_completo():
     # Tenta pegar do JSON (React costuma mandar assim no fetch com body)

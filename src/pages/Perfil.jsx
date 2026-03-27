@@ -28,6 +28,7 @@ function Perfil() {
     areas: ["eletronica", "mecanica"],
   });
 
+  // Lógica de Admin baseada nos dados iniciais
   const envAdmins = import.meta.env.VITE_ADMIN_MATRICULAS || "2610000";
   const isAdmin = envAdmins.split(",").includes(dados.matricula);
 
@@ -36,21 +37,24 @@ function Perfil() {
       fetch(`${API_URL}/status-sistema`)
         .then((res) => res.json())
         .then((data) => setEmManutencao(data.manutencao))
-        .catch((err) => console.error("Erro status:", err));
+        .catch((err) => console.error("Erro ao buscar status:", err));
     }
   }, [isAdmin]);
 
-  // Função genérica para lidar com mudanças nos inputs normais
+  // Função para Inputs de texto simples
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const value = e?.target ? e.target.value : e;
+    const name = e?.target ? e.target.name : "nome";
     setDados((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Função específica para o componente Input com máscara (Telefone)
-  // O erro "c is not a function" geralmente vem da falta dessa prop tratada
+  // Função para o Telefone (que usa Máscara)
   const handleTelChange = (value) => {
-    setDados((prev) => ({ ...prev, tel: value }));
+    setDados((prev) => ({ ...prev, tel: String(value) }));
   };
+
+  // Função vazia para blindar os campos ReadOnly contra o erro "c is not a function"
+  const noop = () => {};
 
   const handleManutencaoToggle = async () => {
     const novoStatus = !emManutencao;
@@ -142,6 +146,7 @@ function Perfil() {
                     value={dados.matricula}
                     readOnly
                     disabled
+                    onChange={noop} // Evita erro de função no IMask
                   />
                 </div>
               </div>
@@ -153,21 +158,17 @@ function Perfil() {
                     value={dados.email}
                     readOnly
                     disabled
+                    onChange={noop} // Evita erro de função no IMask
                   />
                 </div>
-                {/* AQUI ESTAVA O ERRO: 
-                   Se o seu componente Input usa máscara, ele espera que o onChange 
-                   ou onAccept seja passado corretamente de acordo com a biblioteca de máscara.
-                */}
                 <Input
                   {...FORM_FIELDS.telefone}
                   name="tel"
                   value={dados.tel}
-                  onChange={handleTelChange} // Ajustado para passar o valor direto se necessário
+                  onChange={handleTelChange}
                 />
               </div>
 
-              {/* Seção de Áreas */}
               <div className="flex flex-col gap-3">
                 <h3 className="text-gray-400 font-bold uppercase text-[10px] tracking-widest">
                   Suas Áreas

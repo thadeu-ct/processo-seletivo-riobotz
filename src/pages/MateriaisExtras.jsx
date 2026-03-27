@@ -1,11 +1,9 @@
 import { useState } from "react";
 import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
-import { useNavigate } from "react-router-dom";
 
 function MateriaisExtras() {
   const [isPdfOpen, setIsPdfOpen] = useState(false);
-  const navigate = useNavigate();
 
   const pdfUrl = "/riobotz_combot_tutorial.pdf";
 
@@ -17,6 +15,7 @@ function MateriaisExtras() {
       icon: "📝",
       color: "from-blue-600 to-blue-800",
       bonus: "200 Botcoins",
+      locked: true, // Controle de trava
     },
     {
       id: "desafios",
@@ -24,6 +23,7 @@ function MateriaisExtras() {
       description: "Missões técnicas práticas baseadas no tutorial.",
       icon: "⚙️",
       color: "from-yellow-500 to-orange-600",
+      locked: true,
     },
     {
       id: "videos",
@@ -31,22 +31,14 @@ function MateriaisExtras() {
       description: "Conteúdo visual complementar para aprofundamento.",
       icon: "🎬",
       color: "from-purple-600 to-indigo-700",
+      locked: true,
     },
   ];
 
-  const handleQuizClick = () => {
-    // Aqui a gente mostra o aviso importante antes de navegar
-    const confirmar = window.confirm(
-      "AVISO IMPORTANTE: MISSÃO ESPECIAL\n\n" +
-        "• Este quiz vale 200 Botcoins extras.\n" +
-        "• Você tem apenas 2 TENTATIVAS.\n" +
-        "• Na 1ª tentativa, o gabarito NÃO será exibido.\n\n" +
-        "Deseja iniciar agora?",
+  const handleLockedClick = () => {
+    alert(
+      "Missão em desenvolvimento! Nossos engenheiros estão preparando os desafios. Fique de olho nos workshops para saber quando liberar!",
     );
-
-    if (confirmar) {
-      navigate("/quiz/tutorial-extra");
-    }
   };
 
   return (
@@ -96,8 +88,9 @@ function MateriaisExtras() {
               </h1>
               <div className="h-1.5 w-24 bg-yellow-500 mb-6 rounded-full"></div>
               <p className="text-blue-200 text-lg leading-relaxed max-w-2xl">
-                Domine o conteúdo técnico da equipe e conquiste recompensas
-                exclusivas para sua jornada.
+                O tutorial da equipe está liberado! Explore o manual na lateral
+                esquerda e prepare-se: as missões abaixo serão ativadas em
+                breve.
               </p>
             </div>
 
@@ -106,8 +99,9 @@ function MateriaisExtras() {
               {sections.map((section) => (
                 <div
                   key={section.id}
-                  onClick={section.id === "quiz" ? handleQuizClick : () => {}}
-                  className={`relative group bg-white/5 border border-white/10 rounded-[2.5rem] p-8 cursor-pointer hover:bg-white/10 transition-all duration-300 hover:-translate-y-2 overflow-hidden shadow-2xl`}
+                  onClick={section.locked ? handleLockedClick : () => {}}
+                  className={`relative group bg-white/5 border border-white/10 rounded-[2.5rem] p-8 transition-all duration-300 overflow-hidden shadow-2xl 
+                    ${section.locked ? "cursor-not-allowed opacity-80" : "cursor-pointer hover:bg-white/10 hover:-translate-y-2"}`}
                 >
                   {/* Badge de Recompensa */}
                   {section.bonus && (
@@ -116,8 +110,24 @@ function MateriaisExtras() {
                     </div>
                   )}
 
+                  {/* Overlay de "Em breve" */}
+                  {section.locked && (
+                    <div className="absolute inset-0 bg-[#0a1945]/40 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center">
+                      <div className="bg-yellow-500 text-[#0a1945] font-black text-[10px] px-3 py-1 rounded-full uppercase mb-2">
+                        Em breve
+                      </div>
+                      <svg
+                        className="w-8 h-8 text-yellow-500"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z" />
+                      </svg>
+                    </div>
+                  )}
+
                   <div
-                    className={`w-16 h-16 rounded-3xl bg-gradient-to-br ${section.color} flex items-center justify-center text-3xl mb-6 shadow-lg group-hover:scale-110 transition-transform`}
+                    className={`w-16 h-16 rounded-3xl bg-gradient-to-br ${section.color} flex items-center justify-center text-3xl mb-6 shadow-lg transition-transform ${!section.locked && "group-hover:scale-110"}`}
                   >
                     {section.icon}
                   </div>
@@ -129,8 +139,9 @@ function MateriaisExtras() {
                     {section.description}
                   </p>
 
-                  <div className="flex items-center gap-2 text-yellow-500 font-bold text-xs uppercase tracking-widest group-hover:gap-4 transition-all">
-                    Acessar Missão <span>→</span>
+                  <div className="flex items-center gap-2 text-yellow-500 font-bold text-xs uppercase tracking-widest transition-all">
+                    {section.locked ? "Bloqueado" : "Acessar Missão"}{" "}
+                    <span>→</span>
                   </div>
                 </div>
               ))}

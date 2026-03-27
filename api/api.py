@@ -628,7 +628,7 @@ def get_perfil_completo():
 
         # 1. Busca dados básicos
         db.execute(
-            "SELECT nome, matricula, email, tel FROM users WHERE matricula = %s",
+            "SELECT nome, matricula, email, telefone AS tel FROM users WHERE matricula = %s",
             (str(mat),) # Garantindo que vá como string
         )
         user_data = db.fetchone()

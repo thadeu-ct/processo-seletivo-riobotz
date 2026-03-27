@@ -20,31 +20,37 @@ function Perfil() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [emManutencao, setEmManutencao] = useState(false);
 
-  // Inicialização direta do localStorage
   const [dados, setDados] = useState({
     nome: localStorage.getItem("nomeUsuario") || "",
     matricula: localStorage.getItem("matriculaUsuario") || "",
     email: localStorage.getItem("emailUsuario") || "",
     tel: localStorage.getItem("telUsuario") || "",
-    areas: ["eletronica", "mecanica"], // Mock áreas
+    areas: ["eletronica", "mecanica"],
   });
 
-  // 1. DEFINIÇÃO DO ADMIN: Fora de efeitos colaterais desnecessários
   const envAdmins = import.meta.env.VITE_ADMIN_MATRICULAS || "2610000";
   const isAdmin = envAdmins.split(",").includes(dados.matricula);
 
   useEffect(() => {
-    // Só busca o status se for de fato um admin
     if (isAdmin) {
       fetch(`${API_URL}/status-sistema`)
         .then((res) => res.json())
         .then((data) => setEmManutencao(data.manutencao))
-        .catch((err) => {
-          // CORREÇÃO: Usando a variável de erro
-          console.error("Erro ao buscar status do sistema:", err);
-        });
+        .catch((err) => console.error("Erro status:", err));
     }
-  }, [isAdmin]); // Depende apenas da validação de admin
+  }, [isAdmin]);
+
+  // Função genérica para lidar com mudanças nos inputs normais
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setDados((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Função específica para o componente Input com máscara (Telefone)
+  // O erro "c is not a function" geralmente vem da falta dessa prop tratada
+  const handleTelChange = (value) => {
+    setDados((prev) => ({ ...prev, tel: value }));
+  };
 
   const handleManutencaoToggle = async () => {
     const novoStatus = !emManutencao;
@@ -59,8 +65,7 @@ function Perfil() {
         }),
       });
     } catch (err) {
-      // CORREÇÃO: Usando a variável de erro e revertendo o estado
-      console.error("Falha ao atualizar modo manutenção:", err);
+      console.error("Erro toggle:", err);
       setEmManutencao(!novoStatus);
     }
   };
@@ -76,8 +81,7 @@ function Perfil() {
               Configurações de <span className="text-yellow-500">Perfil</span>
             </h1>
             <p className="text-blue-200 font-medium">
-              Mantenha seus dados atualizados para garantir seus Botcoins e
-              acessos.
+              Mantenha seus dados atualizados.
             </p>
 
             {isAdmin && (
@@ -128,8 +132,9 @@ function Perfil() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
                 <Input
                   {...FORM_FIELDS.nome}
+                  name="nome"
                   value={dados.nome}
-                  onChange={(e) => setDados({ ...dados, nome: e.target.value })}
+                  onChange={handleChange}
                 />
                 <div className="opacity-50">
                   <Input
@@ -150,13 +155,19 @@ function Perfil() {
                     disabled
                   />
                 </div>
+                {/* AQUI ESTAVA O ERRO: 
+                   Se o seu componente Input usa máscara, ele espera que o onChange 
+                   ou onAccept seja passado corretamente de acordo com a biblioteca de máscara.
+                */}
                 <Input
                   {...FORM_FIELDS.telefone}
+                  name="tel"
                   value={dados.tel}
-                  onChange={(e) => setDados({ ...dados, tel: e.target.value })}
+                  onChange={handleTelChange} // Ajustado para passar o valor direto se necessário
                 />
               </div>
 
+              {/* Seção de Áreas */}
               <div className="flex flex-col gap-3">
                 <h3 className="text-gray-400 font-bold uppercase text-[10px] tracking-widest">
                   Suas Áreas

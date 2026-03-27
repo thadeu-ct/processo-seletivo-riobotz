@@ -77,7 +77,10 @@ def cadastro():
         db.close()
         banco.close()
     except Exception as e:
-        return handle_error(e)
+        print(e)
+        return jsonify({
+            "erro": str(e)
+        }), 500
 
     return {
         "erro": 0
@@ -163,7 +166,10 @@ def escolha():
 
         return jsonify({"erro": 0})
     except Exception as e:
-        return handle_error(e)
+        print(e)
+        return jsonify({
+            "erro": str(e)
+        }), 500
 
 
 @app.route("/api/areas", methods=["POST"])
@@ -193,7 +199,10 @@ def areas():
             "areas": areas
         }
     except Exception as e:
-        return handle_error(e)
+        print(e)
+        return jsonify({
+            "erro": str(e)
+        }), 500
 
 
 '''
@@ -216,7 +225,10 @@ def candidatos():
 
         return rows
     except Exception as e:
-        return handle_error(e)
+        print(e)
+        return jsonify({
+            "erro": str(e)
+        }), 500
 
 
 @app.route("/api/registrar", methods=["POST"])
@@ -249,7 +261,10 @@ def registrar():
         db.close()
         banco.close()
     except Exception as e:
-        return handle_error(e)
+        print(e)
+        return jsonify({
+            "erro": str(e)
+        }), 500
     
     return {
         "erro": 0
@@ -303,7 +318,10 @@ def geraCodigo():
         db.close()
         banco.close()
     except Exception as e:
-        return handle_error(e)
+        print(e)
+        return jsonify({
+            "erro": str(e)
+        }), 500
 
     return {
         "erro": 0
@@ -346,7 +364,10 @@ def alteracaoBotcoin():
         db.close()
         banco.close()
     except Exception as e:
-        return handle_error(e)
+        print(e)
+        return jsonify({
+            "erro": str(e)
+        }), 500
 
     user = get_user(mat)
     if ("erro" in user.keys()):
@@ -399,7 +420,10 @@ def getworkshops():
 
         return jsonify(rows)
     except Exception as e:
-        return handle_error(e)
+        print(e)
+        return jsonify({
+            "erro": str(e)
+        }), 500
     
 
 @app.route("/api/workshops/inscrever")
@@ -430,7 +454,10 @@ def inscrever_workshops():
             "erro": 0
         }
     except Exception as e:
-        return handle_error(e)
+        print(e)
+        return jsonify({
+            "erro": str(e)
+        }), 500
 
 
 '''
@@ -463,7 +490,10 @@ def addPergunta():
         db.close()
         banco.close()
     except Exception as e:
-        return handle_error(e)
+        print(e)
+        return jsonify({
+            "erro": str(e)
+        }), 500
 
 
 @app.route("/api/perguntas/get", methods=["POST"])
@@ -483,7 +513,10 @@ def getPerguntas():
 
         return jsonify(rows)
     except Exception as e:
-        return handle_error(e)
+        print(e)
+        return jsonify({
+            "erro": str(e)
+        }), 500
     
 
 @app.route("/api/opcoes/add", methdos=["POST"])
@@ -505,7 +538,10 @@ def addOpcao():
         db.close()
         banco.close()
     except Exception as e:
-        return handle_error(e)
+        print(e)
+        return jsonify({
+            "erro": str(e)
+        }), 500
 
 
 @app.errorhandler(Exception)

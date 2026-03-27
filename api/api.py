@@ -87,10 +87,10 @@ def cadastro():
 @app.route("/api/login", methods=["POST"])
 def login():
     matricula = request.form.get("matricula")
-    if not matricula.isnumeric():
+    if not matricula or not matricula.isnumeric():
         return {
             "erro": ERRO_MATRICULA
-        }
+        }, 400
     
     user = get_user(matricula)
     
@@ -104,7 +104,7 @@ def login():
         verifica_texto(senha) or len(senha) < 6
         or not compare_hash(senha, hash_senha)
     ):
-        return {"erro": ERRO_SENHA}
+        return {"erro": ERRO_SENHA}, 400
     
     return {
         "nome": user["nome"],

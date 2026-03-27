@@ -62,7 +62,7 @@ def handle_error(e: Exception):
     print(e)
     return {
         "erro": str(e)
-    }
+    }, 500
 
 
 def get_user(mat: str) -> dict:

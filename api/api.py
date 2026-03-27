@@ -555,7 +555,58 @@ def addOpcao():
         #     "erro": str(e)
         # }), 500
 
+'''
+------------------ Funções de Status do Sistema ------------------
+'''
 
+@app.route("/api/status-sistema", methods=["GET"])
+def getStatus():
+    try:
+        banco = get_db_connection()
+        db = banco.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+        # Busca o valor da coluna 'manutencao' na tabela de configs
+        db.execute("SELECT manutencao FROM configuracoes LIMIT 1")
+        row = db.fetchone()
+
+        db.close()
+        banco.close()
+
+        # Se a tabela estiver vazia, assume que não está em manutenção
+        status = row["manutencao"] if row else False
+        
+        return jsonify({"manutencao": status})
+    except Exception as e:
+        return handle_error(e), 500
+
+
+@app.route("/api/set-manutencao", methods=["POST"])
+def setManutencao():
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"erro": "JSON inválido"}), 400
+
+    novo_status = data.get("status")
+    admin_mat = data.get("admin_mat")
+
+    # Verifica se quem está tentando mudar é realmente um admin (segurança extra no back)
+    # Aqui o Telhado pode validar contra a lista de admins dele
+    
+    try:
+        banco = get_db_connection()
+        db = banco.cursor()
+
+        # Atualiza o status global do sistema
+        db.execute("UPDATE configuracoes SET manutencao = %s", (novo_status,))
+        
+        banco.commit()
+        db.close()
+        banco.close()
+
+        return jsonify({"erro": 0})
+    except Exception as e:
+        return handle_error(e), 500
+    
 @app.errorhandler(Exception)
 def errorPage(e):
     print(e)

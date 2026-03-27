@@ -79,9 +79,9 @@ def get_user(mat: str) -> dict:
         banco.close()
     except Exception as e:
         print(e)
-        return jsonify({
+        return {
             "erro": str(e)
-        })
+        }
     
     return resultados[0]
 

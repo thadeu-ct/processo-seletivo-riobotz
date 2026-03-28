@@ -25,7 +25,7 @@ function Perfil() {
     nome: "",
     matricula: localStorage.getItem("matriculaUsuario") || "",
     email: "",
-    telefone: "", // Usaremos 'tel' internamente no estado
+    telefone: "",
     areas: [],
   });
 
@@ -54,7 +54,7 @@ function Perfil() {
             nome: data.nome,
             matricula: data.matricula,
             email: data.email,
-            telefone: data.telefone || "", // MAPEADO: Back traz 'telefone', jogamos no 'tel' do front
+            telefone: data.telefone || "",
             areas: data.areas || [],
           });
           localStorage.setItem("nomeUsuario", data.nome);
@@ -218,7 +218,7 @@ function Perfil() {
                   </div>
                   <Input
                     {...FORM_FIELDS.telefone}
-                    name="tel"
+                    name="telefone"
                     value={dados.telefone}
                     onChange={handleTelChange}
                   />

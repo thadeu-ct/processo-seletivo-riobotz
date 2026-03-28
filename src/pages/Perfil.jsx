@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
-import UserDropdown from "../components/UserDropdown";
 import Input from "../components/Input";
 import { FORM_FIELDS } from "../services/formFields";
 
@@ -17,7 +16,6 @@ const CORES_AREAS = {
 };
 
 function Perfil() {
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [emManutencao, setEmManutencao] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -170,21 +168,13 @@ function Perfil() {
                   Dados Pessoais
                 </h2>
                 <div className="relative">
-                  <button
-                    onClick={() => setIsProfileOpen(!isProfileOpen)}
-                    className="w-10 h-10 rounded-full bg-[#0a1945] flex items-center justify-center text-white border-2 border-transparent hover:border-yellow-500 transition-all"
+                  <svg
+                    className="w-6 h-6"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
                   >
-                    <svg
-                      className="w-6 h-6"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                    </svg>
-                  </button>
-                  {isProfileOpen && (
-                    <UserDropdown onClose={() => setIsProfileOpen(false)} />
-                  )}
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                  </svg>
                 </div>
               </div>
 

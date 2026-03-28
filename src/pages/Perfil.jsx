@@ -29,7 +29,6 @@ function Perfil() {
     areas: [],
   });
 
-  // OBJETO DE SENHAS para a troca
   const [senhas, setSenhas] = useState({
     atual: "",
     nova: "",
@@ -38,6 +37,9 @@ function Perfil() {
 
   const envAdmins = import.meta.env.VITE_ADMIN_MATRICULAS || "2610000";
   const isAdmin = envAdmins.split(",").includes(dados.matricula);
+
+  // Função vazia padrão para evitar o erro "c is not a function" nos componentes com máscara
+  const noop = () => {};
 
   useEffect(() => {
     const carregarPerfil = async () => {
@@ -88,17 +90,16 @@ function Perfil() {
     setDados((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handler para o objeto de senhas
   const handleSenhaChange = (e) => {
     const { name, value } = e.target;
     setSenhas((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleTelChange = (value) => {
+    // Se o componente de máscara falhar e enviar algo nulo, mantemos o estado anterior
+    if (value === undefined || value === null) return;
     setDados((prev) => ({ ...prev, telefone: String(value) }));
   };
-
-  const noop = () => {};
 
   const handleManutencaoToggle = async () => {
     const novoStatus = !emManutencao;
@@ -163,7 +164,6 @@ function Perfil() {
           </aside>
 
           <div className="lg:w-2/3 flex flex-col gap-8">
-            {/* SEÇÃO 1: DADOS PESSOAIS */}
             <div className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden p-8 md:p-10 text-[#0a1945]">
               <div className="flex justify-between items-start mb-8">
                 <h2 className="font-black uppercase text-2xl">
@@ -196,18 +196,20 @@ function Perfil() {
                     value={dados.nome}
                     onChange={handleChange}
                   />
+                  {/* BLINDAGEM TOTAL: Div bloqueia cliques e seleção, onChange é nulo */}
                   <div className="opacity-50 pointer-events-none select-none">
                     <Input
                       {...FORM_FIELDS.matricula}
                       value={dados.matricula}
                       readOnly
                       disabled
+                      onChange={noop}
                       tabIndex="-1"
                     />
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
-                  <div className="opacity-50">
+                  <div className="opacity-50 pointer-events-none select-none">
                     <Input
                       {...FORM_FIELDS.email}
                       value={dados.email}
@@ -220,7 +222,7 @@ function Perfil() {
                     {...FORM_FIELDS.telefone}
                     name="telefone"
                     value={dados.telefone}
-                    onChange={handleTelChange}
+                    onChange={handleTelChange || noop}
                   />
                 </div>
 
@@ -233,7 +235,7 @@ function Perfil() {
                       dados.areas.map((area) => (
                         <span
                           key={area}
-                          className={`${CORES_AREAS[area.toLowerCase()] || "bg-gray-500"} text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase flex items-center gap-2`}
+                          className={`${CORES_AREAS[area.toLowerCase()] || "bg-gray-500"} text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase`}
                         >
                           {area}
                         </span>
@@ -262,7 +264,6 @@ function Perfil() {
               </form>
             </div>
 
-            {/* SEÇÃO 2: SEGURANÇA (SENHA) */}
             <div className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden p-8 md:p-10 text-[#0a1945]">
               <h2 className="font-black uppercase text-2xl mb-8 border-b border-gray-100 pb-4">
                 Segurança

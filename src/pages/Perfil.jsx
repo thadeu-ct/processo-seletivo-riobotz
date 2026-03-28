@@ -25,7 +25,7 @@ function Perfil() {
     nome: "",
     matricula: localStorage.getItem("matriculaUsuario") || "",
     email: "",
-    tel: "", // Usaremos 'tel' internamente no estado
+    telefone: "", // Usaremos 'tel' internamente no estado
     areas: [],
   });
 
@@ -54,7 +54,7 @@ function Perfil() {
             nome: data.nome,
             matricula: data.matricula,
             email: data.email,
-            tel: data.telefone || "", // MAPEADO: Back traz 'telefone', jogamos no 'tel' do front
+            telefone: data.telefone || "", // MAPEADO: Back traz 'telefone', jogamos no 'tel' do front
             areas: data.areas || [],
           });
           localStorage.setItem("nomeUsuario", data.nome);
@@ -95,7 +95,7 @@ function Perfil() {
   };
 
   const handleTelChange = (value) => {
-    setDados((prev) => ({ ...prev, tel: String(value) }));
+    setDados((prev) => ({ ...prev, telefone: String(value) }));
   };
 
   const noop = () => {};
@@ -196,13 +196,13 @@ function Perfil() {
                     value={dados.nome}
                     onChange={handleChange}
                   />
-                  <div className="opacity-50">
+                  <div className="opacity-50 pointer-events-none select-none">
                     <Input
                       {...FORM_FIELDS.matricula}
                       value={dados.matricula}
                       readOnly
                       disabled
-                      onChange={noop}
+                      tabIndex="-1"
                     />
                   </div>
                 </div>
@@ -219,7 +219,7 @@ function Perfil() {
                   <Input
                     {...FORM_FIELDS.telefone}
                     name="tel"
-                    value={dados.tel}
+                    value={dados.telefone}
                     onChange={handleTelChange}
                   />
                 </div>
@@ -235,7 +235,7 @@ function Perfil() {
                           key={area}
                           className={`${CORES_AREAS[area.toLowerCase()] || "bg-gray-500"} text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase flex items-center gap-2`}
                         >
-                          {area} <span className="cursor-pointer">×</span>
+                          {area}
                         </span>
                       ))
                     ) : (

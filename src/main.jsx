@@ -25,6 +25,7 @@ import Calendario from "./pages/Calendario";
 import Botcoins from "./features/Botcoins";
 import MateriaisExtras from "./pages/MateriaisExtras";
 import EmConstrucao from "./components/UnderConstruction";
+import AdminQuiz from "./pages/AdminQuiz";
 
 const router = createBrowserRouter([
   {
@@ -82,6 +83,10 @@ const router = createBrowserRouter([
   {
     path: "/admin/workshop/:id",
     element: <AdminWorkshop />,
+  },
+  {
+    path: "/admin/quiz/:id",
+    element: <AdminQuiz />,
   },
   {
     path: "/registro-admin",

@@ -1,10 +1,9 @@
+import { useState } from "react";
 import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
 import AreaCard from "../components/AreaCard";
 
 const paineis = [
-  // ... seus paineis (mecanica, autonomos, eletronica, gestao, comunicacao, materiais-extras)
-  // Mantive o array exatamente como você enviou
   {
     id: "mecanica",
     titulo: "Mecânica",
@@ -110,35 +109,65 @@ const paineis = [
 ];
 
 function Home() {
-  // 1. Identificar se é Admin (Lógica centralizada no .env ou fallback)
-  const matriculaUsuario = localStorage.getItem("matriculaUsuario") || "";
-  const envAdmins = import.meta.env.VITE_ADMIN_MATRICULAS || "2610000";
+  const matriculaUsuario = sessionStorage.getItem("matriculaUsuario") || "";
+  const envAdmins = import.meta.env.VITE_ADMIN_MATRICULAS;
   const isAdmin = envAdmins.split(",").includes(matriculaUsuario);
+
+  const [modoAdminAtivo, setModoAdminAtivo] = useState(
+    sessionStorage.getItem("viewAsAdmin") === "true",
+  );
+
+  const toggleModoAdmin = () => {
+    const novoEstado = !modoAdminAtivo;
+    setModoAdminAtivo(novoEstado);
+    sessionStorage.setItem("viewAsAdmin", novoEstado);
+  };
 
   return (
     <div className="min-h-screen bg-[#0a1945] flex flex-col font-sans">
       <PrivateHeader />
 
       <main className="flex-grow flex flex-col items-center py-12 px-6">
-        <div className="text-center mb-16 animate-fade-in">
-          <h1 className="text-white font-black text-3xl md:text-5xl mb-4 tracking-tight uppercase">
-            Sua Jornada
-          </h1>
-          <p className="text-gray-300 font-medium text-lg max-w-2xl mx-auto">
-            Selecione uma área abaixo para acessar os materiais, trilhas de
-            workshops e desafios práticos.
-          </p>
-        </div>
+        {isAdmin && (
+          <div className="w-full max-w-6xl flex justify-start mb-8">
+            <button
+              onClick={toggleModoAdmin}
+              className={`group flex items-center gap-4 px-6 py-3 rounded-2xl border-2 transition-all duration-300 ${
+                modoAdminAtivo
+                  ? "border-yellow-500 bg-yellow-500/10 text-yellow-500 shadow-[0_0_20px_rgba(234,179,8,0.2)]"
+                  : "border-white/10 bg-white/5 text-gray-500 hover:border-white/30"
+              }`}
+            >
+              <div className="flex flex-col items-start">
+                <span className="font-black uppercase text-[10px] tracking-[0.2em]">
+                  Configuração de Visão
+                </span>
+                <span className="text-sm font-bold">
+                  {modoAdminAtivo
+                    ? "MODO ADMIN ATIVO"
+                    : "VISÃO DO PARTICIPANTE"}
+                </span>
+              </div>
+
+              <div
+                className={`w-12 h-6 rounded-full relative transition-colors duration-300 ${modoAdminAtivo ? "bg-yellow-500" : "bg-gray-700"}`}
+              >
+                <div
+                  className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 shadow-sm ${modoAdminAtivo ? "left-7" : "left-1"}`}
+                />
+              </div>
+            </button>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-6xl relative z-10">
           {paineis.map((painel) => {
             const isLockedDate = new Date() < new Date("2026-04-01T00:00:00");
 
-            // 2. NOVA LÓGICA: Se for admin, shouldBeLocked é SEMPRE falso.
-            // Se não for admin, segue a regra da data e do ID.
-            const shouldBeLocked = isAdmin
-              ? false
-              : painel.id !== "materiais-extras" && isLockedDate;
+            const shouldBeLocked =
+              isAdmin && modoAdminAtivo
+                ? false
+                : painel.id !== "materiais-extras" && isLockedDate;
 
             return (
               <AreaCard key={painel.id} {...painel} isLocked={shouldBeLocked} />
@@ -146,7 +175,6 @@ function Home() {
           })}
         </div>
       </main>
-
       <Footer />
     </div>
   );

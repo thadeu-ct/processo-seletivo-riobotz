@@ -7,13 +7,11 @@ import { Link } from "react-router-dom";
 
 const extrairValorTempo = (dataHoraStr) => {
   if (!dataHoraStr) return 0;
-
   try {
     const partes = dataHoraStr.split(",");
     const [dia, mes] = partes[0].trim().split("/");
     const horaInicial = partes[2].split("-")[0].trim();
     const [hora, minuto] = horaInicial.split(":");
-
     return new Date(
       2026,
       parseInt(mes) - 1,
@@ -31,6 +29,13 @@ const extrairValorTempo = (dataHoraStr) => {
 };
 
 function Mecanica() {
+  const matriculaUsuario = sessionStorage.getItem("matriculaUsuario") || "";
+  const envAdmins = import.meta.env.VITE_ADMIN_MATRICULASs;
+
+  const isAdminReal = envAdmins.split(",").includes(matriculaUsuario);
+  const viewAsAdmin = sessionStorage.getItem("viewAsAdmin") === "true";
+  const finalAdminView = isAdminReal && viewAsAdmin;
+
   const trilhaMecanica = useMemo(() => {
     return workshopsDB
       .filter((workshop) => workshop.areas.includes("mecanica"))
@@ -82,9 +87,16 @@ function Mecanica() {
               />
             </svg>
           </div>
-          <h1 className="text-orange-400 font-black text-4xl md:text-5xl lg:text-6xl tracking-tight uppercase font-mono m-0">
-            Mecânica
-          </h1>
+          <div className="flex flex-col">
+            <h1 className="text-orange-400 font-black text-4xl md:text-5xl lg:text-6xl tracking-tight uppercase font-mono m-0">
+              Mecânica
+            </h1>
+            {finalAdminView && (
+              <span className="text-cyan-400 font-bold text-xs uppercase tracking-widest mt-1">
+                Visualização: Administrador
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="w-full max-w-4xl relative">
@@ -103,7 +115,7 @@ function Mecanica() {
                   </div>
 
                   <div className="ml-14 md:ml-24 w-full">
-                    <Workshop {...item} />
+                    <Workshop {...item} isAdminView={finalAdminView} />
                   </div>
                 </div>
               );

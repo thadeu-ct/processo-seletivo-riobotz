@@ -7,13 +7,11 @@ import { Link } from "react-router-dom";
 
 const extrairValorTempo = (dataHoraStr) => {
   if (!dataHoraStr) return 0;
-
   try {
     const partes = dataHoraStr.split(",");
     const [dia, mes] = partes[0].trim().split("/");
     const horaInicial = partes[2].split("-")[0].trim();
     const [hora, minuto] = horaInicial.split(":");
-
     return new Date(
       2026,
       parseInt(mes) - 1,
@@ -31,6 +29,13 @@ const extrairValorTempo = (dataHoraStr) => {
 };
 
 function Comunicacao() {
+  // Lógica de Identificação de Visão
+  const matriculaUsuario = sessionStorage.getItem("matriculaUsuario") || "";
+  const envAdmins = import.meta.env.VITE_ADMIN_MATRICULAS || "2610000";
+  const isAdminReal = envAdmins.split(",").includes(matriculaUsuario);
+  const viewAsAdmin = sessionStorage.getItem("viewAsAdmin") === "true";
+  const finalAdminView = isAdminReal && viewAsAdmin;
+
   const trilhaComunicacao = useMemo(() => {
     return workshopsDB
       .filter((workshop) => workshop.areas.includes("comunicacao"))
@@ -82,36 +87,36 @@ function Comunicacao() {
               />
             </svg>
           </div>
-          <h1 className="text-fuchsia-400 font-black text-4xl md:text-5xl lg:text-6xl tracking-tight uppercase font-mono m-0">
-            Comunicação
-          </h1>
+          <div className="flex flex-col">
+            <h1 className="text-fuchsia-400 font-black text-4xl md:text-5xl lg:text-6xl tracking-tight uppercase font-mono m-0">
+              Comunicação
+            </h1>
+            {finalAdminView && (
+              <span className="text-cyan-400 font-bold text-xs uppercase tracking-widest mt-1">
+                Visualização: Administrador
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="w-full max-w-4xl relative">
           <div className="absolute left-[19px] md:left-[39px] top-4 bottom-0 w-1 bg-fuchsia-400/20 rounded-full"></div>
-
           <div className="flex flex-col gap-12">
-            {trilhaComunicacao.map((item, index) => {
-              if (!item) return null;
-
-              return (
-                <div key={item.id} className="relative flex items-start group">
-                  <div className="absolute left-0 md:left-5 top-8 w-10 h-10 rounded-full bg-[#0a1945] border-4 border-fuchsia-400 z-10 flex items-center justify-center group-hover:scale-125 transition-transform shadow-[0_0_15px_rgba(232,121,249,0.5)]">
-                    <span className="text-fuchsia-400 font-black text-sm font-mono">
-                      {index + 1}
-                    </span>
-                  </div>
-
-                  <div className="ml-14 md:ml-24 w-full">
-                    <Workshop {...item} />
-                  </div>
+            {trilhaComunicacao.map((item, index) => (
+              <div key={item.id} className="relative flex items-start group">
+                <div className="absolute left-0 md:left-5 top-8 w-10 h-10 rounded-full bg-[#0a1945] border-4 border-fuchsia-400 z-10 flex items-center justify-center group-hover:scale-125 transition-transform shadow-[0_0_15px_rgba(232,121,249,0.5)]">
+                  <span className="text-fuchsia-400 font-black text-sm font-mono">
+                    {index + 1}
+                  </span>
                 </div>
-              );
-            })}
+                <div className="ml-14 md:ml-24 w-full">
+                  <Workshop {...item} isAdminView={finalAdminView} />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </main>
-
       <Footer />
     </div>
   );

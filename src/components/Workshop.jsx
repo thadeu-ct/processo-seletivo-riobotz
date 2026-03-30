@@ -9,12 +9,10 @@ function Workshop({
   tipo,
   dataHora,
   local,
-  // Esta prop agora deve representar a "Vontade do Admin" vinda do pai (Home/Area)
   isAdminView,
 }) {
   return (
     <div className="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8 flex flex-col gap-6 shadow-xl hover:border-yellow-400/30 transition-colors w-full relative overflow-hidden group">
-      {/* BADGES (Tipo e Data) - IGUAIS */}
       <div className="flex flex-wrap gap-3 mb-1">
         {tipo === "Presencial" ? (
           <span className="bg-orange-500/20 text-orange-400 border border-orange-500/50 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
@@ -52,7 +50,6 @@ function Workshop({
         )}
       </div>
 
-      {/* VÍDEO - IGUAL */}
       {videoId && (
         <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black/60 shadow-inner">
           <iframe
@@ -81,11 +78,9 @@ function Workshop({
           )}
         </div>
 
-        {/* LÓGICA DE BOTÕES ALTERNADA PELO MODO ADMIN */}
         <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto mt-2 lg:mt-0">
           {tipo === "Presencial" &&
             (isAdminView ? (
-              // SE O MODO ADMIN ESTIVER ATIVO NA ABA: Mostra Ver Inscritos
               <Link
                 to={`/admin/workshop/${id}`}
                 className="w-full sm:w-auto px-8 py-4 rounded-full bg-cyan-600/20 border-2 border-cyan-500 text-cyan-400 font-black text-lg hover:bg-cyan-500 hover:text-[#0a1945] hover:scale-105 transition-all text-center whitespace-nowrap shadow-[0_0_15px_rgba(6,182,212,0.3)]"
@@ -93,7 +88,6 @@ function Workshop({
                 Ver Inscritos
               </Link>
             ) : (
-              // SE NÃO: Comportamento de Participante
               <button
                 className="w-full sm:w-auto px-8 py-4 rounded-full bg-transparent border-2 border-orange-500 text-orange-400 font-black text-lg hover:bg-orange-500 hover:text-white hover:scale-105 transition-all text-center whitespace-nowrap"
                 onClick={() => alert("Simulando inscrição no DB...")}
@@ -102,15 +96,22 @@ function Workshop({
               </button>
             ))}
 
-          {/* O Quiz só aparece se não estivermos no modo admin (visão de participante) */}
-          {quizLink && !isAdminView && (
-            <Link
-              to={quizLink}
-              className="w-full sm:w-auto px-8 py-4 rounded-full bg-yellow-400 text-[#0a1945] font-black text-lg hover:bg-white hover:scale-105 transition-all shadow-lg shadow-yellow-400/20 text-center whitespace-nowrap"
-            >
-              Fazer Quiz
-            </Link>
-          )}
+          {quizLink &&
+            (isAdminView ? (
+              <Link
+                to={`/admin/quiz/${id}`}
+                className="w-full sm:w-auto px-8 py-4 rounded-full bg-yellow-500/10 border-2 border-yellow-500 text-yellow-500 font-black text-lg hover:bg-yellow-500 hover:text-[#0a1945] hover:scale-105 transition-all text-center whitespace-nowrap shadow-[0_0_15px_rgba(234,179,8,0.2)]"
+              >
+                Ver Resultados
+              </Link>
+            ) : (
+              <Link
+                to={quizLink}
+                className="w-full sm:w-auto px-8 py-4 rounded-full bg-yellow-400 text-[#0a1945] font-black text-lg hover:bg-white hover:scale-105 transition-all shadow-lg shadow-yellow-400/20 text-center whitespace-nowrap"
+              >
+                Fazer Quiz
+              </Link>
+            ))}
         </div>
       </div>
     </div>

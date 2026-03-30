@@ -3,6 +3,8 @@ import Footer from "../components/Footer";
 import AreaCard from "../components/AreaCard";
 
 const paineis = [
+  // ... seus paineis (mecanica, autonomos, eletronica, gestao, comunicacao, materiais-extras)
+  // Mantive o array exatamente como você enviou
   {
     id: "mecanica",
     titulo: "Mecânica",
@@ -108,6 +110,11 @@ const paineis = [
 ];
 
 function Home() {
+  // 1. Identificar se é Admin (Lógica centralizada no .env ou fallback)
+  const matriculaUsuario = localStorage.getItem("matriculaUsuario") || "";
+  const envAdmins = import.meta.env.VITE_ADMIN_MATRICULAS || "2610000";
+  const isAdmin = envAdmins.split(",").includes(matriculaUsuario);
+
   return (
     <div className="min-h-screen bg-[#0a1945] flex flex-col font-sans">
       <PrivateHeader />
@@ -125,16 +132,16 @@ function Home() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-6xl relative z-10">
           {paineis.map((painel) => {
-            // Definindo a lógica aqui dentro para não dar erro de "not defined"
             const isLockedDate = new Date() < new Date("2026-04-01T00:00:00");
-            const shouldBeLocked = painel.id !== "materiais-extras" && isLockedDate;
-            
+
+            // 2. NOVA LÓGICA: Se for admin, shouldBeLocked é SEMPRE falso.
+            // Se não for admin, segue a regra da data e do ID.
+            const shouldBeLocked = isAdmin
+              ? false
+              : painel.id !== "materiais-extras" && isLockedDate;
+
             return (
-              <AreaCard 
-                key={painel.id} 
-                {...painel} 
-                isLocked={shouldBeLocked} 
-              />
+              <AreaCard key={painel.id} {...painel} isLocked={shouldBeLocked} />
             );
           })}
         </div>

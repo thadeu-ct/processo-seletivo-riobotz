@@ -83,6 +83,12 @@ function AdminQuiz() {
             <span className="text-yellow-500 font-black tracking-[0.2em] uppercase text-xs mb-2 block">
               Resultados do Quiz
             </span>
+            <Link
+              to={`/admin/quiz/perguntas/${id}`}
+              className="text-cyan-400 font-black tracking-[0.2em] uppercase text-xs hover:underline"
+            >
+              [ Gerenciar Perguntas ]
+            </Link>
             <h1 className="text-white font-black text-3xl md:text-5xl tracking-tight leading-tight uppercase">
               {workshop.titulo}
             </h1>

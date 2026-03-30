@@ -26,6 +26,7 @@ import Botcoins from "./features/Botcoins";
 import MateriaisExtras from "./pages/MateriaisExtras";
 import EmConstrucao from "./components/UnderConstruction";
 import AdminQuiz from "./pages/AdminQuiz";
+import AdminPerguntas from "./pages/AdminPerguntas";
 
 const router = createBrowserRouter([
   {
@@ -87,6 +88,14 @@ const router = createBrowserRouter([
   {
     path: "/admin/quiz/:id",
     element: <AdminQuiz />,
+  },
+  {
+    path: "/admin/quiz/perguntas/:id",
+    element: (
+      <AdminRoute>
+        <AdminPerguntas />
+      </AdminRoute>
+    ),
   },
   {
     path: "/registro-admin",

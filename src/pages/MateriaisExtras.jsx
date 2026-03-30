@@ -1,21 +1,30 @@
 import { useState } from "react";
+import { Link } from "react-router-dom"; // Importar Link para a rota de admin
 import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
 
 function MateriaisExtras() {
   const [isPdfOpen, setIsPdfOpen] = useState(false);
 
+  // Lógica de Admin (SessionStorage para isolamento de aba)
+  const matriculaUsuario = sessionStorage.getItem("matriculaUsuario") || "";
+  const envAdmins = import.meta.env.VITE_ADMIN_MATRICULAS || "";
+  const isAdminReal =
+    matriculaUsuario !== "" && envAdmins.split(",").includes(matriculaUsuario);
+  const viewAsAdmin = sessionStorage.getItem("viewAsAdmin") === "true";
+  const finalAdminView = isAdminReal && viewAsAdmin;
+
   const pdfUrl = "/riobotz_combot_tutorial.pdf";
 
   const sections = [
     {
-      id: "quiz",
+      id: "tutorial_quiz", // ID que deve bater com o que o Telhado criou no Banco
       title: "Quiz Tutorial",
       description: "Teste seus conhecimentos sobre o manual da equipe.",
       icon: "📝",
       color: "from-blue-600 to-blue-800",
       bonus: "200 Botcoins",
-      locked: true, // Controle de trava
+      locked: !finalAdminView, // Destrava se for admin
     },
     {
       id: "desafios",
@@ -23,7 +32,7 @@ function MateriaisExtras() {
       description: "Missões técnicas práticas baseadas no tutorial.",
       icon: "⚙️",
       color: "from-yellow-500 to-orange-600",
-      locked: true,
+      locked: !finalAdminView,
     },
     {
       id: "videos",
@@ -31,7 +40,7 @@ function MateriaisExtras() {
       description: "Conteúdo visual complementar para aprofundamento.",
       icon: "🎬",
       color: "from-purple-600 to-indigo-700",
-      locked: true,
+      locked: !finalAdminView,
     },
   ];
 
@@ -110,7 +119,7 @@ function MateriaisExtras() {
                     </div>
                   )}
 
-                  {/* Overlay de "Em breve" */}
+                  {/* Overlay de "Em breve" - Só aparece se não for admin em modo admin */}
                   {section.locked && (
                     <div className="absolute inset-0 bg-[#0a1945]/40 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center">
                       <div className="bg-yellow-500 text-[#0a1945] font-black text-[10px] px-3 py-1 rounded-full uppercase mb-2">
@@ -139,9 +148,22 @@ function MateriaisExtras() {
                     {section.description}
                   </p>
 
-                  <div className="flex items-center gap-2 text-yellow-500 font-bold text-xs uppercase tracking-widest transition-all">
-                    {section.locked ? "Bloqueado" : "Acessar Missão"}{" "}
-                    <span>→</span>
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center gap-2 text-yellow-500 font-bold text-xs uppercase tracking-widest transition-all">
+                      {section.locked ? "Bloqueado" : "Acessar Missão"}{" "}
+                      <span>→</span>
+                    </div>
+
+                    {/* BOTÃO DE GESTÃO - Só aparece no Quiz se for Admin */}
+                    {finalAdminView && section.id === "tutorial_quiz" && (
+                      <Link
+                        to={`/admin/quiz/perguntas/${section.id}`}
+                        onClick={(e) => e.stopPropagation()} // Impede o clique no card de disparar
+                        className="mt-2 text-cyan-400 font-black text-[10px] uppercase tracking-widest hover:text-white transition-colors border-t border-white/10 pt-4"
+                      >
+                        [ Gerenciar Perguntas ]
+                      </Link>
+                    )}
                   </div>
                 </div>
               ))}

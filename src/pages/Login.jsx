@@ -27,7 +27,7 @@ function Login() {
   };
 
   const verificarDestino = async (matriculaUsuario) => {
-    const envAdmins = import.meta.env.VITE_ADMIN_MATRICULAS || "2610000";
+    const envAdmins = import.meta.env.VITE_ADMIN_MATRICULAS;
     const ADMIN_MATRICULAS = envAdmins.split(",");
 
     const ehAdmin = ADMIN_MATRICULAS.includes(matriculaUsuario);
@@ -87,11 +87,11 @@ function Login() {
       } else {
         // 5. PERSISTÊNCIA DE DADOS: Mantive seus dados e adicionei tel/email caso o Telhado mande na resposta
         // Isso ajuda a preencher o Perfil.jsx automaticamente
-        localStorage.setItem("nomeUsuario", result.nome);
-        localStorage.setItem("matriculaUsuario", result.matricula);
-        localStorage.setItem("botcoinUsuario", result.botcoin);
-        if (result.tel) localStorage.setItem("telUsuario", result.tel);
-        if (result.email) localStorage.setItem("emailUsuario", result.email);
+        sessionStorage.setItem("nomeUsuario", result.nome);
+        sessionStorage.setItem("matriculaUsuario", result.matricula);
+        sessionStorage.setItem("botcoinUsuario", result.botcoin);
+        if (result.tel) sessionStorage.setItem("telUsuario", result.tel);
+        if (result.email) sessionStorage.setItem("emailUsuario", result.email);
 
         await verificarDestino(result.matricula);
       }

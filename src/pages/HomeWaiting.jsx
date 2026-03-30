@@ -2,7 +2,7 @@ import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
 
 function HomeWaiting() {
-  const nomeSalvo = localStorage.getItem("nomeUsuario");
+  const nomeSalvo = sessionStorage.getItem("nomeUsuario");
   const nomeUsuario = nomeSalvo ? nomeSalvo.split(" ")[0] : "Candidato(a)";
 
   return (

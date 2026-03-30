@@ -11,7 +11,7 @@ function PrivateNavBar() {
 
   useEffect(() => {
     const updateBotcoins = () => {
-      const storedBotcoins = localStorage.getItem("botcoinUsuario");
+      const storedBotcoins = sessionStorage.getItem("botcoinUsuario");
       if (storedBotcoins) {
         setBotcoins(parseInt(storedBotcoins, 10));
       }
@@ -22,7 +22,7 @@ function PrivateNavBar() {
 
     // Listener para atualizar caso mude em outra aba ou parte do app
     window.addEventListener("storage", updateBotcoins);
-    
+
     // Evento customizado caso você atualize o storage manualmente no mesmo documento
     window.addEventListener("botcoinsUpdated", updateBotcoins);
 

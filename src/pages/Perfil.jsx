@@ -21,7 +21,7 @@ function Perfil() {
 
   const [dados, setDados] = useState({
     nome: "",
-    matricula: localStorage.getItem("matriculaUsuario") || "",
+    matricula: sessionStorage.getItem("matriculaUsuario") || "",
     email: "",
     telefone: "",
     areas: [],
@@ -57,7 +57,7 @@ function Perfil() {
             telefone: data.telefone || "",
             areas: data.areas || [],
           });
-          localStorage.setItem("nomeUsuario", data.nome);
+          sessionStorage.setItem("nomeUsuario", data.nome);
         }
       } catch (err) {
         console.error("Erro ao carregar dados do banco:", err);

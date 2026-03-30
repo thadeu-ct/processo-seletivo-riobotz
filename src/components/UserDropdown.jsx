@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
 
 function UserDropdown({ onClose }) {
-  const nomeSalvo = localStorage.getItem("nomeUsuario");
+  const nomeSalvo = sessionStorage.getItem("nomeUsuario");
   const nomeUsuario = nomeSalvo ? nomeSalvo.split(" ")[0] : "Candidato(a)";
-  
-  const userMatricula = localStorage.getItem("matriculaUsuario") || "";
 
-  const envAdmins = import.meta.env.VITE_ADMIN_MATRICULAS || "2610000"; 
+  const userMatricula = sessionStorage.getItem("matriculaUsuario") || "";
+
+  const envAdmins = import.meta.env.VITE_ADMIN_MATRICULAS || "2610000";
   const ADMIN_MATRICULAS = envAdmins.split(",");
   const isAdmin = ADMIN_MATRICULAS.includes(userMatricula);
 
@@ -39,7 +39,7 @@ function UserDropdown({ onClose }) {
         to="/"
         onClick={() => {
           onClose();
-          localStorage.clear();
+          sessionStorage.clear();
         }}
         className="block px-4 py-2 text-red-500 font-bold hover:bg-red-50 transition-colors"
       >

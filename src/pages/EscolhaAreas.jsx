@@ -1,4 +1,4 @@
-import { useState, useEffect  } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import PrivateHeader from "../components/PrivateHeader";
 
@@ -143,7 +143,10 @@ function EscolhaAreas() {
     const fetchAreas = async () => {
       try {
         const dataToSend = new FormData();
-        dataToSend.append("matricula", localStorage.getItem("matriculaUsuario"));
+        dataToSend.append(
+          "matricula",
+          sessionStorage.getItem("matriculaUsuario"),
+        );
 
         const response = await fetch(`${apiUrl}/areas`, {
           method: "POST",
@@ -182,17 +185,17 @@ function EscolhaAreas() {
           (a) => a.id === selecionadas[selecionadas.length - 1],
         )
       : null);
-  
+
   const isCentralSelecionada =
     areaCentral && selecionadas.includes(areaCentral.id);
-  
+
   const handleContinuar = async () => {
     if (selecionadas.length === 0) return;
 
     setIsLoading(true);
 
     try {
-      const matricula = localStorage.getItem("matriculaUsuario");
+      const matricula = sessionStorage.getItem("matriculaUsuario");
 
       const response = await fetch(`${apiUrl}/escolha`, {
         method: "POST",
@@ -201,7 +204,7 @@ function EscolhaAreas() {
         },
         body: JSON.stringify({
           areas: selecionadas,
-          matricula: matricula
+          matricula: matricula,
         }),
       });
 
@@ -219,7 +222,7 @@ function EscolhaAreas() {
       setIsLoading(false);
     }
   };
-  
+
   return (
     <div className="min-h-screen bg-[#0a1945] flex flex-col font-sans">
       <style>{`

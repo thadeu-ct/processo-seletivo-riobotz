@@ -32,7 +32,7 @@ const extrairValorTempo = (dataHoraStr) => {
 function Autonomos() {
   // Lógica de Identificação de Visão (Isolada por Aba via sessionStorage)
   const matriculaUsuario = sessionStorage.getItem("matriculaUsuario") || "";
-  const envAdmins = import.meta.env.VITE_ADMIN_MATRICULAS;
+  const envAdmins = import.meta.env.VITE_ADMIN_MATRICULAS || "";
   const isAdminReal = envAdmins.split(",").includes(matriculaUsuario);
   const viewAsAdmin = sessionStorage.getItem("viewAsAdmin") === "true";
   const finalAdminView = isAdminReal && viewAsAdmin;

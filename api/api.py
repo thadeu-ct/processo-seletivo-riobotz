@@ -432,11 +432,6 @@ def getworkshops():
     try:
         banco = get_db_connection()
         db = banco.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-
-        #  SELECT w.id, w.nome, w.descricao AS desc, w.link, w.data, w.data_fim, w.is_online AS online, JSON_AGG(wa.area_nome) AS areas
-        # FROM workshops w JOIN workshops_areas wa ON w.id = wa.workshop_id
-        # GROUP BY w.id;
-
         db.execute(
             """
             SELECT 
@@ -467,10 +462,7 @@ def getworkshops():
         return jsonify(rows)
     except Exception as e:
         return handle_error(e), 500
-        # print(e)
-        # return jsonify({
-        #     "erro": str(e)
-        # }), 500
+
     
 
 @app.route("/api/workshops/area", methods=["POST"])
@@ -503,7 +495,7 @@ def areaWorkshops():
             WHERE wa.area_nome = %s
             GROUP BY w.id;
             """,
-            (area)
+            (area,)
         )
 
         rows = db.fetchall()

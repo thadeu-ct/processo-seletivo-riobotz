@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import PrivateHeader from "../components/PrivateHeader";
 
 const areasDaEquipe = [
@@ -160,7 +160,6 @@ function EscolhaAreas() {
           return;
         }
 
-        // Adjust depending on your API format
         setSelecionadas(data.areas || []);
       } catch (error) {
         console.error("Erro ao buscar áreas:", error);
@@ -265,9 +264,10 @@ function EscolhaAreas() {
             ESCOLHA SUAS ÁREAS DE INTERESSE
           </h1>
           <p className="text-gray-300 font-medium text-lg max-w-2xl mx-auto">
-            A RioBotz funciona com áreas integradas. Você pode focar em uma
-            especialidade ou atuar em múltiplas frentes. Selecione as áreas que
-            você quer fazer parte!
+            A RioBotz funciona com áreas integradas. Você pode escolher uma ou
+            várias para aprender por agora, e no fim, encontrar-se na sua área
+            favorita. Escolha todas as áreas de interesse, e no fim, selecione
+            só a escolhida.
           </p>
         </div>
 

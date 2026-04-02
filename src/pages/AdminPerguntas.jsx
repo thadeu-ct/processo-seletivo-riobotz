@@ -10,11 +10,9 @@ function AdminPerguntas() {
   const [perguntas, setPerguntas] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Estados do formulário de Pergunta
   const [novaPergunta, setNovaPergunta] = useState("");
   const [imagem, setImagem] = useState(null);
 
-  // Estados para gerenciar Opções (conforme a API do Telhado)
   const [perguntaSelecionada, setPerguntaSelecionada] = useState("");
   const [novaOpcao, setNovaOpcao] = useState("");
 
@@ -24,6 +22,7 @@ function AdminPerguntas() {
       const res = await fetch(`${API_URL}/perguntas/get`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: id }),
       });
       const data = await res.json();
       setPerguntas(data);
@@ -32,7 +31,7 @@ function AdminPerguntas() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     carregarPerguntas();
@@ -116,7 +115,6 @@ function AdminPerguntas() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-          {/* COLUNA 1: ADICIONAR PERGUNTA */}
           <section className="flex flex-col gap-8">
             <form
               onSubmit={handleAddPergunta}
@@ -166,7 +164,6 @@ function AdminPerguntas() {
               </div>
             </form>
 
-            {/* COLUNA 1: ADICIONAR OPÇÃO */}
             <form
               onSubmit={handleAddOpcao}
               className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 shadow-2xl backdrop-blur-xl"
@@ -217,7 +214,6 @@ function AdminPerguntas() {
             </form>
           </section>
 
-          {/* COLUNA 2: LISTA DE PERGUNTAS */}
           <section className="bg-black/20 rounded-[2.5rem] border border-white/5 p-2">
             <div className="bg-[#0a1945] rounded-[2.2rem] p-8 min-h-[600px]">
               <h3 className="text-xs font-black uppercase tracking-[0.4em] text-gray-500 mb-8 ml-2">

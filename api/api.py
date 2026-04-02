@@ -473,7 +473,50 @@ def getworkshops():
         # }), 500
     
 
-@app.route("/api/workshops/inscrever")
+@app.route("/api/workshops/area", methods=["POST"])
+def areaWorkshops():
+    data = request.get_json(silent=True)
+    area: str = data.get("area") if data else request.form.get("area")
+
+    try:
+        banco = get_db_connection()
+        db = banco.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+        db.execute(
+            """
+            SELECT 
+                w.id,
+                w.nome AS titulo,
+                w.descricao,
+                w.link,
+                CASE 
+                    WHEN w.is_online THEN 'Online'
+                    ELSE 'Presencial'
+                END AS tipo,
+                JSON_AGG(wa.area_nome) FILTER (WHERE wa.area_nome IS NOT NULL) AS areas,
+                TO_CHAR(w.data, 'DD/MM') || ', ' ||
+                TO_CHAR(w.data, 'Dy') || ', ' ||
+                TO_CHAR(w.data, 'HH24:MI') || '-' ||
+                TO_CHAR(w.data_fim, 'HH24:MI') AS "dataHora"
+            FROM workshops w
+            JOIN workshops_areas wa ON w.id = wa.workshop_id
+            WHERE wa.area_nome = %s
+            GROUP BY w.id;
+            """,
+            (area)
+        )
+
+        rows = db.fetchall()
+
+        db.close()
+        banco.close()
+
+        return jsonify(rows)
+    except Exception as e:
+        return handle_error(e), 500
+    
+
+@app.route("/api/workshops/inscrever", methods=["POST"])
 def inscrever_workshops():
     mat: str = request.form.get("matricula")
     id_w: int = int(request.form.get("id"))
@@ -498,7 +541,8 @@ def inscrever_workshops():
         banco.close()
 
         return {
-            "erro": 0
+            "erro": 0,
+            "inscricao": 1
         }
     except Exception as e:
         return handle_error(e), 500

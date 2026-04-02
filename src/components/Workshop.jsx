@@ -81,7 +81,7 @@ function Workshop({
         )}
       </div>
 
-      {videoId && tipo === "Presencial" ? (
+      {videoId && tipo === "Online" ? (
         <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black/60 shadow-inner">
           <iframe
             className="absolute top-0 left-0 w-full h-full"

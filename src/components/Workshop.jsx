@@ -15,7 +15,6 @@ function Workshop({
 }) {
   const handleInscricao = async () => {
     const matricula = sessionStorage.getItem("matriculaUsuario");
-
     if (!matricula) {
       alert("Você precisa estar logado!");
       return;
@@ -44,6 +43,7 @@ function Workshop({
 
   return (
     <div className="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8 flex flex-col gap-6 shadow-xl hover:border-yellow-400/30 transition-colors w-full relative overflow-hidden group">
+      {/* BADGES */}
       <div className="flex flex-wrap gap-3 mb-1">
         {tipo === "Presencial" ? (
           <span className="bg-orange-500/20 text-orange-400 border border-orange-500/50 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
@@ -81,56 +81,62 @@ function Workshop({
         )}
       </div>
 
-      {videoId && tipo === "Online" ? (
-        <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black/60 shadow-inner">
-          <iframe
-            className="absolute top-0 left-0 w-full h-full"
-            src={`https://www.youtube.com/embed/${videoId}`}
-            title={titulo}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          ></iframe>
-        </div>
-      ) : (
-        <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-[#061133] border border-white/5 shadow-inner flex flex-col items-center justify-center text-center p-6 group-hover:border-yellow-400/20 transition-colors">
-          <div
-            className="absolute inset-0 opacity-10"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 2px 2px, white 1px, transparent 0)",
-              backgroundSize: "24px 24px",
-            }}
-          ></div>
-
-          <div className="relative z-10 flex flex-col items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-white/5 border-2 border-dashed border-white/20 flex items-center justify-center text-gray-500">
-              <svg
-                className="w-8 h-8"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="1.5"
-                  d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
-                />
-              </svg>
+      {/* ÁREA DE VÍDEO / PLACEHOLDER - LÓGICA REFEITA */}
+      {
+        tipo === "Online" ? (
+          videoId ? (
+            // Caso 1: É Online e TEM vídeo
+            <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black/60 shadow-inner">
+              <iframe
+                className="absolute top-0 left-0 w-full h-full"
+                src={`https://www.youtube.com/embed/${videoId}`}
+                title={titulo}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
             </div>
-            <div>
-              <h4 className="text-gray-300 font-black uppercase tracking-widest text-sm mb-1">
-                Vídeo em Produção
-              </h4>
-              <p className="text-gray-500 text-xs font-bold px-4 max-w-[280px]">
-                Aguarde o lançamento oficial. Você será notificado quando este
-                conteúdo estiver disponível.
-              </p>
+          ) : (
+            // Caso 2: É Online e NÃO TEM vídeo (Ainda)
+            <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-[#061133] border border-white/5 shadow-inner flex flex-col items-center justify-center text-center p-6 group-hover:border-yellow-400/20 transition-colors">
+              <div
+                className="absolute inset-0 opacity-10"
+                style={{
+                  backgroundImage:
+                    "radial-gradient(circle at 2px 2px, white 1px, transparent 0)",
+                  backgroundSize: "24px 24px",
+                }}
+              ></div>
+              <div className="relative z-10 flex flex-col items-center gap-4">
+                <div className="w-16 h-16 rounded-full bg-white/5 border-2 border-dashed border-white/20 flex items-center justify-center text-gray-500">
+                  <svg
+                    className="w-8 h-8"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="1.5"
+                      d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="text-gray-300 font-black uppercase tracking-widest text-sm mb-1">
+                    Vídeo em Produção
+                  </h4>
+                  <p className="text-gray-500 text-xs font-bold px-4 max-w-[280px]">
+                    Aguarde o lançamento oficial. Você será comunicado em breve.
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          )
+        ) : null /* Caso 3: É Presencial, não renderiza área de vídeo */
+      }
 
+      {/* CONTEÚDO TEXTUAL */}
       <div className="flex flex-col lg:flex-row gap-6 justify-between items-start lg:items-end">
         <div className="flex-1">
           <h3 className="text-white font-black text-2xl md:text-3xl mb-2 tracking-tight group-hover:text-yellow-400 transition-colors">
@@ -147,6 +153,7 @@ function Workshop({
           )}
         </div>
 
+        {/* BOTÕES DE AÇÃO */}
         <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto mt-2 lg:mt-0">
           {tipo === "Presencial" &&
             (isAdminView ? (

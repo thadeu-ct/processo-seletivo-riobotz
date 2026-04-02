@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
 
@@ -12,13 +13,19 @@ function Workshop({
   dataHora,
   local,
   isAdminView,
+  jaInscrito,
 }) {
+  const [statusInscrito, setStatusInscrito] = useState(jaInscrito);
+
+  useEffect(() => {
+    setStatusInscrito(jaInscrito);
+  }, [jaInscrito]);
+
   const handleInscricao = async () => {
+    if (statusInscrito) return; // Evita cliques duplos se já estiver ok
+
     const matricula = sessionStorage.getItem("matriculaUsuario");
-    if (!matricula) {
-      alert("Você precisa estar logado!");
-      return;
-    }
+    if (!matricula) return alert("Você precisa estar logado!");
 
     try {
       const formData = new FormData();
@@ -32,12 +39,11 @@ function Workshop({
 
       const data = await res.json();
       if (data.inscricao === 1) {
-        alert("Inscrição confirmada! Nos vemos lá.");
-      } else {
-        alert(data.erro || "Erro ao se inscrever.");
+        setStatusInscrito(true);
+        alert("Inscrição confirmada!");
       }
     } catch (err) {
-      console.error("Erro na inscrição:", err);
+      console.error(err);
     }
   };
 

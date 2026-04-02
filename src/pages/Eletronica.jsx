@@ -43,8 +43,6 @@ function Eletronica() {
     const carregarDados = async () => {
       try {
         setLoading(true);
-        const matricula = sessionStorage.getItem("matriculaUsuario");
-
         const resW = await fetch(`${API_URL}/workshops/area`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -53,14 +51,16 @@ function Eletronica() {
         const workshops = await resW.json();
 
         let inscritosIds = [];
-        if (matricula) {
+        if (matriculaUsuario) {
           const resI = await fetch(`${API_URL}/user/workshops`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ matricula }),
+            body: JSON.stringify({ matricula: matriculaUsuario }),
           });
           const dataI = await resI.json();
-          inscritosIds = dataI.map((item) => item.id);
+          if (Array.isArray(dataI)) {
+            inscritosIds = dataI.map((item) => item.id);
+          }
         }
 
         if (Array.isArray(workshops)) {
@@ -68,7 +68,6 @@ function Eletronica() {
             ...ws,
             jaInscrito: inscritosIds.includes(ws.id),
           }));
-
           const ordenados = workshopsFinal.sort(
             (a, b) =>
               extrairValorTempo(a.dataHora) - extrairValorTempo(b.dataHora),
@@ -76,14 +75,13 @@ function Eletronica() {
           setTrilhaEletronica(ordenados);
         }
       } catch (err) {
-        console.error("Erro ao carregar trilha:", err);
+        console.error("Erro ao carregar trilha Eletrônica:", err);
       } finally {
         setLoading(false);
       }
     };
-
     carregarDados();
-  }, []);
+  }, [matriculaUsuario]);
 
   return (
     <div className="min-h-screen bg-[#0a1945] flex flex-col font-sans">

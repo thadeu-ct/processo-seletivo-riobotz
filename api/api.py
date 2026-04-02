@@ -552,6 +552,65 @@ def inscrever_workshops():
         # }), 500
 
 
+@app.route("/api/workshops/inscritos", methods=["POST"])
+def inscritosWorkshop():
+    data = request.get_json(silent=True)
+    work_id: int = int(data.get("workshop_id")) if data else int(request.form.get("workshop_id"))
+
+    try:
+        banco = get_db_connection()
+        db = banco.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+        db.execute(
+            """
+            SELECT u.matricula AS matricula, u.nome AS nome
+            FROM user_workshops AS w
+            JOIN users AS u ON w.user_matricula = u.matricula
+            WHERE w.workshop_id = %s
+            ORDER BY user_matricula
+            """,
+            (work_id,)
+        )
+
+        rows = db.fetchall()
+
+        db.close()
+        banco.close()
+
+        return jsonify(rows)
+    except Exception as e:
+        return handle_error(e), 500    
+
+
+@app.route("/api/workshops/salvar-presenca", methods=["POST"])
+def presencaWorkshops():
+    data = request.get_json(silent=True)
+    mats: tuple[str, int] = [
+        (int(d.get("botcoins")), d.get("matricula"))
+        for d in data
+    ]
+
+    try:
+        banco = get_db_connection()
+        db = banco.cursor()
+
+        db.executemany(
+            "UPDATE users SET botcoins = botcoins + %s WHERE matricula = %s",
+            mats
+        )
+
+        banco.commit()
+
+        db.close()
+        banco.close()
+
+        return {
+            "erro": 0
+        }
+    except Exception as e:
+        return handle_error(e), 500
+
+
 '''
 ------------------ Funções das perguntas ------------------
 '''

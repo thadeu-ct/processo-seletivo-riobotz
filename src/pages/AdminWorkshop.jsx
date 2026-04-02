@@ -1,66 +1,103 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
 import workshopsDB from "../services/workshops.json";
 
-const inscritosMock = [
-  {
-    id: 1,
-    matricula: "202410123",
-    nome: "João Silva",
-    presente: false,
-    bonus: 0,
-  },
-  {
-    id: 2,
-    matricula: "202410456",
-    nome: "Maria Oliveira",
-    presente: true,
-    bonus: 10,
-  },
-  {
-    id: 3,
-    matricula: "202410789",
-    nome: "Carlos Eduardo Souza",
-    presente: false,
-    bonus: 0,
-  },
-  {
-    id: 4,
-    matricula: "202410321",
-    nome: "Ana Beatriz Costa",
-    presente: true,
-    bonus: 0,
-  },
-];
+const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
 
 function AdminWorkshop() {
   const { id } = useParams();
-  const workshop = workshopsDB.find((w) => w.id === id);
 
-  const [alunos, setAlunos] = useState(inscritosMock);
+  const [alunos, setAlunos] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const workshop = workshopsDB.find((w) => String(w.id) === String(id));
+
+  const matriculaUsuario = sessionStorage.getItem("matriculaUsuario") || "";
+  const envAdmins = import.meta.env.VITE_ADMIN_MATRICULAS || "";
+  const isAdminReal =
+    matriculaUsuario !== "" && envAdmins.split(",").includes(matriculaUsuario);
+
+  useEffect(() => {
+    const buscarInscritos = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(`${API_URL}/workshops/inscritos`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ workshop_id: id }),
+        });
+        const data = await res.json();
+
+        if (Array.isArray(data)) {
+          setAlunos(
+            data.map((a) => ({
+              ...a,
+              presente: a.presente || false,
+              bonus: a.bonus || 0,
+            })),
+          );
+        }
+      } catch (err) {
+        console.error("Erro ao carregar inscritos:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (isAdminReal) buscarInscritos();
+  }, [id, isAdminReal]);
 
   const togglePresenca = (alunoId) => {
-    setAlunos(
-      alunos.map((aluno) =>
-        aluno.id === alunoId ? { ...aluno, presente: !aluno.presente } : aluno,
+    setAlunos((prev) =>
+      prev.map((aluno) =>
+        aluno.matricula === alunoId
+          ? { ...aluno, presente: !aluno.presente }
+          : aluno,
       ),
     );
   };
 
   const addBonus = (alunoId) => {
-    setAlunos(
-      alunos.map((aluno) =>
-        aluno.id === alunoId ? { ...aluno, bonus: aluno.bonus + 10 } : aluno,
+    setAlunos((prev) =>
+      prev.map((aluno) =>
+        aluno.matricula === alunoId
+          ? { ...aluno, bonus: (aluno.bonus || 0) + 10 }
+          : aluno,
       ),
     );
   };
 
+  const handleSalvar = async () => {
+    try {
+      const res = await fetch(`${API_URL}/workshops/salvar-presenca`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          workshop_id: id,
+          dados: alunos,
+        }),
+      });
+      const data = await res.json();
+      if (!data.erro) alert("Lançamentos salvos com sucesso!");
+    } catch (err) {
+      console.error("Erro fatal ao carregar inscritos:", err);
+    }
+  };
+
+  if (!isAdminReal) {
+    return (
+      <div className="min-h-screen bg-[#0a1945] text-white flex items-center justify-center font-black">
+        ACESSO NEGADO
+      </div>
+    );
+  }
+
   if (!workshop) {
     return (
-      <div className="text-white text-center mt-20 text-2xl font-black">
-        Workshop não encontrado.
+      <div className="min-h-screen bg-[#0a1945] text-white flex items-center justify-center font-black text-2xl">
+        Workshop {id} não encontrado.
       </div>
     );
   }
@@ -109,91 +146,87 @@ function AdminWorkshop() {
           </div>
         </div>
 
-        <div className="w-full max-w-5xl bg-white/5 border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+        <div className="w-full max-w-5xl bg-white/5 border border-white/10 rounded-2xl overflow-hidden shadow-2xl backdrop-blur-md">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-white/10 border-b border-white/10 text-gray-300 text-sm uppercase tracking-wider">
-                  <th className="p-4 font-bold text-center w-24">
-                    Presença (+50 ₿)
-                  </th>
-                  <th className="p-4 font-bold">Matrícula</th>
-                  <th className="p-4 font-bold">Nome do Candidato</th>
-                  <th className="p-4 font-bold text-center w-36">Bônus</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/10">
-                {alunos.map((aluno) => (
-                  <tr
-                    key={aluno.id}
-                    className="hover:bg-white/5 transition-colors group"
-                  >
-                    <td className="p-4 text-center">
-                      <button
-                        onClick={() => togglePresenca(aluno.id)}
-                        className={`w-8 h-8 rounded-lg border-2 flex items-center justify-center transition-all mx-auto ${
-                          aluno.presente
-                            ? "bg-cyan-500 border-cyan-500 text-[#0a1945] shadow-[0_0_10px_rgba(6,182,212,0.5)]"
-                            : "bg-transparent border-gray-500 text-transparent hover:border-cyan-500"
-                        }`}
-                      >
-                        <svg
-                          className="w-5 h-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          strokeWidth="3"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M5 13l4 4L19 7"
-                          ></path>
-                        </svg>
-                      </button>
-                    </td>
-
-                    <td className="p-4 font-mono text-gray-400">
-                      {aluno.matricula}
-                    </td>
-                    <td className="p-4 font-bold text-white">{aluno.nome}</td>
-
-                    <td className="p-4 text-center">
-                      <div className="flex items-center justify-center gap-2">
+            {loading ? (
+              <div className="p-20 text-center text-cyan-400 font-bold animate-pulse">
+                CARREGANDO LISTA DA TABELA...
+              </div>
+            ) : (
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-white/10 border-b border-white/10 text-gray-300 text-sm uppercase tracking-wider">
+                    <th className="p-4 font-bold text-center w-24">
+                      Presença (+50 ₿)
+                    </th>
+                    <th className="p-4 font-bold">Matrícula</th>
+                    <th className="p-4 font-bold">Nome do Candidato</th>
+                    <th className="p-4 font-bold text-center w-36">Bônus</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/10">
+                  {alunos.map((aluno) => (
+                    <tr
+                      key={aluno.matricula}
+                      className="hover:bg-white/5 transition-colors group"
+                    >
+                      <td className="p-4 text-center">
                         <button
-                          onClick={() => addBonus(aluno.id)}
-                          className="px-3 py-1.5 bg-yellow-400/10 text-yellow-400 border border-yellow-400/30 rounded-lg font-black hover:bg-yellow-400 hover:text-[#0a1945] transition-all flex items-center gap-1 shadow-sm"
-                          title="Adicionar bônus por participação"
+                          onClick={() => togglePresenca(aluno.matricula)}
+                          className={`w-8 h-8 rounded-lg border-2 flex items-center justify-center transition-all mx-auto ${
+                            aluno.presente
+                              ? "bg-cyan-500 border-cyan-500 text-[#0a1945]"
+                              : "bg-transparent border-gray-500 text-transparent"
+                          }`}
                         >
-                          +10
                           <svg
-                            className="w-4 h-4"
-                            fill="currentColor"
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
                             viewBox="0 0 24 24"
+                            strokeWidth="3"
                           >
-                            <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zm1-13h-2v2H9v2h2v2H9v2h2v2h2v-2h2v-2h-2v-2h2V9h-2V7z" />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M5 13l4 4L19 7"
+                            />
                           </svg>
                         </button>
-                        {aluno.bonus > 0 && (
-                          <span className="text-yellow-400 font-mono text-sm w-6 text-right">
-                            {aluno.bonus}
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      </td>
+                      <td className="p-4 font-mono text-gray-400">
+                        {aluno.matricula}
+                      </td>
+                      <td className="p-4 font-bold text-white uppercase text-sm">
+                        {aluno.nome}
+                      </td>
+                      <td className="p-4 text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() => addBonus(aluno.matricula)}
+                            className="px-3 py-1.5 bg-yellow-400/10 text-yellow-400 border border-yellow-400/30 rounded-lg font-black hover:bg-yellow-400 hover:text-[#0a1945] transition-all"
+                          >
+                            +10 ₿
+                          </button>
+                          {aluno.bonus > 0 && (
+                            <span className="text-yellow-400 font-mono text-sm">
+                              {aluno.bonus}
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
 
         <div className="w-full max-w-5xl mt-8 flex justify-end">
           <button
+            onClick={handleSalvar}
             className="px-8 py-4 rounded-full bg-cyan-500 text-[#0a1945] font-black text-lg hover:bg-white hover:scale-105 transition-all shadow-[0_0_20px_rgba(6,182,212,0.4)]"
-            onClick={() =>
-              alert("Lista de presença e Botcoins salvos no Banco de Dados!")
-            }
           >
             Salvar Lançamentos
           </button>

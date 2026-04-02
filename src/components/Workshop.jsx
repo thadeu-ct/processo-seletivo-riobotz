@@ -81,60 +81,55 @@ function Workshop({
         )}
       </div>
 
-      {/* ÁREA DE VÍDEO / PLACEHOLDER - LÓGICA REFEITA */}
-      {
-        tipo === "Online" ? (
-          videoId ? (
-            // Caso 1: É Online e TEM vídeo
-            <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black/60 shadow-inner">
-              <iframe
-                className="absolute top-0 left-0 w-full h-full"
-                src={`https://www.youtube.com/embed/${videoId}`}
-                title={titulo}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
-            </div>
-          ) : (
-            // Caso 2: É Online e NÃO TEM vídeo (Ainda)
-            <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-[#061133] border border-white/5 shadow-inner flex flex-col items-center justify-center text-center p-6 group-hover:border-yellow-400/20 transition-colors">
-              <div
-                className="absolute inset-0 opacity-10"
-                style={{
-                  backgroundImage:
-                    "radial-gradient(circle at 2px 2px, white 1px, transparent 0)",
-                  backgroundSize: "24px 24px",
-                }}
-              ></div>
-              <div className="relative z-10 flex flex-col items-center gap-4">
-                <div className="w-16 h-16 rounded-full bg-white/5 border-2 border-dashed border-white/20 flex items-center justify-center text-gray-500">
-                  <svg
-                    className="w-8 h-8"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="1.5"
-                      d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <h4 className="text-gray-300 font-black uppercase tracking-widest text-sm mb-1">
-                    Vídeo em Produção
-                  </h4>
-                  <p className="text-gray-500 text-xs font-bold px-4 max-w-[280px]">
-                    Aguarde o lançamento oficial. Você será comunicado em breve.
-                  </p>
-                </div>
+      {tipo === "Online" ? (
+        videoId ? (
+          <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black/60 shadow-inner">
+            <iframe
+              className="absolute top-0 left-0 w-full h-full"
+              src={`https://www.youtube.com/embed/${videoId}`}
+              title={titulo}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            ></iframe>
+          </div>
+        ) : (
+          <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-[#061133] border border-white/5 shadow-inner flex flex-col items-center justify-center text-center p-6 group-hover:border-yellow-400/20 transition-colors">
+            <div
+              className="absolute inset-0 opacity-10"
+              style={{
+                backgroundImage:
+                  "radial-gradient(circle at 2px 2px, white 1px, transparent 0)",
+                backgroundSize: "24px 24px",
+              }}
+            ></div>
+            <div className="relative z-10 flex flex-col items-center gap-4">
+              <div className="w-16 h-16 rounded-full bg-white/5 border-2 border-dashed border-white/20 flex items-center justify-center text-gray-500">
+                <svg
+                  className="w-8 h-8"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="1.5"
+                    d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h4 className="text-gray-300 font-black uppercase tracking-widest text-sm mb-1">
+                  Vídeo em Produção
+                </h4>
+                <p className="text-gray-500 text-xs font-bold px-4 max-w-[280px]">
+                  Aguarde o lançamento oficial. Você será comunicado em breve.
+                </p>
               </div>
             </div>
-          )
-        ) : null /* Caso 3: É Presencial, não renderiza área de vídeo */
-      }
+          </div>
+        )
+      ) : null}
 
       {/* CONTEÚDO TEXTUAL */}
       <div className="flex flex-col lg:flex-row gap-6 justify-between items-start lg:items-end">

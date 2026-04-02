@@ -40,29 +40,49 @@ function Gestao() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const carregarWorkshops = async () => {
+    const carregarDados = async () => {
       try {
-        const res = await fetch(`${API_URL}/workshops/area`, {
+        setLoading(true);
+        const matricula = sessionStorage.getItem("matriculaUsuario");
+
+        const resW = await fetch(`${API_URL}/workshops/area`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ area: "gestao" }),
         });
-        const data = await res.json();
+        const workshops = await resW.json();
 
-        const ordenados = data.sort(
-          (a, b) =>
-            extrairValorTempo(a.dataHora) - extrairValorTempo(b.dataHora),
-        );
+        let inscritosIds = [];
+        if (matricula) {
+          const resI = await fetch(`${API_URL}/user/workshops`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ matricula }),
+          });
+          const dataI = await resI.json();
+          inscritosIds = dataI.map((item) => item.id);
+        }
 
-        setTrilhaGestao(ordenados);
+        if (Array.isArray(workshops)) {
+          const workshopsFinal = workshops.map((ws) => ({
+            ...ws,
+            jaInscrito: inscritosIds.includes(ws.id),
+          }));
+
+          const ordenados = workshopsFinal.sort(
+            (a, b) =>
+              extrairValorTempo(a.dataHora) - extrairValorTempo(b.dataHora),
+          );
+          setTrilhaGestao(ordenados);
+        }
       } catch (err) {
-        console.error("Erro ao buscar workshops:", err);
+        console.error("Erro ao carregar trilha:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    carregarWorkshops();
+    carregarDados();
   }, []);
 
   return (

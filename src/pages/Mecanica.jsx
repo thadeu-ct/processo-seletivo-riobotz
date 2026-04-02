@@ -59,8 +59,10 @@ function Mecanica() {
             body: JSON.stringify({ matricula: matriculaUsuario }),
           });
           const dataI = await resI.json();
+          console.log("RESPOSTA DO TELHADO:", dataI); // <--- ADICIONE ISSO
           if (Array.isArray(dataI)) {
             inscritosIds = dataI.map((item) => Number(item.id));
+            console.log("IDS MAPEADOS:", inscritosIds); // <--- E ISSO
           }
         }
 

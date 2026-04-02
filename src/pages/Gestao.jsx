@@ -59,14 +59,14 @@ function Gestao() {
           });
           const dataI = await resI.json();
           if (Array.isArray(dataI)) {
-            inscritosIds = dataI.map((item) => item.id);
+            inscritosIds = dataI.map((item) => Number(item.id));
           }
         }
 
         if (Array.isArray(workshops)) {
           const workshopsFinal = workshops.map((ws) => ({
             ...ws,
-            jaInscrito: inscritosIds.includes(ws.id),
+            jaInscrito: inscritosIds.includes(Number(ws.id)),
           }));
           const ordenados = workshopsFinal.sort(
             (a, b) =>

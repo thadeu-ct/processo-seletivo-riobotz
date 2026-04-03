@@ -602,6 +602,28 @@ def presencaWorkshops():
     except Exception as e:
         return handle_error(e), 500
 
+@app.route("/api/user/workshops", methods=["POST"])
+def getUserWorkshops():
+    data = request.get_json(silent=True)
+    mat = data.get("matricula") if data else request.form.get("matricula")
+
+    if not mat:
+        return jsonify({"erro": "Matrícula ausente"}), 400
+
+    try:
+        banco = get_db_connection()
+        db = banco.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+        db.execute("SELECT id FROM user_workshop WHERE matricula = %s", (str(mat),))
+        
+        rows = db.fetchall()
+        db.close()
+        banco.close()
+        
+        return jsonify(rows)
+    except Exception as e:
+        print(f"Erro na rota user/workshops: {e}")
+        return jsonify({"erro": str(e)}), 500
 
 '''
 ------------------ Funções das perguntas ------------------

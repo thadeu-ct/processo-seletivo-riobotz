@@ -387,40 +387,25 @@ function Calendario() {
     const eventosNoDia = [...presenciais, ...onlinesAlocados].filter(
       (ws) => ws.diaData === diaData,
     );
+    const grouped = {};
 
-    const ordenados = eventosNoDia.sort((a, b) => {
-      const startDiff = parseTime(a.inicio) - parseTime(b.inicio);
-      if (startDiff !== 0) return startDiff;
-      return parseTime(b.fim) - parseTime(a.fim);
+    eventosNoDia.forEach((ws) => {
+      const key = `${ws.inicio}-${ws.fim}`;
+      if (!grouped[key]) grouped[key] = [];
+      grouped[key].push(ws);
     });
 
-    return ordenados.map((ws, index) => {
-      const style = getEventStyle(ws.inicio, ws.fim);
-
-      const temConflito = ordenados.some((outro, outroIdx) => {
-        if (index === outroIdx) return false;
-        const startA = parseTime(ws.inicio);
-        const endA = parseTime(ws.fim);
-        const startB = parseTime(outro.inicio);
-        const endB = parseTime(outro.fim);
-
-        return startA < endB && endA > startB;
-      });
-
-      const eventStyle = {
-        ...style,
-        width: temConflito ? "48%" : "96%",
-        left: temConflito && index % 2 !== 0 ? "50%" : "2%",
-        zIndex: 10 + index,
-      };
+    return Object.entries(grouped).map(([key, eventos]) => {
+      const [inicio, fim] = key.split("-");
+      const style = getEventStyle(inicio, fim);
 
       return (
         <div
-          key={ws.id}
-          className="absolute z-10 transition-all duration-300 ease-in-out"
-          style={eventStyle}
+          key={key}
+          className="absolute w-full flex flex-row gap-1 p-1 z-10 transition-all"
+          style={style}
         >
-          {renderWorkshopCard(ws)}
+          {eventos.map((ws) => renderWorkshopCard(ws))}
         </div>
       );
     });

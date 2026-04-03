@@ -689,6 +689,7 @@ def addOpcao():
         #     "erro": str(e)
         # }), 500
 
+
 '''
 ------------------ Funções de Status do Sistema ------------------
 '''
@@ -788,6 +789,7 @@ def get_perfil_completo():
     except Exception as e:
         print(f"ERRO NO PERFIL: {e}") # Isso vai aparecer no log do seu terminal/Vercel
         return jsonify({"erro": str(e)}), 500
+
 
 @app.errorhandler(Exception)
 def errorPage(e):

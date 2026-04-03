@@ -388,52 +388,42 @@ function Calendario() {
       (ws) => ws.diaData === diaData,
     );
 
-    const eventosOrdenados = eventosNoDia.sort(
-      (a, b) => parseTime(a.inicio) - parseTime(b.inicio),
-    );
-
-    const colunas = [];
-
-    eventosOrdenados.forEach((ws) => {
-      let colocou = false;
-      const wsStart = parseTime(ws.inicio);
-
-      for (let i = 0; i < colunas.length; i++) {
-        const ultimoEventoNaColuna = colunas[i][colunas[i].length - 1];
-        const fimDoUltimo = parseTime(ultimoEventoNaColuna.fim);
-
-        if (wsStart >= fimDoUltimo) {
-          colunas[i].push(ws);
-          colocou = true;
-          break;
-        }
-      }
-
-      if (!colocou) {
-        colunas.push([ws]);
-      }
+    const ordenados = eventosNoDia.sort((a, b) => {
+      const startDiff = parseTime(a.inicio) - parseTime(b.inicio);
+      if (startDiff !== 0) return startDiff;
+      return parseTime(b.fim) - parseTime(a.fim);
     });
 
-    return (
-      <div className="absolute inset-0 flex flex-row gap-1 p-1">
-        {colunas.map((coluna, colIdx) => (
-          <div key={colIdx} className="flex-1 relative h-full">
-            {coluna.map((ws) => {
-              const style = getEventStyle(ws.inicio, ws.fim);
-              return (
-                <div
-                  key={ws.id}
-                  className="absolute w-full z-10 transition-all"
-                  style={style}
-                >
-                  {renderWorkshopCard(ws)}
-                </div>
-              );
-            })}
-          </div>
-        ))}
-      </div>
-    );
+    return ordenados.map((ws, index) => {
+      const style = getEventStyle(ws.inicio, ws.fim);
+
+      const temConflito = ordenados.some((outro, outroIdx) => {
+        if (index === outroIdx) return false;
+        const startA = parseTime(ws.inicio);
+        const endA = parseTime(ws.fim);
+        const startB = parseTime(outro.inicio);
+        const endB = parseTime(outro.fim);
+
+        return startA < endB && endA > startB;
+      });
+
+      const eventStyle = {
+        ...style,
+        width: temConflito ? "48%" : "96%",
+        left: temConflito && index % 2 !== 0 ? "50%" : "2%",
+        zIndex: 10 + index,
+      };
+
+      return (
+        <div
+          key={ws.id}
+          className="absolute z-10 transition-all duration-300 ease-in-out"
+          style={eventStyle}
+        >
+          {renderWorkshopCard(ws)}
+        </div>
+      );
+    });
   };
 
   const totalGridHeight = SLOTS.length * SLOT_HEIGHT;

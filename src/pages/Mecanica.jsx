@@ -41,30 +41,50 @@ function Mecanica() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const carregarWorkshops = async () => {
+    const carregarDados = async () => {
       try {
-        const res = await fetch(`${API_URL}/workshops/area`, {
+        setLoading(true);
+        const resW = await fetch(`${API_URL}/workshops/area`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ area: "mecanica" }),
         });
-        const data = await res.json();
+        const workshops = await resW.json();
 
-        const ordenados = data.sort(
-          (a, b) =>
-            extrairValorTempo(a.dataHora) - extrairValorTempo(b.dataHora),
-        );
+        let inscritosIds = [];
+        if (matriculaUsuario) {
+          const resI = await fetch(`${API_URL}/user/workshops`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ matricula: matriculaUsuario }),
+          });
+          const dataI = await resI.json();
+          console.log("RESPOSTA DO TELHADO:", dataI); // <--- ADICIONE ISSO
+          if (Array.isArray(dataI)) {
+            inscritosIds = dataI.map((item) => Number(item.id));
+            console.log("IDS MAPEADOS:", inscritosIds); // <--- E ISSO
+          }
+        }
 
-        setTrilhaMecanica(ordenados);
+        if (Array.isArray(workshops)) {
+          const workshopsFinal = workshops.map((ws) => ({
+            ...ws,
+            jaInscrito: inscritosIds.includes(Number(ws.id)),
+          }));
+          const ordenados = workshopsFinal.sort(
+            (a, b) =>
+              extrairValorTempo(a.dataHora) - extrairValorTempo(b.dataHora),
+          );
+          setTrilhaMecanica(ordenados);
+        }
       } catch (err) {
-        console.error("Erro ao buscar workshops:", err);
+        console.error("Erro ao carregar trilha Mecânica:", err);
       } finally {
         setLoading(false);
       }
     };
-
-    carregarWorkshops();
-  }, []);
+    carregarDados();
+  }, [matriculaUsuario]);
 
   return (
     <div className="min-h-screen bg-[#0a1945] flex flex-col font-sans">

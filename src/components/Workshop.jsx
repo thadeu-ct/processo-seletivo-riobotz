@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
 
@@ -12,13 +13,19 @@ function Workshop({
   dataHora,
   local,
   isAdminView,
+  jaInscrito,
 }) {
+  const [statusInscrito, setStatusInscrito] = useState(jaInscrito);
+
+  useEffect(() => {
+    setStatusInscrito(jaInscrito);
+  }, [jaInscrito]);
+
   const handleInscricao = async () => {
+    if (statusInscrito) return;
+
     const matricula = sessionStorage.getItem("matriculaUsuario");
-    if (!matricula) {
-      alert("Você precisa estar logado!");
-      return;
-    }
+    if (!matricula) return alert("Você precisa estar logado!");
 
     try {
       const formData = new FormData();
@@ -32,18 +39,16 @@ function Workshop({
 
       const data = await res.json();
       if (data.inscricao === 1) {
-        alert("Inscrição confirmada! Nos vemos lá.");
-      } else {
-        alert(data.erro || "Erro ao se inscrever.");
+        setStatusInscrito(true);
+        alert("Inscrição confirmada!");
       }
     } catch (err) {
-      console.error("Erro na inscrição:", err);
+      console.error(err);
     }
   };
 
   return (
     <div className="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8 flex flex-col gap-6 shadow-xl hover:border-yellow-400/30 transition-colors w-full relative overflow-hidden group">
-      {/* BADGES */}
       <div className="flex flex-wrap gap-3 mb-1">
         {tipo === "Presencial" ? (
           <span className="bg-orange-500/20 text-orange-400 border border-orange-500/50 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
@@ -131,7 +136,6 @@ function Workshop({
         )
       ) : null}
 
-      {/* CONTEÚDO TEXTUAL */}
       <div className="flex flex-col lg:flex-row gap-6 justify-between items-start lg:items-end">
         <div className="flex-1">
           <h3 className="text-white font-black text-2xl md:text-3xl mb-2 tracking-tight group-hover:text-yellow-400 transition-colors">
@@ -148,7 +152,6 @@ function Workshop({
           )}
         </div>
 
-        {/* BOTÕES DE AÇÃO */}
         <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto mt-2 lg:mt-0">
           {tipo === "Presencial" &&
             (isAdminView ? (
@@ -160,13 +163,36 @@ function Workshop({
               </Link>
             ) : (
               <button
-                className="w-full sm:w-auto px-8 py-4 rounded-full bg-transparent border-2 border-orange-500 text-orange-400 font-black text-lg hover:bg-orange-500 hover:text-white hover:scale-105 transition-all text-center whitespace-nowrap"
+                className={`w-full sm:w-auto px-8 py-4 rounded-full font-black text-lg transition-all text-center whitespace-nowrap border-2 ${
+                  statusInscrito
+                    ? "bg-green-500/20 border-green-500 text-green-400 cursor-default"
+                    : "bg-transparent border-orange-500 text-orange-400 hover:bg-orange-500 hover:text-white hover:scale-105"
+                }`}
                 onClick={handleInscricao}
+                disabled={statusInscrito}
               >
-                Inscrever-se
+                {statusInscrito ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="3"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Inscrito
+                  </span>
+                ) : (
+                  "Inscrever-se"
+                )}
               </button>
             ))}
-
           {quizLink &&
             (isAdminView ? (
               <Link

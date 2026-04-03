@@ -174,6 +174,61 @@ function Calendario() {
   const [semanaAtual, setSemanaAtual] = useState(0);
   const [workshopsData, setWorkshopsData] = useState([]);
 
+  const matricula = sessionStorage.getItem("matriculaUsuario");
+
+  useEffect(() => {
+    fetch(`${API_URL}/workshops`, { method: "POST" })
+      .then((res) => res.json())
+      .then((data) => setWorkshopsData(data))
+      .catch((err) => console.error("Erro workshops:", err));
+
+    if (matricula) {
+      const formData = new FormData();
+      formData.append("matricula", matricula);
+
+      fetch(`${API_URL}/areas`, {
+        method: "POST",
+        body: formData,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.workshops_inscritos) {
+            const mapa = {};
+            data.workshops_inscritos.forEach((id) => {
+              mapa[id] = true;
+            });
+            setInscricoes(mapa);
+          }
+        });
+    }
+  }, [matricula]);
+
+  const handleInscricaoReal = async (id) => {
+    if (!matricula) return alert("Faça login primeiro!");
+    if (inscricoes[id]) return;
+
+    try {
+      const formData = new FormData();
+      formData.append("matricula", matricula);
+      formData.append("id", id);
+
+      const res = await fetch(`${API_URL}/workshops/inscrever`, {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+
+      if (data.inscricao === 1 || !data.erro) {
+        setInscricoes((prev) => ({ ...prev, [id]: true }));
+        alert("Inscrição confirmada!");
+      } else {
+        alert(data.erro || "Erro na inscrição");
+      }
+    } catch (err) {
+      console.error("Erro conexão:", err);
+    }
+  };
+
   useEffect(() => {
     fetch(`${API_URL}/workshops`, {
       method: "POST",
@@ -292,7 +347,7 @@ function Calendario() {
         {!isOnline && !estaInscrito && (
           <div
             className="absolute inset-0 bg-[#0a1945]/95 backdrop-blur-[1px] z-10 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded"
-            onClick={() => handleToggleInscricao(ws.id)}
+            onClick={() => handleInscricaoReal(ws.id)}
           >
             <svg
               className="w-6 h-6 text-yellow-500 mb-1"

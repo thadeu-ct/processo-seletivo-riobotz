@@ -387,28 +387,53 @@ function Calendario() {
     const eventosNoDia = [...presenciais, ...onlinesAlocados].filter(
       (ws) => ws.diaData === diaData,
     );
-    const grouped = {};
 
-    eventosNoDia.forEach((ws) => {
-      const key = `${ws.inicio}-${ws.fim}`;
-      if (!grouped[key]) grouped[key] = [];
-      grouped[key].push(ws);
+    const eventosOrdenados = eventosNoDia.sort(
+      (a, b) => parseTime(a.inicio) - parseTime(b.inicio),
+    );
+
+    const colunas = [];
+
+    eventosOrdenados.forEach((ws) => {
+      let colocou = false;
+      const wsStart = parseTime(ws.inicio);
+
+      for (let i = 0; i < colunas.length; i++) {
+        const ultimoEventoNaColuna = colunas[i][colunas[i].length - 1];
+        const fimDoUltimo = parseTime(ultimoEventoNaColuna.fim);
+
+        if (wsStart >= fimDoUltimo) {
+          colunas[i].push(ws);
+          colocou = true;
+          break;
+        }
+      }
+
+      if (!colocou) {
+        colunas.push([ws]);
+      }
     });
 
-    return Object.entries(grouped).map(([key, eventos]) => {
-      const [inicio, fim] = key.split("-");
-      const style = getEventStyle(inicio, fim);
-
-      return (
-        <div
-          key={key}
-          className="absolute w-full flex flex-row gap-1 p-1 z-10 transition-all"
-          style={style}
-        >
-          {eventos.map((ws) => renderWorkshopCard(ws))}
-        </div>
-      );
-    });
+    return (
+      <div className="absolute inset-0 flex flex-row gap-1 p-1">
+        {colunas.map((coluna, colIdx) => (
+          <div key={colIdx} className="flex-1 relative h-full">
+            {coluna.map((ws) => {
+              const style = getEventStyle(ws.inicio, ws.fim);
+              return (
+                <div
+                  key={ws.id}
+                  className="absolute w-full z-10 transition-all"
+                  style={style}
+                >
+                  {renderWorkshopCard(ws)}
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+    );
   };
 
   const totalGridHeight = SLOTS.length * SLOT_HEIGHT;

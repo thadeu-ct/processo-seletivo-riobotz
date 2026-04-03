@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import Footer from "../components/Footer";
 import LogoRioBotz from "../assets/logo-riobotz.svg";
 import Input from "../components/Input";
@@ -18,6 +18,13 @@ const camposCadastro = [
 ];
 
 function Cadastro() {
+  const location = useLocation();
+  useEffect(() => {
+    if (location.state?.erro) {
+      alert(location.state.erro);
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({

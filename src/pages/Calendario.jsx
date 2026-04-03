@@ -387,25 +387,65 @@ function Calendario() {
     const eventosNoDia = [...presenciais, ...onlinesAlocados].filter(
       (ws) => ws.diaData === diaData,
     );
-    const grouped = {};
+
+    const ocupacaoSlots = {};
 
     eventosNoDia.forEach((ws) => {
-      const key = `${ws.inicio}-${ws.fim}`;
-      if (!grouped[key]) grouped[key] = [];
-      grouped[key].push(ws);
+      let atual = parseTime(ws.inicio);
+      const fim = parseTime(ws.fim);
+
+      while (atual < fim) {
+        const horaStr = `${Math.floor(atual / 60)
+          .toString()
+          .padStart(2, "0")}:${(atual % 60).toString().padStart(2, "0")}`;
+        ocupacaoSlots[horaStr] = (ocupacaoSlots[horaStr] || 0) + 1;
+        atual += 30;
+      }
     });
 
-    return Object.entries(grouped).map(([key, eventos]) => {
-      const [inicio, fim] = key.split("-");
-      const style = getEventStyle(inicio, fim);
+    return eventosNoDia.map((ws, index) => {
+      const style = getEventStyle(ws.inicio, ws.fim);
+
+      let precisaDividir = false;
+      let atual = parseTime(ws.inicio);
+      const fim = parseTime(ws.fim);
+
+      while (atual < fim) {
+        const horaStr = `${Math.floor(atual / 60)
+          .toString()
+          .padStart(2, "0")}:${(atual % 60).toString().padStart(2, "0")}`;
+        if (ocupacaoSlots[horaStr] > 1) {
+          precisaDividir = true;
+          break;
+        }
+        atual += 30;
+      }
+
+      const outrosNoMesmoInicio = eventosNoDia.filter(
+        (outro) =>
+          outro.id !== ws.id &&
+          parseTime(outro.inicio) === parseTime(ws.inicio),
+      );
+
+      const esquerdo =
+        outrosNoMesmoInicio.length > 0
+          ? eventosNoDia.indexOf(ws) % 2 === 0
+          : true;
+
+      const eventStyle = {
+        ...style,
+        width: precisaDividir ? "48%" : "96%",
+        left: precisaDividir ? (esquerdo ? "2%" : "50%") : "2%",
+        zIndex: 10 + index,
+      };
 
       return (
         <div
-          key={key}
-          className="absolute w-full flex flex-row gap-1 p-1 z-10 transition-all"
-          style={style}
+          key={ws.id}
+          className="absolute z-10 transition-all duration-300"
+          style={eventStyle}
         >
-          {eventos.map((ws) => renderWorkshopCard(ws))}
+          {renderWorkshopCard(ws)}
         </div>
       );
     });

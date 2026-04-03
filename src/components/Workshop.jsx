@@ -7,7 +7,7 @@ function Workshop({
   id,
   titulo,
   descricao,
-  videoId,
+  link,
   quizLink,
   tipo,
   dataHora,
@@ -87,11 +87,11 @@ function Workshop({
       </div>
 
       {tipo === "Online" ? (
-        videoId ? (
+        link ? (
           <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black/60 shadow-inner">
             <iframe
               className="absolute top-0 left-0 w-full h-full"
-              src={`https://www.youtube.com/embed/${videoId}`}
+              src={`https://www.youtube.com/embed/${link}`}
               title={titulo}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen

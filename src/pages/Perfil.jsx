@@ -36,7 +36,6 @@ function Perfil() {
   const envAdmins = import.meta.env.VITE_ADMIN_MATRICULAS || "2610000";
   const isAdmin = envAdmins.split(",").includes(dados.matricula);
 
-  // Função vazia padrão para evitar o erro "c is not a function" nos componentes com máscara
   const noop = () => {};
 
   useEffect(() => {
@@ -54,7 +53,7 @@ function Perfil() {
             nome: data.nome,
             matricula: data.matricula,
             email: data.email,
-            telefone: data.telefone || "",
+            telefone: data.tel || "",
             areas: data.areas || [],
           });
           sessionStorage.setItem("nomeUsuario", data.nome);
@@ -94,7 +93,6 @@ function Perfil() {
   };
 
   const handleTelChange = (value) => {
-    // Se o componente de máscara falhar e enviar algo nulo, mantemos o estado anterior
     if (value === undefined || value === null) return;
     setDados((prev) => ({ ...prev, telefone: String(value) }));
   };
@@ -114,6 +112,54 @@ function Perfil() {
     } catch (err) {
       console.error("Erro toggle:", err);
       setEmManutencao(!novoStatus);
+    }
+  };
+
+  const handleSalvarDados = async () => {
+    try {
+      alert(
+        "Função de atualização de dados pessoais em implementação no servidor.",
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleSalvarSenha = async () => {
+    if (!senhas.atual || !senhas.nova || !senhas.confirmacao) {
+      return alert("Preencha todos os campos de senha.");
+    }
+    if (senhas.nova.length < 6) {
+      return alert("A nova senha deve ter no mínimo 6 caracteres.");
+    }
+    if (senhas.nova !== senhas.confirmacao) {
+      return alert("A nova senha e a confirmação não coincidem.");
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/user/trocar-senha`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          matricula: dados.matricula,
+          senhaAtual: senhas.atual,
+          senhaNova: senhas.nova,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.erro) {
+        alert(
+          data.erro === 5 ? "Senha atual incorreta." : "Erro ao alterar senha.",
+        );
+      } else {
+        alert("Senha alterada com sucesso!");
+        setSenhas({ atual: "", nova: "", confirmacao: "" });
+      }
+    } catch (err) {
+      console.error("Erro ao trocar senha:", err);
+      alert("Erro de conexão com o servidor.");
     }
   };
 

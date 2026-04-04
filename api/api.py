@@ -733,7 +733,7 @@ def getPerguntas():
 
         db.execute(
             """
-            SELECT p.texto AS enunciado, w.workshop_id AS id, w.nome AS nome
+            SELECT p.texto AS enunciado, w.id AS id, w.nome AS nome
             FROM perguntas AS p JOIN workshops AS w ON w.id = p.workshop_id 
             ORDER BY p.texto
             """

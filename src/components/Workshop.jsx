@@ -194,7 +194,6 @@ function Workshop({
               </button>
             ))}
 
-          {/* BOTÃO DE QUIZ (SÓ PARA ONLINE) */}
           {tipo === "Online" &&
             (quizLink || isAdminView) &&
             (isAdminView ? (

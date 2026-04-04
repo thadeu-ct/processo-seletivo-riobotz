@@ -628,6 +628,35 @@ def getUserWorkshops():
 '''
 ------------------ Funções das perguntas ------------------
 '''
+@app.route("/api/quiz/<int:workshop_id>", methods=["GET"])
+def get_quiz_data(workshop_id):
+    try:
+        banco = get_db_connection()
+        db = banco.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+        db.execute("SELECT id, enunciado, imagem_url, resposta_correta_index FROM perguntas WHERE workshop_id = %s", (workshop_id,))
+        perguntas_raw = db.fetchall()
+
+        quiz_formatado = []
+
+        for p in perguntas_raw:
+            db.execute("SELECT texto FROM opcoes WHERE pergunta_id = %s ORDER BY id", (p['id'],))
+            opcoes = [row['texto'] for row in db.fetchall()]
+            
+            quiz_formatado.append({
+                "pergunta": p['enunciado'],
+                "imagem": p['imagem_url'],
+                "opcoes": opcoes,
+                "respostaCorreta": p['resposta_correta_index']
+            })
+
+        db.close()
+        banco.close()
+        return jsonify(quiz_formatado)
+    except Exception as e:
+        return jsonify({"erro": str(e)}), 500
+
+
 @app.route("/api/pergunta/add", methods=["POST"])
 def addPergunta():
     texto: str = request.form.get("texto")

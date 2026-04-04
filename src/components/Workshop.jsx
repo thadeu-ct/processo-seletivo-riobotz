@@ -7,7 +7,7 @@ function Workshop({
   id,
   titulo,
   descricao,
-  videoId,
+  link,
   quizLink,
   tipo,
   dataHora,
@@ -87,11 +87,11 @@ function Workshop({
       </div>
 
       {tipo === "Online" ? (
-        videoId ? (
+        link ? (
           <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-black/60 shadow-inner">
             <iframe
               className="absolute top-0 left-0 w-full h-full"
-              src={`https://www.youtube.com/embed/${videoId}`}
+              src={`https://www.youtube.com/embed/${link}`}
               title={titulo}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
@@ -193,21 +193,34 @@ function Workshop({
                 )}
               </button>
             ))}
-          {quizLink &&
+
+          {tipo === "Online" &&
+            (quizLink || isAdminView) &&
             (isAdminView ? (
-              <Link
-                to={`/admin/quiz/${id}`}
-                className="w-full sm:w-auto px-8 py-4 rounded-full bg-yellow-500/10 border-2 border-yellow-500 text-yellow-500 font-black text-lg hover:bg-yellow-500 hover:text-[#0a1945] hover:scale-105 transition-all text-center whitespace-nowrap shadow-[0_0_15px_rgba(234,179,8,0.2)]"
-              >
-                Ver Resultados
-              </Link>
+              quizLink ? (
+                <Link
+                  to={`/admin/quiz/${id}`}
+                  className="flex-1 bg-green-600/20 border-2 border-green-500 text-green-400 font-black py-4 px-6 rounded-full hover:bg-green-500 hover:text-white transition-all text-center"
+                >
+                  Resultados
+                </Link>
+              ) : (
+                <Link
+                  to={`/admin/quiz/perguntas/${id}`}
+                  className="flex-1 bg-yellow-500/10 border-2 border-yellow-500 text-yellow-500 font-black py-4 px-6 rounded-full hover:bg-yellow-500 hover:text-[#0a1945] transition-all text-center"
+                >
+                  Configurar
+                </Link>
+              )
             ) : (
-              <Link
-                to={quizLink}
-                className="w-full sm:w-auto px-8 py-4 rounded-full bg-yellow-400 text-[#0a1945] font-black text-lg hover:bg-white hover:scale-105 transition-all shadow-lg shadow-yellow-400/20 text-center whitespace-nowrap"
-              >
-                Fazer Quiz
-              </Link>
+              quizLink && (
+                <Link
+                  to={quizLink}
+                  className="w-full sm:w-auto px-8 py-4 rounded-full bg-yellow-400 text-[#0a1945] font-black text-lg hover:bg-white hover:scale-105 transition-all shadow-lg shadow-yellow-400/20 text-center whitespace-nowrap"
+                >
+                  Fazer Quiz
+                </Link>
+              )
             ))}
         </div>
       </div>

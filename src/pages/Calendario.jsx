@@ -177,35 +177,42 @@ function Calendario() {
   const matricula = sessionStorage.getItem("matriculaUsuario");
 
   useEffect(() => {
-    fetch(`${API_URL}/workshops`, { method: "POST" })
-      .then((res) => res.json())
-      .then((data) => setWorkshopsData(data))
-      .catch((err) => console.error("Erro workshops:", err));
+    const carregarTudo = async () => {
+      try {
+        // Busca todos os workshops para a grade
+        const resW = await fetch(`${API_URL}/workshops`, { method: "POST" });
+        const dataW = await resW.json();
+        if (Array.isArray(dataW)) setWorkshopsData(dataW);
 
-    if (matricula) {
-      const formData = new FormData();
-      formData.append("matricula", matricula);
+        // Busca inscrições reais do banco
+        if (matricula) {
+          const resI = await fetch(`${API_URL}/user/workshops`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ matricula }),
+          });
+          const dataI = await resI.json();
 
-      fetch(`${API_URL}/areas`, {
-        method: "POST",
-        body: formData,
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.workshops_inscritos) {
+          if (Array.isArray(dataI)) {
             const mapa = {};
-            data.workshops_inscritos.forEach((id) => {
-              mapa[id] = true;
+            // Forçamos o ID para Number para evitar erro de string vs int
+            dataI.forEach((item) => {
+              mapa[Number(item.id)] = true;
             });
             setInscricoes(mapa);
           }
-        });
-    }
+        }
+      } catch (err) {
+        console.error("Erro ao sincronizar calendário:", err);
+      }
+    };
+
+    carregarTudo();
   }, [matricula]);
 
   const handleInscricaoReal = async (id) => {
     if (!matricula) return alert("Faça login primeiro!");
-    if (inscricoes[id]) return;
+    if (inscricoes[Number(id)]) return;
 
     try {
       const formData = new FormData();
@@ -219,8 +226,8 @@ function Calendario() {
       const data = await res.json();
 
       if (data.inscricao === 1 || !data.erro) {
-        setInscricoes((prev) => ({ ...prev, [id]: true }));
-        alert("Inscrição confirmada!");
+        setInscricoes((prev) => ({ ...prev, [Number(id)]: true }));
+        alert("Inscrição confirmada via Calendário!");
       } else {
         alert(data.erro || "Erro na inscrição");
       }
@@ -228,20 +235,6 @@ function Calendario() {
       console.error("Erro conexão:", err);
     }
   };
-
-  useEffect(() => {
-    fetch(`${API_URL}/workshops`, {
-      method: "POST",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setWorkshopsData(data);
-      })
-      .catch((err) => {
-        console.error("Erro ao buscar workshops:", err);
-        setWorkshopsData([]);
-      });
-  }, []);
 
   const workshopsProcessados = useMemo(() => {
     return workshopsData.map((ws) => {
@@ -312,7 +305,7 @@ function Calendario() {
 
   const renderWorkshopCard = (ws) => {
     const isOnline = ws.tipo === "Online";
-    const estaInscrito = inscricoes[ws.id];
+    const estaInscrito = inscricoes[Number(ws.id)];
     const estiloFaixa = obterEstiloFaixaLado(ws.areas);
 
     return (

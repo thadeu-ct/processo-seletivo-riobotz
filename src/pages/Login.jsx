@@ -85,11 +85,10 @@ function Login() {
       } else if (result.registrado === false) {
         setLoginStatus("pending_ctc");
       } else {
-        // 5. PERSISTÊNCIA DE DADOS: Mantive seus dados e adicionei tel/email caso o Telhado mande na resposta
-        // Isso ajuda a preencher o Perfil.jsx automaticamente
         sessionStorage.setItem("nomeUsuario", result.nome);
         sessionStorage.setItem("matriculaUsuario", result.matricula);
         sessionStorage.setItem("botcoinUsuario", result.botcoin);
+        sessionStorage.setItem("registrado", result.registrado);
         if (result.tel) sessionStorage.setItem("telUsuario", result.tel);
         if (result.email) sessionStorage.setItem("emailUsuario", result.email);
 

@@ -1,43 +1,55 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
-import workshopsDB from "../services/workshops.json";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
 
 function AdminQuiz() {
   const { id } = useParams();
-  const workshop = workshopsDB.find((w) => w.id === id);
+  const [workshop, setWorkshop] = useState(null);
+  const [resultados, setResultados] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Mock de dados - Mantendo os resultados que já tínhamos
-  const [resultados] = useState([
-    {
-      id: 1,
-      matricula: "202410123",
-      nome: "João Silva",
-      acertos: 8,
-      totalQuestoes: 10,
-      data: "30/03/2026 - 14:20",
-      tempo: "04:12",
-    },
-    {
-      id: 2,
-      matricula: "202410456",
-      nome: "Maria Oliveira",
-      acertos: 10,
-      totalQuestoes: 10,
-      data: "30/03/2026 - 15:05",
-      tempo: "03:45",
-    },
-    {
-      id: 3,
-      matricula: "202410789",
-      nome: "Carlos Eduardo Souza",
-      acertos: 5,
-      totalQuestoes: 10,
-      data: "29/03/2026 - 10:00",
-      tempo: "07:30",
-    },
-  ]);
+  useEffect(() => {
+    const carregarDadosAdmin = async () => {
+      try {
+        setLoading(true);
+
+        const resW = await fetch(`${API_URL}/workshops`, { method: "POST" });
+        const dataW = await resW.json();
+        const found = dataW.find((w) => Number(w.id) === Number(id));
+        setWorkshop(found);
+
+        const resR = await fetch(`${API_URL}/admin/quiz/resultados`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ workshop_id: id }),
+        });
+        const dataR = await resR.json();
+
+        if (Array.isArray(dataR)) {
+          setResultados(dataR);
+        }
+      } catch (err) {
+        console.error("Erro ao carregar dados de admin:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    carregarDadosAdmin();
+  }, [id]);
+
+  const mediaGeral = useMemo(() => {
+    if (resultados.length === 0) return "0.0";
+    const soma = resultados.reduce((acc, curr) => acc + curr.acertos, 0);
+    const total = resultados.reduce((acc, curr) => acc + curr.totalQuestoes, 0);
+    return ((soma / total) * 10).toFixed(1);
+  }, [resultados]);
+
+  if (loading)
+    return <div className="text-white text-center mt-20">Sincronizando...</div>;
 
   if (!workshop) {
     return (
@@ -52,7 +64,6 @@ function AdminQuiz() {
       <PrivateHeader />
 
       <main className="flex-grow flex flex-col items-center py-8 px-4 md:px-8">
-        {/* Voltar Minimalista */}
         <div className="w-full max-w-6xl mb-6">
           <Link
             to="/home"
@@ -75,7 +86,6 @@ function AdminQuiz() {
           </Link>
         </div>
 
-        {/* Header Principal */}
         <div className="w-full max-w-6xl mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="flex-1">
             <span className="text-yellow-500 font-black tracking-[0.3em] uppercase text-[10px] mb-3 block">
@@ -99,12 +109,13 @@ function AdminQuiz() {
               <span className="text-gray-400 text-[10px] font-black uppercase tracking-widest block mb-1">
                 Média Geral
               </span>
-              <span className="text-green-400 font-black text-3xl">7.7</span>
+              <span className="text-green-400 font-black text-3xl">
+                {mediaGeral}
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Tabela de Resultados */}
         <div className="w-full max-w-6xl bg-[#0d1b4a] border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
@@ -159,9 +170,7 @@ function AdminQuiz() {
           </div>
         </div>
 
-        {/* FOOTER DA PÁGINA: Ações de Admin */}
         <div className="w-full max-w-6xl mt-12 flex flex-col md:flex-row justify-between items-center gap-6">
-          {/* Botão de Exportação Secundário */}
           <button className="text-gray-500 hover:text-white font-black uppercase text-[10px] tracking-widest transition-colors flex items-center gap-2">
             <svg
               className="w-4 h-4"
@@ -179,7 +188,6 @@ function AdminQuiz() {
             Exportar Relatório CSV
           </button>
 
-          {/* O NOVO BOTÃO DE GESTÃO - ESTILO "ACTION" */}
           <Link
             to={`/admin/quiz/perguntas/${id}`}
             className="group flex items-center gap-6 bg-cyan-500 hover:bg-white p-2 pr-8 rounded-full transition-all duration-300 shadow-xl shadow-cyan-500/20"

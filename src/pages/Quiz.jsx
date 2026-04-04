@@ -1,53 +1,33 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
 
-const bancoDeQuizzes = {
-  "microcontroladores-1": [
-    {
-      pergunta: "O que significa a sigla PWM?",
-      imagem: null,
-      opcoes: [
-        "Pulse Wave Modulation (Modulação por Largura de Pulso)",
-        "Power With Mechanics (Potência com Mecânica)",
-        "Processador Wireless Modular",
-        "Pino de Wattagem Máxima",
-      ],
-      respostaCorreta: 0,
-    },
-    {
-      pergunta:
-        "Qual a principal diferença entre um sinal Analógico e um Digital?",
-      imagem:
-        "https://via.placeholder.com/600x300/0a1945/facc15?text=Grafico+Analogico+vs+Digital",
-      opcoes: [
-        "Analógico é mais rápido que o Digital.",
-        "Digital só tem dois estados (0 e 1), enquanto o Analógico varia continuamente.",
-        "Analógico é usado apenas em motores, Digital em LEDs.",
-        "Não existe diferença na prática.",
-      ],
-      respostaCorreta: 1,
-    },
-  ],
-  default: [
-    {
-      pergunta: "Você prestou atenção no Workshop?",
-      imagem: null,
-      opcoes: ["Sim!", "Com certeza!", "Acho que sim...", "Dormi no meio."],
-      respostaCorreta: 0,
-    },
-  ],
-};
+const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
 
 function Quiz() {
   const { id } = useParams();
-  const perguntas = bancoDeQuizzes[id] || bancoDeQuizzes["default"];
-
+  const [perguntas, setPerguntas] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [perguntaAtual, setPerguntaAtual] = useState(0);
   const [opcaoSelecionada, setOpcaoSelecionada] = useState(null);
   const [pontuacao, setPontuacao] = useState(0);
   const [mostrarResultado, setMostrarResultado] = useState(false);
+
+  useEffect(() => {
+    const fetchQuiz = async () => {
+      try {
+        const res = await fetch(`${API_URL}/quiz/${id}`);
+        const data = await res.json();
+        if (data) setPerguntas(data);
+      } catch (err) {
+        console.error("Erro ao carregar quiz:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchQuiz();
+  }, [id]);
 
   const handleResponder = () => {
     if (opcaoSelecionada === null) return;
@@ -64,6 +44,20 @@ function Quiz() {
       setMostrarResultado(true);
     }
   };
+
+  if (loading)
+    return (
+      <div className="min-h-screen bg-[#0a1945] flex items-center justify-center text-white">
+        Carregando Quiz...
+      </div>
+    );
+
+  if (perguntas.length === 0)
+    return (
+      <div className="min-h-screen bg-[#0a1945] flex items-center justify-center text-white">
+        Quiz não encontrado.
+      </div>
+    );
 
   const moedasGanhas = pontuacao * 50;
   const pergunta = perguntas[perguntaAtual];

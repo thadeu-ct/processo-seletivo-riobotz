@@ -216,16 +216,19 @@ function AdminPerguntas() {
                   <option value="" className="bg-[#0a1945]">
                     Escolha a pergunta...
                   </option>
-                  {perguntas.map((p, idx) => (
-                    <option
-                      key={idx}
-                      value={p.enunciado || p.texto}
-                      className="bg-[#0a1945]"
-                    >
-                      {(p.enunciado || p.texto || "")?.substring(0, 50)}
-                      {(p.enunciado || p.texto)?.length > 50 ? "..." : ""}
-                    </option>
-                  ))}
+                  {perguntas.map((p, idx) => {
+                    const textoPergunta = p.enunciado || p.texto || "";
+                    return (
+                      <option
+                        key={idx}
+                        value={textoPergunta}
+                        className="bg-[#0a1945]"
+                      >
+                        {textoPergunta.substring(0, 50)}
+                        {textoPergunta.length > 50 ? "..." : ""}
+                      </option>
+                    );
+                  })}
                 </select>
 
                 <input

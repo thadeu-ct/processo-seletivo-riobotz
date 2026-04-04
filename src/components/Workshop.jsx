@@ -193,21 +193,23 @@ function Workshop({
                 )}
               </button>
             ))}
-          {quizLink &&
+          {(quizLink || isAdminView) &&
             (isAdminView ? (
               <Link
                 to={`/admin/quiz/${id}`}
                 className="w-full sm:w-auto px-8 py-4 rounded-full bg-yellow-500/10 border-2 border-yellow-500 text-yellow-500 font-black text-lg hover:bg-yellow-500 hover:text-[#0a1945] hover:scale-105 transition-all text-center whitespace-nowrap shadow-[0_0_15px_rgba(234,179,8,0.2)]"
               >
-                Ver Resultados
+                {quizLink ? "Ver Resultados" : "Configurar Quiz"}
               </Link>
             ) : (
-              <Link
-                to={quizLink}
-                className="w-full sm:w-auto px-8 py-4 rounded-full bg-yellow-400 text-[#0a1945] font-black text-lg hover:bg-white hover:scale-105 transition-all shadow-lg shadow-yellow-400/20 text-center whitespace-nowrap"
-              >
-                Fazer Quiz
-              </Link>
+              quizLink && (
+                <Link
+                  to={quizLink}
+                  className="w-full sm:w-auto px-8 py-4 rounded-full bg-yellow-400 text-[#0a1945] font-black text-lg hover:bg-white hover:scale-105 transition-all shadow-lg shadow-yellow-400/20 text-center whitespace-nowrap"
+                >
+                  Fazer Quiz
+                </Link>
+              )
             ))}
         </div>
       </div>

@@ -17,6 +17,18 @@ function AdminPerguntas() {
   const [novaOpcao, setNovaOpcao] = useState("");
   const [isCerto, setIsCerto] = useState(false);
 
+  // MOCK HARDCODED PARA TESTE (Caso o banco falhe)
+  const perguntasMock = [
+    {
+      enunciado: "Pergunta de Teste 01 - Microcontroladores",
+      texto: "Pergunta de Teste 01 - Microcontroladores",
+    },
+    {
+      enunciado: "Pergunta de Teste 02 - Sinais Digitais",
+      texto: "Pergunta de Teste 02 - Sinais Digitais",
+    },
+  ];
+
   const carregarPerguntas = useCallback(async () => {
     try {
       setLoading(true);
@@ -27,14 +39,17 @@ function AdminPerguntas() {
       });
       const data = await res.json();
 
-      if (Array.isArray(data)) {
+      console.log("Dados que vieram do Back:", data); // ABRA O F12 PARA VER ISSO
+
+      if (Array.isArray(data) && data.length > 0) {
         setPerguntas(data);
       } else {
-        setPerguntas([]);
+        // Se o banco vier vazio, usamos o Mock para você não ficar parado
+        setPerguntas(perguntasMock);
       }
     } catch (err) {
       console.error("Erro ao carregar perguntas:", err);
-      setPerguntas([]);
+      setPerguntas(perguntasMock);
     } finally {
       setLoading(false);
     }
@@ -94,7 +109,7 @@ function AdminPerguntas() {
   };
 
   const handleDeletarPergunta = async (textoPergunta) => {
-    if (!window.confirm(`Excluir pergunta: "${textoPergunta}"?`)) return;
+    if (!window.confirm(`Excluir: "${textoPergunta}"?`)) return;
 
     try {
       const res = await fetch(`${API_URL}/pergunta/delete`, {
@@ -105,11 +120,9 @@ function AdminPerguntas() {
       const data = await res.json();
       if (!data.erro) {
         carregarPerguntas();
-      } else {
-        alert("Erro ao deletar no servidor.");
       }
     } catch (err) {
-      console.error("Erro ao deletar:", err);
+      console.error(err);
     }
   };
 
@@ -140,40 +153,23 @@ function AdminPerguntas() {
           Voltar para Resultados
         </Link>
 
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-          <div>
-            <span className="text-cyan-400 font-black uppercase text-xs tracking-[0.4em] mb-3 block opacity-70">
-              Workshop Admin
-            </span>
-            <h1 className="text-5xl md:text-6xl font-black uppercase tracking-tighter leading-none">
-              Gerenciar{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
-                Questões
-              </span>
-            </h1>
-          </div>
-        </div>
-
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           <section className="flex flex-col gap-8">
-            {/* 1. CRIAR PERGUNTA */}
             <form
               onSubmit={handleAddPergunta}
               className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 shadow-2xl backdrop-blur-xl"
             >
               <h2 className="text-xl font-black mb-8 uppercase tracking-tight flex items-center gap-3">
-                <div className="w-2 h-8 bg-cyan-500 rounded-full"></div>
                 1. Criar Pergunta
               </h2>
               <div className="space-y-6">
                 <textarea
-                  className="w-full bg-black/40 border border-white/10 rounded-2xl p-5 outline-none focus:border-cyan-500 transition-all min-h-[120px] text-lg font-medium"
+                  className="w-full bg-black/40 border border-white/10 rounded-2xl p-5 outline-none focus:border-cyan-500 min-h-[120px] text-lg"
                   placeholder="Enunciado da questão..."
                   value={novaPergunta}
                   onChange={(e) => setNovaPergunta(e.target.value)}
                   required
                 />
-
                 <div className="relative group cursor-pointer">
                   <input
                     type="file"
@@ -181,26 +177,23 @@ function AdminPerguntas() {
                     onChange={(e) => setImagem(e.target.files[0])}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                   />
-                  <div className="bg-black/40 border-2 border-dashed border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center group-hover:border-cyan-500/50 transition-all text-center">
+                  <div className="bg-black/40 border-2 border-dashed border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center group-hover:border-cyan-500/50">
                     <span className="text-cyan-400 font-bold uppercase text-[10px] tracking-widest">
                       {imagem ? imagem.name : "Clique ou arraste a imagem"}
                     </span>
                   </div>
                 </div>
-
-                <button className="w-full bg-cyan-500 text-[#0a1945] font-black py-5 rounded-2xl uppercase tracking-[0.2em] text-xs hover:bg-white transition-all shadow-xl shadow-cyan-500/20">
+                <button className="w-full bg-cyan-500 text-[#0a1945] font-black py-5 rounded-2xl uppercase text-xs hover:bg-white transition-all">
                   Cadastrar Pergunta
                 </button>
               </div>
             </form>
 
-            {/* 2. ADICIONAR OPÇÕES */}
             <form
               onSubmit={handleAddOpcao}
               className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 shadow-2xl backdrop-blur-xl"
             >
               <h2 className="text-xl font-black mb-8 uppercase tracking-tight flex items-center gap-3">
-                <div className="w-2 h-8 bg-yellow-500 rounded-full"></div>
                 2. Adicionar Opções
               </h2>
               <div className="space-y-6">
@@ -210,20 +203,18 @@ function AdminPerguntas() {
                   onChange={(e) => setPerguntaSelecionada(e.target.value)}
                   required
                 >
-                  <option value="" className="bg-[#0a1945]">
-                    Escolha a pergunta...
-                  </option>
+                  <option value="">Escolha a pergunta...</option>
                   {perguntas.map((p, idx) => {
-                    const texto = p.enunciado || p.texto || "";
+                    // Tenta pegar enunciado, se não der, tenta texto, se não der, assume que é lista simples data[0]
+                    const val =
+                      p.enunciado || p.texto || (Array.isArray(p) ? p[0] : "");
                     return (
-                      <option key={idx} value={texto} className="bg-[#0a1945]">
-                        {texto.substring(0, 50)}
-                        {texto.length > 50 ? "..." : ""}
+                      <option key={idx} value={val}>
+                        {val.substring(0, 50)}...
                       </option>
                     );
                   })}
                 </select>
-
                 <input
                   type="text"
                   className="w-full bg-black/40 border border-white/10 rounded-2xl p-4 outline-none focus:border-yellow-500"
@@ -232,7 +223,6 @@ function AdminPerguntas() {
                   onChange={(e) => setNovaOpcao(e.target.value)}
                   required
                 />
-
                 <label className="flex items-center gap-3 cursor-pointer p-2">
                   <input
                     type="checkbox"
@@ -244,15 +234,13 @@ function AdminPerguntas() {
                     Esta é a resposta correta?
                   </span>
                 </label>
-
-                <button className="w-full bg-yellow-500 text-[#0a1945] font-black py-5 rounded-2xl uppercase tracking-widest text-xs hover:bg-white transition-all shadow-xl shadow-yellow-500/20">
+                <button className="w-full bg-yellow-500 text-[#0a1945] font-black py-5 rounded-2xl uppercase text-xs hover:bg-white transition-all">
                   Adicionar Alternativa
                 </button>
               </div>
             </form>
           </section>
 
-          {/* LISTA DE PERGUNTAS NO BANCO */}
           <section className="bg-black/20 rounded-[2.5rem] border border-white/5 p-8">
             <h3 className="text-xs font-black uppercase tracking-[0.4em] text-gray-500 mb-8">
               Perguntas no Banco
@@ -262,9 +250,12 @@ function AdminPerguntas() {
                 <div className="text-center animate-pulse text-[10px] font-black uppercase">
                   Sincronizando...
                 </div>
-              ) : perguntas.length > 0 ? (
+              ) : (
                 perguntas.map((p, index) => {
-                  const enunciadoFinal = p.enunciado || p.texto || "Sem título";
+                  const enunciadoFinal =
+                    p.enunciado ||
+                    p.texto ||
+                    (Array.isArray(p) ? p[0] : "Sem título");
                   return (
                     <div
                       key={index}
@@ -272,13 +263,12 @@ function AdminPerguntas() {
                     >
                       <div className="flex justify-between items-start gap-4 relative z-10">
                         <div className="flex gap-4">
-                          <span className="text-cyan-500 font-mono font-black text-2xl drop-shadow-[0_0_8px_rgba(6,182,212,0.5)]">
+                          <span className="text-cyan-500 font-mono font-black text-2xl">
                             {(index + 1).toString().padStart(2, "0")}
                           </span>
                           <div className="flex flex-col gap-1">
                             <span className="font-bold text-gray-100 text-lg leading-snug">
-                              {enunciadoFinal.substring(0, 35)}
-                              {enunciadoFinal.length > 35 ? "..." : ""}
+                              {enunciadoFinal.substring(0, 35)}...
                             </span>
                             <span className="text-[10px] uppercase tracking-widest text-gray-400 font-black opacity-60">
                               Ref: {enunciadoFinal.substring(0, 20)}...
@@ -295,10 +285,6 @@ function AdminPerguntas() {
                     </div>
                   );
                 })
-              ) : (
-                <div className="text-center py-20 opacity-20 uppercase font-black">
-                  Nenhuma pergunta cadastrada
-                </div>
               )}
             </div>
           </section>

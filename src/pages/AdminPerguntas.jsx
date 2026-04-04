@@ -190,10 +190,43 @@ function AdminPerguntas() {
                     required
                   >
                     <option value="">Escolha a pergunta...</option>
-                    {perguntas.map((p, idx) => (
-                      <option key={idx} value={p[0]}>
-                        {p.enunciado}
-                      </option>
+                    {perguntas.map((p, index) => (
+                      <div
+                        key={index}
+                        className="flex flex-col gap-3 p-6 bg-white/5 rounded-3xl border border-white/10 hover:border-cyan-500/50 hover:bg-white/[0.07] transition-all group relative overflow-hidden"
+                      >
+                        <div className="absolute -right-4 -top-4 w-24 h-24 bg-cyan-500/10 blur-3xl group-hover:bg-cyan-500/20 transition-colors"></div>
+
+                        <div className="flex justify-between items-start gap-4 relative z-10">
+                          <div className="flex gap-4">
+                            <span className="text-cyan-500 font-mono font-black text-2xl drop-shadow-[0_0_8px_rgba(6,182,212,0.5)]">
+                              {(index + 1).toString().padStart(2, "0")}
+                            </span>
+
+                            <div className="flex flex-col gap-1">
+                              <span className="font-bold text-gray-100 text-lg leading-snug">
+                                {p.enunciado ||
+                                  p.texto ||
+                                  "Texto não encontrado"}
+                              </span>
+                              {p.nome && (
+                                <span className="text-[10px] uppercase tracking-widest text-gray-500 font-black">
+                                  Workshop: {p.nome}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          <button
+                            className="opacity-0 group-hover:opacity-100 text-red-500/50 hover:text-red-500 transition-all uppercase text-[10px] font-black tracking-tighter"
+                            onClick={() => {
+                              /* fazer a função de deletar */
+                            }}
+                          >
+                            [ Excluir ]
+                          </button>
+                        </div>
+                      </div>
                     ))}
                   </select>
                 </div>

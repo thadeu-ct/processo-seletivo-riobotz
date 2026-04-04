@@ -756,7 +756,7 @@ def getPerguntas():
 def addOpcao():
     pergunta: str = request.form.get("pergunta")
     texto: str = request.form.get("opcao")
-    is_certo: bool = request.form.get("is_certo")
+    is_certo: bool = bool(request.form.get("is_certo"))
 
     try:
         banco = get_db_connection()

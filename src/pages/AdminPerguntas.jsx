@@ -219,11 +219,11 @@ function AdminPerguntas() {
                   {perguntas.map((p, idx) => (
                     <option
                       key={idx}
-                      value={p.enunciado}
+                      value={p.enunciado || p.texto}
                       className="bg-[#0a1945]"
                     >
-                      {p.enunciado.substring(0, 50)}
-                      {p.enunciado.length > 50 ? "..." : ""}
+                      {(p.enunciado || p.texto || "")?.substring(0, 50)}
+                      {(p.enunciado || p.texto)?.length > 50 ? "..." : ""}
                     </option>
                   ))}
                 </select>
@@ -279,16 +279,24 @@ function AdminPerguntas() {
                         </span>
                         <div className="flex flex-col gap-1">
                           <span className="font-bold text-gray-100 text-lg leading-snug">
-                            {p.enunciado.substring(0, 35)}
-                            {p.enunciado.length > 35 ? "..." : ""}
+                            {(
+                              p.enunciado ||
+                              p.texto ||
+                              "Sem título"
+                            )?.substring(0, 35)}
+                            {(p.enunciado || p.texto)?.length > 35 ? "..." : ""}
                           </span>
                           <span className="text-[10px] uppercase tracking-widest text-gray-500 font-black">
-                            Ref: {p.enunciado.substring(0, 20)}...
+                            Ref:{" "}
+                            {(p.enunciado || p.texto || "")?.substring(0, 20)}
+                            ...
                           </span>
                         </div>
                       </div>
                       <button
-                        onClick={() => handleDeletarPergunta(p.enunciado)}
+                        onClick={() =>
+                          handleDeletarPergunta(p.enunciado || p.texto)
+                        }
                         className="text-red-500/30 hover:text-red-500 transition-colors uppercase text-[10px] font-black"
                       >
                         [ Excluir ]

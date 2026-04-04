@@ -4,9 +4,7 @@ from flask_cors import CORS
 from .functions import *
 import psycopg2
 import psycopg2.extras
-import os
 import random
-
 
 load_dotenv()
 
@@ -21,10 +19,10 @@ def date():
         "date": comecou_processo(datetime.now())
     }
 
+
 '''
 ------------------ Funções de Login/Cadastro ------------------
 '''
-
 @app.route("/api/cadastro", methods=["POST"])
 def cadastro():
     nome: str = request.form.get("nome")
@@ -78,11 +76,7 @@ def cadastro():
         banco.close()
     except Exception as e:
         return handle_error(e), 500
-        # print(e)
-        # return jsonify({
-        #     "erro": str(e)
-        # }), 500
-
+    
     return {
         "erro": 0
     }
@@ -168,10 +162,6 @@ def escolha():
         return jsonify({"erro": 0})
     except Exception as e:
         return handle_error(e), 500
-        # print(e)
-        # return jsonify({
-        #     "erro": str(e)
-        # }), 500
 
 
 @app.route("/api/areas", methods=["POST"])
@@ -202,10 +192,6 @@ def areas():
         }
     except Exception as e:
         return handle_error(e), 500
-        # print(e)
-        # return jsonify({
-        #     "erro": str(e)
-        # }), 500
 
 
 '''
@@ -229,10 +215,6 @@ def candidatos():
         return jsonify(rows)
     except Exception as e:
         return handle_error(e), 500
-        # print(e)
-        # return jsonify({
-        #     "erro": str(e)
-        # }), 500
 
 
 @app.route("/api/registrar", methods=["POST"])
@@ -266,10 +248,6 @@ def registrar():
         banco.close()
     except Exception as e:
         return handle_error(e), 500
-        # print(e)
-        # return jsonify({
-        #     "erro": str(e)
-        # }), 500
     
     return {
         "erro": 0
@@ -352,10 +330,6 @@ def geraCodigo():
         banco.close()
     except Exception as e:
         return handle_error(e), 500
-        # print(e)
-        # return jsonify({
-        #     "erro": str(e)
-        # }), 500
 
     return {
         "erro": 0
@@ -440,10 +414,6 @@ def alteracaoBotcoin():
         banco.close()
     except Exception as e:
         return handle_error(e), 500
-        # print(e)
-        # return jsonify({
-        #     "erro": str(e)
-        # }), 500
 
     user = get_user(mat)
     if ("erro" in user.keys()):
@@ -568,10 +538,6 @@ def inscrever_workshops():
         }
     except Exception as e:
         return handle_error(e), 500
-        # print(e)
-        # return jsonify({
-        #     "erro": str(e)
-        # }), 500
 
 
 @app.route("/api/workshops/inscritos", methods=["POST"])
@@ -655,6 +621,7 @@ def getUserWorkshops():
     except Exception as e:
         print(f"Erro na rota user/workshops: {e}")
         return jsonify({"erro": str(e)}), 500
+
 
 '''
 ------------------ Funções das perguntas ------------------

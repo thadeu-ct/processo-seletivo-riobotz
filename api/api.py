@@ -663,6 +663,7 @@ def getUserWorkshops():
 def get_quiz_data():
     data = request.get_json(silent=True)
     workshop_id = data.get("id") if data else request.form.get("id")
+    qtd = int((data.get("qtd") if data else request.form.get("qtd")) or 5) 
 
     try:
         banco = get_db_connection()
@@ -683,12 +684,12 @@ def get_quiz_data():
                 SELECT * FROM perguntas
                 WHERE workshop_id = %s
                 ORDER BY RANDOM()
-                LIMIT 5
+                LIMIT %s
             ) AS p
             JOIN opcoes AS o ON o.pergunta_ref = p.texto
             GROUP BY p.texto, p.imagem
             """,
-            (workshop_id,)
+            (workshop_id, qtd)
         )
 
         rows = db.fetchall()

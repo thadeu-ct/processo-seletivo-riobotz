@@ -48,8 +48,31 @@ function AdminQuiz() {
     return ((soma / total) * 10).toFixed(1);
   }, [resultados]);
 
-  if (loading)
-    return <div className="text-white text-center mt-20">Sincronizando...</div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0a1945] flex flex-col items-center justify-center font-sans">
+        <div className="relative flex items-center justify-center w-32 h-32">
+          <svg
+            className="w-full h-full text-yellow-400 opacity-80 drop-shadow-[0_0_15px_rgba(250,204,21,0.5)]"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="1"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+            />
+          </svg>
+          <div className="absolute inset-0 border-4 border-yellow-400/20 border-t-yellow-400 rounded-full animate-spin"></div>
+        </div>
+        <h2 className="text-yellow-400 font-black uppercase tracking-[0.3em] text-xs mt-8 animate-pulse">
+          Sincronizando Resultados...
+        </h2>
+      </div>
+    );
+  }
 
   if (!workshop) {
     return (

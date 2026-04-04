@@ -728,7 +728,7 @@ def addPergunta():
         return handle_error(e), 500
 
 
-@app.route("/api/perguntas/delete", methods=["POST"])
+@app.route("/api/pergunta/delete", methods=["POST"])
 def deletePergunta():
     data = request.get_json(silent=True)
     texto: str = data.get("texto") if data else request.form.get("texto")

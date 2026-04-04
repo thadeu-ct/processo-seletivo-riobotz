@@ -4,9 +4,7 @@ from flask_cors import CORS
 from .functions import *
 import psycopg2
 import psycopg2.extras
-import os
 import random
-
 
 load_dotenv()
 
@@ -21,10 +19,10 @@ def date():
         "date": comecou_processo(datetime.now())
     }
 
+
 '''
 ------------------ Funções de Login/Cadastro ------------------
 '''
-
 @app.route("/api/cadastro", methods=["POST"])
 def cadastro():
     nome: str = request.form.get("nome")
@@ -78,11 +76,7 @@ def cadastro():
         banco.close()
     except Exception as e:
         return handle_error(e), 500
-        # print(e)
-        # return jsonify({
-        #     "erro": str(e)
-        # }), 500
-
+    
     return {
         "erro": 0
     }
@@ -168,10 +162,6 @@ def escolha():
         return jsonify({"erro": 0})
     except Exception as e:
         return handle_error(e), 500
-        # print(e)
-        # return jsonify({
-        #     "erro": str(e)
-        # }), 500
 
 
 @app.route("/api/areas", methods=["POST"])
@@ -202,10 +192,6 @@ def areas():
         }
     except Exception as e:
         return handle_error(e), 500
-        # print(e)
-        # return jsonify({
-        #     "erro": str(e)
-        # }), 500
 
 
 '''
@@ -229,10 +215,6 @@ def candidatos():
         return jsonify(rows)
     except Exception as e:
         return handle_error(e), 500
-        # print(e)
-        # return jsonify({
-        #     "erro": str(e)
-        # }), 500
 
 
 @app.route("/api/registrar", methods=["POST"])
@@ -266,10 +248,6 @@ def registrar():
         banco.close()
     except Exception as e:
         return handle_error(e), 500
-        # print(e)
-        # return jsonify({
-        #     "erro": str(e)
-        # }), 500
     
     return {
         "erro": 0
@@ -352,10 +330,6 @@ def geraCodigo():
         banco.close()
     except Exception as e:
         return handle_error(e), 500
-        # print(e)
-        # return jsonify({
-        #     "erro": str(e)
-        # }), 500
 
     return {
         "erro": 0
@@ -440,10 +414,6 @@ def alteracaoBotcoin():
         banco.close()
     except Exception as e:
         return handle_error(e), 500
-        # print(e)
-        # return jsonify({
-        #     "erro": str(e)
-        # }), 500
 
     user = get_user(mat)
     if ("erro" in user.keys()):
@@ -568,10 +538,6 @@ def inscrever_workshops():
         }
     except Exception as e:
         return handle_error(e), 500
-        # print(e)
-        # return jsonify({
-        #     "erro": str(e)
-        # }), 500
 
 
 @app.route("/api/workshops/inscritos", methods=["POST"])
@@ -656,6 +622,7 @@ def getUserWorkshops():
         print(f"Erro na rota user/workshops: {e}")
         return jsonify({"erro": str(e)}), 500
 
+
 '''
 ------------------ Funções das perguntas ------------------
 '''
@@ -663,6 +630,7 @@ def getUserWorkshops():
 def get_quiz_data():
     data = request.get_json(silent=True)
     workshop_id = data.get("id") if data else request.form.get("id")
+    qtd = int((data.get("qtd") if data else request.form.get("qtd")) or 5) 
 
     try:
         banco = get_db_connection()
@@ -677,17 +645,18 @@ def get_quiz_data():
                     JSON_BUILD_OBJECT(
                         'texto', o.texto,
                         'correta', o.is_certo
-                    )
+                    ) ORDER BY RANDOM()
                 ) AS opcoes
             FROM (
                 SELECT * FROM perguntas
                 WHERE workshop_id = %s
-                LIMIT 5
+                ORDER BY RANDOM()
+                LIMIT %s
             ) AS p
             JOIN opcoes AS o ON o.pergunta_ref = p.texto
             GROUP BY p.texto, p.imagem
             """,
-            (workshop_id,)
+            (workshop_id, qtd)
         )
 
         rows = db.fetchall()
@@ -715,6 +684,39 @@ def addPergunta():
         db.execute(
             "INSERT INTO perguntas VALUES (%s, %s, %s)",
             (texto, image_bi, workshop_id)
+        )
+
+        banco.commit()
+
+        db.close()
+        banco.close()
+        return {
+            "erro": 0
+        }
+    except Exception as e:
+        return handle_error(e), 500
+
+
+@app.route("/api/pergunta/delete", methods=["POST"])
+def deletePergunta():
+    data = request.get_json(silent=True)
+    texto: str = data.get("texto") if data else request.form.get("texto")
+
+    try:
+        banco = get_db_connection()
+        db = banco.cursor()
+
+        db.execute(
+            """
+            DELETE FROM opcoes where pergunta_ref = %s
+            """,
+            (texto, )
+        )
+        db.execute(
+            """
+            DELETE FROM perguntas WHERE texto = %s            
+            """,
+            (texto, )
         )
 
         banco.commit()
@@ -756,14 +758,14 @@ def getPerguntas():
 def addOpcao():
     pergunta: str = request.form.get("pergunta")
     texto: str = request.form.get("opcao")
-    is_certo: bool = request.form.get("is_certo")
+    is_certo: bool = request.form.get("is_certo").lower() == "true"
 
     try:
         banco = get_db_connection()
         db = banco.cursor()
 
         db.execute(
-            "INSERT INTO opcoes VALUES (%s, %s, %s)",
+            "INSERT INTO opcoes (texto, pergunta_ref, is_certo) VALUES (%s, %s, %s)",
             (texto, pergunta, is_certo)
         )
 

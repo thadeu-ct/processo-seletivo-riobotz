@@ -25,7 +25,12 @@ function AdminPerguntas() {
         body: JSON.stringify({ id: id }),
       });
       const data = await res.json();
-      setPerguntas(data);
+      if (Array.isArray(data)) {
+        setPerguntas(data);
+      } else {
+        console.error("O Back-end não retornou um array:", data);
+        setPerguntas([]);
+      }
     } catch (err) {
       console.error("Erro ao carregar perguntas:", err);
     } finally {

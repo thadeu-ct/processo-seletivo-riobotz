@@ -682,6 +682,7 @@ def get_quiz_data():
             FROM (
                 SELECT * FROM perguntas
                 WHERE workshop_id = %s
+                ORDER BY RANDOM()
                 LIMIT 5
             ) AS p
             JOIN opcoes AS o ON o.pergunta_ref = p.texto

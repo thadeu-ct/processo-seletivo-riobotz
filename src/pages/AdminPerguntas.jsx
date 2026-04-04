@@ -15,6 +15,7 @@ function AdminPerguntas() {
 
   const [perguntaSelecionada, setPerguntaSelecionada] = useState("");
   const [novaOpcao, setNovaOpcao] = useState("");
+  const [isCerto, setIsCerto] = useState(false);
 
   const carregarPerguntas = useCallback(async () => {
     try {
@@ -25,11 +26,9 @@ function AdminPerguntas() {
         body: JSON.stringify({ id: id }),
       });
       const data = await res.json();
+
       if (Array.isArray(data)) {
         setPerguntas(data);
-      } else {
-        console.error("O Back-end não retornou um array:", data);
-        setPerguntas([]);
       }
     } catch (err) {
       console.error("Erro ao carregar perguntas:", err);
@@ -49,37 +48,50 @@ function AdminPerguntas() {
     formData.append("id", id);
     if (imagem) formData.append("image", imagem);
 
-    const res = await fetch(`${API_URL}/pergunta/add`, {
-      method: "POST",
-      body: formData,
-    });
-    const data = await res.json();
-    if (!data.erro) {
-      setNovaPergunta("");
-      setImagem(null);
-      carregarPerguntas();
+    try {
+      const res = await fetch(`${API_URL}/pergunta/add`, {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.erro === 0) {
+        setNovaPergunta("");
+        setImagem(null);
+        carregarPerguntas();
+        alert("Pergunta cadastrada!");
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
   const handleAddOpcao = async (e) => {
     e.preventDefault();
+    if (!perguntaSelecionada) return alert("Selecione uma pergunta!");
+
     const formData = new FormData();
     formData.append("pergunta", perguntaSelecionada);
     formData.append("opcao", novaOpcao);
+    formData.append("is_certo", isCerto);
 
-    const res = await fetch(`${API_URL}/opcoes/add`, {
-      method: "POST",
-      body: formData,
-    });
-    const data = await res.json();
-    if (!data.erro) {
-      setNovaOpcao("");
-      alert("Opção adicionada com sucesso!");
+    try {
+      const res = await fetch(`${API_URL}/opcoes/add`, {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.erro === 0) {
+        setNovaOpcao("");
+        setIsCerto(false);
+        alert("Opção adicionada com sucesso!");
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#0a1945] text-white flex flex-col font-sans selection:bg-cyan-500 selection:text-white">
+    <div className="min-h-screen bg-[#0a1945] text-white flex flex-col font-sans">
       <PrivateHeader />
 
       <main className="flex-grow max-w-6xl mx-auto w-full py-12 px-6">
@@ -129,41 +141,20 @@ function AdminPerguntas() {
                 <div className="w-2 h-8 bg-cyan-500 rounded-full"></div>
                 1. Criar Pergunta
               </h2>
-
               <div className="space-y-6">
-                <div className="flex flex-col gap-3">
-                  <label className="text-[10px] uppercase font-black tracking-widest text-gray-500 ml-1">
-                    Enunciado
-                  </label>
-                  <textarea
-                    className="w-full bg-black/40 border border-white/10 rounded-2xl p-5 outline-none focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10 transition-all min-h-[120px] text-lg font-medium"
-                    placeholder="Qual a função do componente X?"
-                    value={novaPergunta}
-                    onChange={(e) => setNovaPergunta(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div className="flex flex-col gap-3">
-                  <label className="text-[10px] uppercase font-black tracking-widest text-gray-500 ml-1">
-                    Imagem de Apoio
-                  </label>
-                  <div className="relative group cursor-pointer">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => setImagem(e.target.files[0])}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                    />
-                    <div className="bg-black/40 border-2 border-dashed border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center group-hover:border-cyan-500/50 transition-all">
-                      <span className="text-cyan-400 font-bold uppercase text-[10px] tracking-widest">
-                        {imagem ? imagem.name : "Clique ou arraste a imagem"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <button className="w-full bg-cyan-500 text-[#0a1945] font-black py-5 rounded-2xl uppercase tracking-[0.2em] text-xs hover:bg-white hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-cyan-500/20">
+                <textarea
+                  className="w-full bg-black/40 border border-white/10 rounded-2xl p-5 outline-none focus:border-cyan-500 transition-all min-h-[120px]"
+                  placeholder="Enunciado da questão..."
+                  value={novaPergunta}
+                  onChange={(e) => setNovaPergunta(e.target.value)}
+                  required
+                />
+                <input
+                  type="file"
+                  onChange={(e) => setImagem(e.target.files[0])}
+                  className="text-xs"
+                />
+                <button className="w-full bg-cyan-500 text-[#0a1945] font-black py-5 rounded-2xl uppercase tracking-widest text-xs hover:bg-white transition-all">
                   Cadastrar Pergunta
                 </button>
               </div>
@@ -177,119 +168,95 @@ function AdminPerguntas() {
                 <div className="w-2 h-8 bg-yellow-500 rounded-full"></div>
                 2. Adicionar Opções
               </h2>
-
               <div className="space-y-6">
-                <div className="flex flex-col gap-3">
-                  <label className="text-[10px] uppercase font-black tracking-widest text-gray-500 ml-1">
-                    Selecionar Pergunta
-                  </label>
-                  <select
-                    className="w-full bg-black/40 border border-white/10 rounded-2xl p-4 outline-none focus:border-yellow-500 transition-all appearance-none cursor-pointer"
-                    value={perguntaSelecionada}
-                    onChange={(e) => setPerguntaSelecionada(e.target.value)}
-                    required
-                  >
-                    <option value="">Escolha a pergunta...</option>
-                    {perguntas.map((p, index) => (
-                      <div
-                        key={index}
-                        className="flex flex-col gap-3 p-6 bg-white/5 rounded-3xl border border-white/10 hover:border-cyan-500/50 hover:bg-white/[0.07] transition-all group relative overflow-hidden"
-                      >
-                        <div className="absolute -right-4 -top-4 w-24 h-24 bg-cyan-500/10 blur-3xl group-hover:bg-cyan-500/20 transition-colors"></div>
+                <select
+                  className="w-full bg-black/40 border border-white/10 rounded-2xl p-4 outline-none focus:border-yellow-500 text-white"
+                  value={perguntaSelecionada}
+                  onChange={(e) => setPerguntaSelecionada(e.target.value)}
+                  required
+                >
+                  <option value="" className="bg-[#0a1945]">
+                    Escolha a pergunta...
+                  </option>
+                  {perguntas.map((p, idx) => (
+                    <option
+                      key={idx}
+                      value={p.enunciado}
+                      className="bg-[#0a1945]"
+                    >
+                      {p.enunciado}
+                    </option>
+                  ))}
+                </select>
 
-                        <div className="flex justify-between items-start gap-4 relative z-10">
-                          <div className="flex gap-4">
-                            <span className="text-cyan-500 font-mono font-black text-2xl drop-shadow-[0_0_8px_rgba(6,182,212,0.5)]">
-                              {(index + 1).toString().padStart(2, "0")}
-                            </span>
+                <input
+                  type="text"
+                  className="w-full bg-black/40 border border-white/10 rounded-2xl p-4 outline-none focus:border-yellow-500"
+                  placeholder="Texto da alternativa..."
+                  value={novaOpcao}
+                  onChange={(e) => setNovaOpcao(e.target.value)}
+                  required
+                />
 
-                            <div className="flex flex-col gap-1">
-                              <span className="font-bold text-gray-100 text-lg leading-snug">
-                                {p.enunciado ||
-                                  p.texto ||
-                                  "Texto não encontrado"}
-                              </span>
-                              {p.nome && (
-                                <span className="text-[10px] uppercase tracking-widest text-gray-500 font-black">
-                                  Workshop: {p.nome}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-
-                          <button
-                            className="opacity-0 group-hover:opacity-100 text-red-500/50 hover:text-red-500 transition-all uppercase text-[10px] font-black tracking-tighter"
-                            onClick={() => {
-                              /* fazer a função de deletar */
-                            }}
-                          >
-                            [ Excluir ]
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="flex flex-col gap-3">
-                  <label className="text-[10px] uppercase font-black tracking-widest text-gray-500 ml-1">
-                    Texto da Opção
-                  </label>
+                <label className="flex items-center gap-3 cursor-pointer p-2">
                   <input
-                    type="text"
-                    className="w-full bg-black/40 border border-white/10 rounded-2xl p-4 outline-none focus:border-yellow-500 transition-all"
-                    placeholder="Ex: Alumínio 7075-T6"
-                    value={novaOpcao}
-                    onChange={(e) => setNovaOpcao(e.target.value)}
-                    required
+                    type="checkbox"
+                    checked={isCerto}
+                    onChange={(e) => setIsCerto(e.target.checked)}
+                    className="w-5 h-5 accent-yellow-500"
                   />
-                </div>
+                  <span className="text-xs font-bold uppercase tracking-widest text-gray-400">
+                    Esta é a resposta correta?
+                  </span>
+                </label>
 
-                <button className="w-full bg-yellow-500 text-[#0a1945] font-black py-5 rounded-2xl uppercase tracking-[0.2em] text-xs hover:bg-white hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-yellow-500/20">
+                <button className="w-full bg-yellow-500 text-[#0a1945] font-black py-5 rounded-2xl uppercase tracking-widest text-xs hover:bg-white transition-all">
                   Adicionar Alternativa
                 </button>
               </div>
             </form>
           </section>
 
-          <section className="bg-black/20 rounded-[2.5rem] border border-white/5 p-2">
-            <div className="bg-[#0a1945] rounded-[2.2rem] p-8 min-h-[600px]">
-              <h3 className="text-xs font-black uppercase tracking-[0.4em] text-gray-500 mb-8 ml-2">
-                Perguntas no Banco
-              </h3>
-
-              <div className="space-y-4">
-                {loading ? (
-                  <div className="p-10 text-center animate-pulse uppercase text-[10px] font-black tracking-widest text-gray-600">
-                    Sincronizando com o Supabase...
-                  </div>
-                ) : perguntas.length > 0 ? (
-                  perguntas.map((p, index) => (
-                    <div
-                      key={index}
-                      className="flex flex-col gap-2 p-6 bg-white/5 rounded-3xl border border-white/5 hover:border-cyan-500/30 transition-all group"
-                    >
-                      <div className="flex justify-between items-start gap-4">
-                        <div className="flex gap-4">
-                          <span className="text-cyan-500 font-mono font-bold text-lg">
-                            {(index + 1).toString().padStart(2, "0")}
-                          </span>
-                          <span className="font-bold text-gray-200 text-lg leading-snug">
+          <section className="bg-black/20 rounded-[2.5rem] border border-white/5 p-8">
+            <h3 className="text-xs font-black uppercase tracking-[0.4em] text-gray-500 mb-8">
+              Perguntas no Banco
+            </h3>
+            <div className="space-y-4">
+              {loading ? (
+                <div className="text-center animate-pulse text-[10px] font-black uppercase">
+                  Sincronizando...
+                </div>
+              ) : perguntas.length > 0 ? (
+                perguntas.map((p, index) => (
+                  <div
+                    key={index}
+                    className="flex flex-col gap-3 p-6 bg-white/5 rounded-3xl border border-white/10 hover:border-cyan-500/50 transition-all group relative overflow-hidden"
+                  >
+                    <div className="flex justify-between items-start gap-4 relative z-10">
+                      <div className="flex gap-4">
+                        <span className="text-cyan-500 font-mono font-black text-2xl drop-shadow-[0_0_8px_rgba(6,182,212,0.5)]">
+                          {(index + 1).toString().padStart(2, "0")}
+                        </span>
+                        <div className="flex flex-col gap-1">
+                          <span className="font-bold text-gray-100 text-lg leading-snug">
                             {p.enunciado}
                           </span>
+                          <span className="text-[10px] uppercase tracking-widest text-gray-500 font-black">
+                            ID do Workshop: {id}
+                          </span>
                         </div>
-                        <button className="text-red-500/30 hover:text-red-500 transition-colors uppercase text-[10px] font-black">
-                          [ Excluir ]
-                        </button>
                       </div>
+                      <button className="text-red-500/30 hover:text-red-500 transition-colors uppercase text-[10px] font-black">
+                        [ Excluir ]
+                      </button>
                     </div>
-                  ))
-                ) : (
-                  <div className="text-center py-20 opacity-20 uppercase font-black tracking-widest text-sm">
-                    Nenhuma pergunta cadastrada
                   </div>
-                )}
-              </div>
+                ))
+              ) : (
+                <div className="text-center py-20 opacity-20 uppercase font-black">
+                  Nenhuma pergunta cadastrada
+                </div>
+              )}
             </div>
           </section>
         </div>

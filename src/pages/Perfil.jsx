@@ -213,7 +213,7 @@ function Perfil() {
                 <h2 className="font-black uppercase text-2xl">
                   Dados Pessoais
                 </h2>
-                <div className="relative">
+                <div className="relative text-gray-300">
                   <svg
                     className="w-6 h-6"
                     fill="currentColor"
@@ -232,7 +232,6 @@ function Perfil() {
                     value={dados.nome}
                     onChange={handleChange}
                   />
-                  {/* BLINDAGEM TOTAL: Div bloqueia cliques e seleção, onChange é nulo */}
                   <div className="opacity-50 pointer-events-none select-none">
                     <Input
                       {...FORM_FIELDS.matricula}
@@ -292,6 +291,7 @@ function Perfil() {
                 <div className="flex justify-end pt-4">
                   <button
                     type="button"
+                    onClick={handleSalvarDados}
                     className="bg-[#0a1945] text-white font-black px-10 py-4 rounded-2xl uppercase text-xs tracking-widest hover:bg-blue-900 transition-all"
                   >
                     Salvar Dados
@@ -308,7 +308,8 @@ function Perfil() {
                 <Input
                   {...FORM_FIELDS.senha}
                   name="atual"
-                  placeholder="Senha atual"
+                  label="Senha Atual"
+                  placeholder="Digite sua senha atual"
                   value={senhas.atual}
                   onChange={handleSenhaChange}
                 />
@@ -316,14 +317,16 @@ function Perfil() {
                   <Input
                     {...FORM_FIELDS.senha}
                     name="nova"
-                    placeholder="Nova senha (mín. 6 caracteres)"
+                    label="Nova Senha"
+                    placeholder="Mín. 6 caracteres"
                     value={senhas.nova}
                     onChange={handleSenhaChange}
                   />
                   <Input
                     {...FORM_FIELDS.senha}
                     name="confirmacao"
-                    placeholder="Confirme a nova senha"
+                    label="Confirmar Nova Senha"
+                    placeholder="Repita a nova senha"
                     value={senhas.confirmacao}
                     onChange={handleSenhaChange}
                   />
@@ -331,6 +334,7 @@ function Perfil() {
                 <div className="flex justify-end gap-4 mt-4">
                   <button
                     type="button"
+                    onClick={handleSalvarSenha}
                     className="bg-yellow-500 text-[#0a1945] font-black px-10 py-4 rounded-2xl uppercase text-xs tracking-widest hover:bg-yellow-600 transition-all"
                   >
                     Alterar Senha

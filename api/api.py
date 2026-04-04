@@ -276,6 +276,34 @@ def registrar():
     }
 
 
+@app.route("/api/admin/quiz/resultados", methods=["POST"])
+def quizHistorico():
+    data = request.get_json(silent=True)
+    workshop_id = int(data.get("workshop_id")) if data else int(request.form.get("workshop_id"))
+
+    try:
+        banco = get_db_connection()
+        db = banco.cursor()
+
+        db.execute(
+            """
+            SELECT u.user_mat AS matricula, COUNT(*) AS total
+            FROM user_pergunta AS u JOIN perguntas AS p ON p.texto = u.pergunta_id
+            WHERE p.workshop_id = %s
+            GROUP BY u.user_mat
+            """,
+            (workshop_id, )
+        )
+
+        rows = db.fetchall()
+
+        db.close()
+        banco.close()
+        return jsonify(rows)
+    except Exception as e:
+        return handle_error(e), 500
+    
+
 '''
 ------------------ Funções de Trocar senha ------------------
 '''
@@ -628,47 +656,54 @@ def getUserWorkshops():
 '''
 ------------------ Funções das perguntas ------------------
 '''
-@app.route("/api/quiz/<int:workshop_id>", methods=["GET"])
-def get_quiz_data(workshop_id):
+@app.route("/api/quiz/get", methods=["GET"])
+def get_quiz_data():
+    data = request.get_json(silent=True)
+    workshop_id = data.get("id") if data else request.form.get("id")
+
     try:
         banco = get_db_connection()
         db = banco.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-        db.execute("SELECT id, enunciado, imagem_url, resposta_correta_index FROM perguntas WHERE workshop_id = %s", (workshop_id,))
-        perguntas_raw = db.fetchall()
+        db.execute(
+            """
+            SELECT
+                p.texto AS enunciado,
+                p.imagem,
+                JSON_AGG(
+                    JSON_BUILD_OBJECT(
+                        'texto', o.texto,
+                        'correta', o.is_certo
+                    )
+                ) AS opcoes
+            FROM (
+                SELECT * FROM perguntas
+                WHERE workshop_id = %s
+                LIMIT 5
+            ) AS p
+            JOIN opcoes AS o ON o.pergunta_ref = p.texto
+            GROUP BY p.texto, p.imagem
+            """,
+            (workshop_id,)
+        )
 
-        quiz_formatado = []
-
-        for p in perguntas_raw:
-            db.execute("SELECT texto FROM opcoes WHERE pergunta_id = %s ORDER BY id", (p['id'],))
-            opcoes = [row['texto'] for row in db.fetchall()]
-            
-            quiz_formatado.append({
-                "pergunta": p['enunciado'],
-                "imagem": p['imagem_url'],
-                "opcoes": opcoes,
-                "respostaCorreta": p['resposta_correta_index']
-            })
+        rows = db.fetchall()
 
         db.close()
         banco.close()
-        return jsonify(quiz_formatado)
+
+        return jsonify(rows)
     except Exception as e:
-        return jsonify({"erro": str(e)}), 500
+        return handle_error(e), 500
 
 
 @app.route("/api/pergunta/add", methods=["POST"])
 def addPergunta():
     texto: str = request.form.get("texto")
     workshop_id: int = int(request.form.get("id"))
+
     image = request.files.get("image")
-
-    if not image:
-        return {
-            "erro": "Nenhuma imagem foi enviada"
-        }
-
-    image_bi = image.read()
+    image_bi = image.read() if image else None
 
     try:
         banco = get_db_connection()
@@ -685,10 +720,6 @@ def addPergunta():
         banco.close()
     except Exception as e:
         return handle_error(e), 500
-        # print(e)
-        # return jsonify({
-        #     "erro": str(e)
-        # }), 500
 
 
 @app.route("/api/perguntas/get", methods=["POST"])
@@ -698,7 +729,11 @@ def getPerguntas():
         db = banco.cursor()
 
         db.execute(
-            "SELECT texto FROM perguntas ORDER BY texto"
+            """
+            SELECT p.texto AS enunciado, w.workshop_id AS id, w.nome AS nome
+            FROM perguntas AS p JOIN workshops AS w ON w.id = p.workshop_id 
+            ORDER BY p.texto
+            """
         )
 
         rows = db.fetchall()
@@ -709,24 +744,21 @@ def getPerguntas():
         return jsonify(rows)
     except Exception as e:
         return handle_error(e), 500
-        # print(e)
-        # return jsonify({
-        #     "erro": str(e)
-        # }), 500
     
 
 @app.route("/api/opcoes/add", methods=["POST"])
 def addOpcao():
     pergunta: str = request.form.get("pergunta")
     texto: str = request.form.get("opcao")
+    is_certo: bool = request.form.get("is_certo")
 
     try:
         banco = get_db_connection()
         db = banco.cursor()
 
         db.execute(
-            "INSERT INTO opcoes VALUES (%s, %s)",
-            (texto, pergunta)
+            "INSERT INTO opcoes VALUES (%s, %s, %s)",
+            (texto, pergunta, is_certo)
         )
 
         banco.commit()

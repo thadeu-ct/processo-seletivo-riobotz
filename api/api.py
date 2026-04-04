@@ -380,17 +380,19 @@ def trocarSenha():
 def userTrocarSenha():
     data = request.get_json(silent=True)
     mat = data.get("matricula") if data else request.form.get("matricula")
-    if not mat or not mat.isnumeric():
+    senhaNova = data.get("senhaNova") if data else request.form.get("senhaNova")
+    senhaAtual = data.get("senhaAtual") if data else request.form.get("senhaAtual")
+
+    if not mat or not senhaNova or not senhaAtual:
         return {
-            "erro": ERRO_MATRICULA
+            "erro": "Dados Incompletos"
         }
     
     user = get_user(mat)
     if "erro" in user.keys():
         return jsonify(user), 500
     
-    senhaNova = data.get("senhaNova") if data else request.form.get("senhaNova")
-    if not senhaNova or verifica_texto(senhaNova) or compare_hash(senhaNova, user["senha"]):
+    if compare_hash(senhaAtual, user["senha"]):
         return {
             "erro": ERRO_SENHA
         }
@@ -629,6 +631,7 @@ def presencaWorkshops():
         }
     except Exception as e:
         return handle_error(e), 500
+
 
 @app.route("/api/user/workshops", methods=["POST"])
 def getUserWorkshops():

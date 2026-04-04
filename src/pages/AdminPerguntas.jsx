@@ -54,7 +54,7 @@ function AdminPerguntas() {
         body: formData,
       });
       const data = await res.json();
-      if (data.erro === 0) {
+      if (!data.erro) {
         setNovaPergunta("");
         setImagem(null);
         carregarPerguntas();
@@ -80,7 +80,7 @@ function AdminPerguntas() {
         body: formData,
       });
       const data = await res.json();
-      if (data.erro === 0) {
+      if (!data.erro) {
         setNovaOpcao("");
         setIsCerto(false);
         alert("Opção adicionada com sucesso!");
@@ -90,8 +90,33 @@ function AdminPerguntas() {
     }
   };
 
+  const handleDeletarPergunta = async (textoPergunta) => {
+    if (
+      !window.confirm(
+        "Tem certeza que deseja excluir esta pergunta e todas as suas opções?",
+      )
+    )
+      return;
+
+    try {
+      const res = await fetch(`${API_URL}/pergunta/delete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ texto: textoPergunta }),
+      });
+      const data = await res.json();
+      if (!data.erro) {
+        carregarPerguntas();
+      } else {
+        alert("Erro ao deletar.");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-[#0a1945] text-white flex flex-col font-sans">
+    <div className="min-h-screen bg-[#0a1945] text-white flex flex-col font-sans selection:bg-cyan-500 selection:text-white">
       <PrivateHeader />
 
       <main className="flex-grow max-w-6xl mx-auto w-full py-12 px-6">
@@ -133,6 +158,7 @@ function AdminPerguntas() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           <section className="flex flex-col gap-8">
+            {/* 1. CRIAR PERGUNTA */}
             <form
               onSubmit={handleAddPergunta}
               className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 shadow-2xl backdrop-blur-xl"
@@ -143,23 +169,35 @@ function AdminPerguntas() {
               </h2>
               <div className="space-y-6">
                 <textarea
-                  className="w-full bg-black/40 border border-white/10 rounded-2xl p-5 outline-none focus:border-cyan-500 transition-all min-h-[120px]"
+                  className="w-full bg-black/40 border border-white/10 rounded-2xl p-5 outline-none focus:border-cyan-500 transition-all min-h-[120px] text-lg font-medium"
                   placeholder="Enunciado da questão..."
                   value={novaPergunta}
                   onChange={(e) => setNovaPergunta(e.target.value)}
                   required
                 />
-                <input
-                  type="file"
-                  onChange={(e) => setImagem(e.target.files[0])}
-                  className="text-xs"
-                />
-                <button className="w-full bg-cyan-500 text-[#0a1945] font-black py-5 rounded-2xl uppercase tracking-widest text-xs hover:bg-white transition-all">
+
+                {/* Visual da Imagem Voltou */}
+                <div className="relative group cursor-pointer">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setImagem(e.target.files[0])}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  />
+                  <div className="bg-black/40 border-2 border-dashed border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center group-hover:border-cyan-500/50 transition-all">
+                    <span className="text-cyan-400 font-bold uppercase text-[10px] tracking-widest">
+                      {imagem ? imagem.name : "Clique ou arraste a imagem"}
+                    </span>
+                  </div>
+                </div>
+
+                <button className="w-full bg-cyan-500 text-[#0a1945] font-black py-5 rounded-2xl uppercase tracking-[0.2em] text-xs hover:bg-white transition-all shadow-xl shadow-cyan-500/20">
                   Cadastrar Pergunta
                 </button>
               </div>
             </form>
 
+            {/* 2. ADICIONAR OPÇÕES */}
             <form
               onSubmit={handleAddOpcao}
               className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 shadow-2xl backdrop-blur-xl"
@@ -170,7 +208,7 @@ function AdminPerguntas() {
               </h2>
               <div className="space-y-6">
                 <select
-                  className="w-full bg-black/40 border border-white/10 rounded-2xl p-4 outline-none focus:border-yellow-500 text-white"
+                  className="w-full bg-black/40 border border-white/10 rounded-2xl p-4 outline-none focus:border-yellow-500 text-white cursor-pointer"
                   value={perguntaSelecionada}
                   onChange={(e) => setPerguntaSelecionada(e.target.value)}
                   required
@@ -184,7 +222,8 @@ function AdminPerguntas() {
                       value={p.enunciado}
                       className="bg-[#0a1945]"
                     >
-                      {p.enunciado}
+                      {p.enunciado.substring(0, 50)}
+                      {p.enunciado.length > 50 ? "..." : ""}
                     </option>
                   ))}
                 </select>
@@ -210,13 +249,14 @@ function AdminPerguntas() {
                   </span>
                 </label>
 
-                <button className="w-full bg-yellow-500 text-[#0a1945] font-black py-5 rounded-2xl uppercase tracking-widest text-xs hover:bg-white transition-all">
+                <button className="w-full bg-yellow-500 text-[#0a1945] font-black py-5 rounded-2xl uppercase tracking-[0.2em] text-xs hover:bg-white transition-all shadow-xl shadow-yellow-500/20">
                   Adicionar Alternativa
                 </button>
               </div>
             </form>
           </section>
 
+          {/* LISTA DE PERGUNTAS NO BANCO */}
           <section className="bg-black/20 rounded-[2.5rem] border border-white/5 p-8">
             <h3 className="text-xs font-black uppercase tracking-[0.4em] text-gray-500 mb-8">
               Perguntas no Banco
@@ -239,14 +279,18 @@ function AdminPerguntas() {
                         </span>
                         <div className="flex flex-col gap-1">
                           <span className="font-bold text-gray-100 text-lg leading-snug">
-                            {p.enunciado}
+                            {p.enunciado.substring(0, 35)}
+                            {p.enunciado.length > 35 ? "..." : ""}
                           </span>
                           <span className="text-[10px] uppercase tracking-widest text-gray-500 font-black">
-                            ID do Workshop: {id}
+                            Ref: {p.enunciado.substring(0, 20)}...
                           </span>
                         </div>
                       </div>
-                      <button className="text-red-500/30 hover:text-red-500 transition-colors uppercase text-[10px] font-black">
+                      <button
+                        onClick={() => handleDeletarPergunta(p.enunciado)}
+                        className="text-red-500/30 hover:text-red-500 transition-colors uppercase text-[10px] font-black"
+                      >
                         [ Excluir ]
                       </button>
                     </div>

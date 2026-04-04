@@ -392,7 +392,7 @@ def userTrocarSenha():
     if "erro" in user.keys():
         return jsonify(user), 500
     
-    if compare_hash(senhaAtual, user["senha"]):
+    if not compare_hash(senhaAtual, user["senha"]):
         return {
             "erro": ERRO_SENHA
         }

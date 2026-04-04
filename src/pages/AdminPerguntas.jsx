@@ -7,27 +7,24 @@ const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
 
 function AdminPerguntas() {
   const { id } = useParams();
-  const [perguntas, setPerguntas] = useState([]);
-  const [loading, setLoading] = useState(true);
 
+  const [perguntas, setPerguntas] = useState([
+    {
+      enunciado: "Pergunta Mock 01 - Selecione-me",
+      texto: "Pergunta Mock 01 - Selecione-me",
+    },
+    {
+      enunciado: "Pergunta Mock 02 - Eu funciono",
+      texto: "Pergunta Mock 02 - Eu funciono",
+    },
+  ]);
+
+  const [loading, setLoading] = useState(true);
   const [novaPergunta, setNovaPergunta] = useState("");
   const [imagem, setImagem] = useState(null);
-
   const [perguntaSelecionada, setPerguntaSelecionada] = useState("");
   const [novaOpcao, setNovaOpcao] = useState("");
   const [isCerto, setIsCerto] = useState(false);
-
-  // MOCK HARDCODED PARA TESTE (Caso o banco falhe)
-  const perguntasMock = [
-    {
-      enunciado: "Pergunta de Teste 01 - Microcontroladores",
-      texto: "Pergunta de Teste 01 - Microcontroladores",
-    },
-    {
-      enunciado: "Pergunta de Teste 02 - Sinais Digitais",
-      texto: "Pergunta de Teste 02 - Sinais Digitais",
-    },
-  ];
 
   const carregarPerguntas = useCallback(async () => {
     try {
@@ -39,17 +36,13 @@ function AdminPerguntas() {
       });
       const data = await res.json();
 
-      console.log("Dados que vieram do Back:", data); // ABRA O F12 PARA VER ISSO
+      console.log("DADOS DO BACK:", data);
 
       if (Array.isArray(data) && data.length > 0) {
         setPerguntas(data);
-      } else {
-        // Se o banco vier vazio, usamos o Mock para você não ficar parado
-        setPerguntas(perguntasMock);
       }
     } catch (err) {
       console.error("Erro ao carregar perguntas:", err);
-      setPerguntas(perguntasMock);
     } finally {
       setLoading(false);
     }
@@ -110,7 +103,6 @@ function AdminPerguntas() {
 
   const handleDeletarPergunta = async (textoPergunta) => {
     if (!window.confirm(`Excluir: "${textoPergunta}"?`)) return;
-
     try {
       const res = await fetch(`${API_URL}/pergunta/delete`, {
         method: "POST",
@@ -118,16 +110,14 @@ function AdminPerguntas() {
         body: JSON.stringify({ texto: textoPergunta }),
       });
       const data = await res.json();
-      if (!data.erro) {
-        carregarPerguntas();
-      }
+      if (!data.erro) carregarPerguntas();
     } catch (err) {
       console.error(err);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#0a1945] text-white flex flex-col font-sans selection:bg-cyan-500 selection:text-white">
+    <div className="min-h-screen bg-[#0a1945] text-white flex flex-col font-sans">
       <PrivateHeader />
 
       <main className="flex-grow max-w-6xl mx-auto w-full py-12 px-6">
@@ -160,11 +150,12 @@ function AdminPerguntas() {
               className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 shadow-2xl backdrop-blur-xl"
             >
               <h2 className="text-xl font-black mb-8 uppercase tracking-tight flex items-center gap-3">
+                <div className="w-2 h-8 bg-cyan-500 rounded-full"></div>
                 1. Criar Pergunta
               </h2>
               <div className="space-y-6">
                 <textarea
-                  className="w-full bg-black/40 border border-white/10 rounded-2xl p-5 outline-none focus:border-cyan-500 min-h-[120px] text-lg"
+                  className="w-full bg-black/40 border border-white/10 rounded-2xl p-5 outline-none focus:border-cyan-500 min-h-[120px] text-lg font-medium"
                   placeholder="Enunciado da questão..."
                   value={novaPergunta}
                   onChange={(e) => setNovaPergunta(e.target.value)}
@@ -183,7 +174,7 @@ function AdminPerguntas() {
                     </span>
                   </div>
                 </div>
-                <button className="w-full bg-cyan-500 text-[#0a1945] font-black py-5 rounded-2xl uppercase text-xs hover:bg-white transition-all">
+                <button className="w-full bg-cyan-500 text-[#0a1945] font-black py-5 rounded-2xl uppercase tracking-widest text-xs hover:bg-white transition-all shadow-xl shadow-cyan-500/20">
                   Cadastrar Pergunta
                 </button>
               </div>
@@ -194,6 +185,7 @@ function AdminPerguntas() {
               className="bg-white/5 p-8 rounded-[2.5rem] border border-white/10 shadow-2xl backdrop-blur-xl"
             >
               <h2 className="text-xl font-black mb-8 uppercase tracking-tight flex items-center gap-3">
+                <div className="w-2 h-8 bg-yellow-500 rounded-full"></div>
                 2. Adicionar Opções
               </h2>
               <div className="space-y-6">
@@ -205,16 +197,17 @@ function AdminPerguntas() {
                 >
                   <option value="">Escolha a pergunta...</option>
                   {perguntas.map((p, idx) => {
-                    // Tenta pegar enunciado, se não der, tenta texto, se não der, assume que é lista simples data[0]
-                    const val =
+                    const textoOpcao =
                       p.enunciado || p.texto || (Array.isArray(p) ? p[0] : "");
                     return (
-                      <option key={idx} value={val}>
-                        {val.substring(0, 50)}...
+                      <option key={idx} value={textoOpcao}>
+                        {textoOpcao.substring(0, 45)}
+                        {textoOpcao.length > 45 ? "..." : ""}
                       </option>
                     );
                   })}
                 </select>
+
                 <input
                   type="text"
                   className="w-full bg-black/40 border border-white/10 rounded-2xl p-4 outline-none focus:border-yellow-500"
@@ -223,6 +216,7 @@ function AdminPerguntas() {
                   onChange={(e) => setNovaOpcao(e.target.value)}
                   required
                 />
+
                 <label className="flex items-center gap-3 cursor-pointer p-2">
                   <input
                     type="checkbox"
@@ -234,7 +228,8 @@ function AdminPerguntas() {
                     Esta é a resposta correta?
                   </span>
                 </label>
-                <button className="w-full bg-yellow-500 text-[#0a1945] font-black py-5 rounded-2xl uppercase text-xs hover:bg-white transition-all">
+
+                <button className="w-full bg-yellow-500 text-[#0a1945] font-black py-5 rounded-2xl uppercase tracking-widest text-xs hover:bg-white transition-all shadow-xl shadow-yellow-500/20">
                   Adicionar Alternativa
                 </button>
               </div>
@@ -246,13 +241,13 @@ function AdminPerguntas() {
               Perguntas no Banco
             </h3>
             <div className="space-y-4">
-              {loading ? (
+              {loading && perguntas.length === 2 ? (
                 <div className="text-center animate-pulse text-[10px] font-black uppercase">
                   Sincronizando...
                 </div>
               ) : (
                 perguntas.map((p, index) => {
-                  const enunciadoFinal =
+                  const textoFinal =
                     p.enunciado ||
                     p.texto ||
                     (Array.isArray(p) ? p[0] : "Sem título");
@@ -268,15 +263,16 @@ function AdminPerguntas() {
                           </span>
                           <div className="flex flex-col gap-1">
                             <span className="font-bold text-gray-100 text-lg leading-snug">
-                              {enunciadoFinal.substring(0, 35)}...
+                              {textoFinal.substring(0, 35)}
+                              {textoFinal.length > 35 ? "..." : ""}
                             </span>
                             <span className="text-[10px] uppercase tracking-widest text-gray-400 font-black opacity-60">
-                              Ref: {enunciadoFinal.substring(0, 20)}...
+                              Ref: {textoFinal.substring(0, 20)}...
                             </span>
                           </div>
                         </div>
                         <button
-                          onClick={() => handleDeletarPergunta(enunciadoFinal)}
+                          onClick={() => handleDeletarPergunta(textoFinal)}
                           className="text-red-500/30 hover:text-red-500 transition-colors uppercase text-[10px] font-black"
                         >
                           [ Excluir ]

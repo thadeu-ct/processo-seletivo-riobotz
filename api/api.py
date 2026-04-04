@@ -677,7 +677,7 @@ def get_quiz_data():
                     JSON_BUILD_OBJECT(
                         'texto', o.texto,
                         'correta', o.is_certo
-                    )
+                    ) ORDER BY RANDOM()
                 ) AS opcoes
             FROM (
                 SELECT * FROM perguntas

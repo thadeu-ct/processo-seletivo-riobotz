@@ -789,14 +789,14 @@ def getPerguntas():
 def addOpcao():
     pergunta: str = request.form.get("pergunta")
     texto: str = request.form.get("opcao")
-    is_certo: bool = bool(request.form.get("is_certo"))
+    is_certo: bool = request.form.get("is_certo").lower() == "true"
 
     try:
         banco = get_db_connection()
         db = banco.cursor()
 
         db.execute(
-            "INSERT INTO opcoes VALUES (%s, %s, %s)",
+            "INSERT INTO opcoes (texto, pergunta_ref, is_certo) VALUES (%s, %s, %s)",
             (texto, pergunta, is_certo)
         )
 

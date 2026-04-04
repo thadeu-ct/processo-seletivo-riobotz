@@ -728,6 +728,39 @@ def addPergunta():
         return handle_error(e), 500
 
 
+@app.route("/api/perguntas/delete", methods=["POST"])
+def deletePergunta():
+    data = request.get_json(silent=True)
+    texto: str = data.get("texto") if data else request.form.get("texto")
+
+    try:
+        banco = get_db_connection()
+        db = banco.cursor()
+
+        db.execute(
+            """
+            DELETE FROM opcoes where pergunta_ref = %s
+            """,
+            (texto, )
+        )
+        db.execute(
+            """
+            DELETE FROM perguntas WHERE texto = %s            
+            """,
+            (texto, )
+        )
+
+        banco.commit()
+
+        db.close()
+        banco.close()
+        return {
+            "erro": 0
+        }
+    except Exception as e:
+        return handle_error(e), 500
+
+
 @app.route("/api/perguntas/get", methods=["POST"])
 def getPerguntas():
     try:

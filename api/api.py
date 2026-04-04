@@ -721,6 +721,9 @@ def addPergunta():
 
         db.close()
         banco.close()
+        return {
+            "erro": 0
+        }
     except Exception as e:
         return handle_error(e), 500
 
@@ -768,13 +771,13 @@ def addOpcao():
 
         db.close()
         banco.close()
+
+        return {
+            "erro": 0
+        }
     except Exception as e:
         return handle_error(e), 500
-        # print(e)
-        # return jsonify({
-        #     "erro": str(e)
-        # }), 500
-
+    
 
 '''
 ------------------ Funções de Status do Sistema ------------------

@@ -197,12 +197,21 @@ function Workshop({
           {tipo === "Online" &&
             (quizLink || isAdminView) &&
             (isAdminView ? (
-              <Link
-                to={`/admin/quiz/${id}`}
-                className="w-full sm:w-auto px-8 py-4 rounded-full bg-yellow-500/10 border-2 border-yellow-500 text-yellow-500 font-black text-lg hover:bg-yellow-500 hover:text-[#0a1945] hover:scale-105 transition-all text-center whitespace-nowrap shadow-[0_0_15px_rgba(234,179,8,0.2)]"
-              >
-                {quizLink ? "Ver Resultados" : "Configurar Quiz"}
-              </Link>
+              quizLink ? (
+                <Link
+                  to={`/admin/quiz/${id}`}
+                  className="flex-1 bg-green-600/20 border-2 border-green-500 text-green-400 font-black py-4 px-6 rounded-full hover:bg-green-500 hover:text-white transition-all text-center"
+                >
+                  Resultados
+                </Link>
+              ) : (
+                <Link
+                  to={`/admin/quiz/perguntas/${id}`}
+                  className="flex-1 bg-yellow-500/10 border-2 border-yellow-500 text-yellow-500 font-black py-4 px-6 rounded-full hover:bg-yellow-500 hover:text-[#0a1945] transition-all text-center"
+                >
+                  Configurar
+                </Link>
+              )
             ) : (
               quizLink && (
                 <Link

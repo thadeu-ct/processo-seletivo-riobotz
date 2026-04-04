@@ -187,7 +187,7 @@ function AdminPerguntas() {
                     <option value="">Escolha a pergunta...</option>
                     {perguntas.map((p, idx) => (
                       <option key={idx} value={p[0]}>
-                        {p[0]}
+                        {p.enunciado}
                       </option>
                     ))}
                   </select>
@@ -237,7 +237,7 @@ function AdminPerguntas() {
                             {(index + 1).toString().padStart(2, "0")}
                           </span>
                           <span className="font-bold text-gray-200 text-lg leading-snug">
-                            {p[0]}
+                            {p.enunciado}
                           </span>
                         </div>
                         <button className="text-red-500/30 hover:text-red-500 transition-colors uppercase text-[10px] font-black">

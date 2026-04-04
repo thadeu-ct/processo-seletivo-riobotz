@@ -8,16 +8,7 @@ const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
 function AdminPerguntas() {
   const { id } = useParams();
 
-  const [perguntas, setPerguntas] = useState([
-    {
-      enunciado: "Pergunta Mock 01 - Selecione-me",
-      texto: "Pergunta Mock 01 - Selecione-me",
-    },
-    {
-      enunciado: "Pergunta Mock 02 - Eu funciono",
-      texto: "Pergunta Mock 02 - Eu funciono",
-    },
-  ]);
+  const [perguntas, setPerguntas] = useState([]);
 
   const [loading, setLoading] = useState(true);
   const [novaPergunta, setNovaPergunta] = useState("");

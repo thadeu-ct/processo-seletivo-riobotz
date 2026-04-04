@@ -29,9 +29,12 @@ function AdminPerguntas() {
 
       if (Array.isArray(data)) {
         setPerguntas(data);
+      } else {
+        setPerguntas([]);
       }
     } catch (err) {
       console.error("Erro ao carregar perguntas:", err);
+      setPerguntas([]);
     } finally {
       setLoading(false);
     }
@@ -91,12 +94,7 @@ function AdminPerguntas() {
   };
 
   const handleDeletarPergunta = async (textoPergunta) => {
-    if (
-      !window.confirm(
-        "Tem certeza que deseja excluir esta pergunta e todas as suas opções?",
-      )
-    )
-      return;
+    if (!window.confirm(`Excluir pergunta: "${textoPergunta}"?`)) return;
 
     try {
       const res = await fetch(`${API_URL}/pergunta/delete`, {
@@ -108,10 +106,10 @@ function AdminPerguntas() {
       if (!data.erro) {
         carregarPerguntas();
       } else {
-        alert("Erro ao deletar.");
+        alert("Erro ao deletar no servidor.");
       }
     } catch (err) {
-      console.error(err);
+      console.error("Erro ao deletar:", err);
     }
   };
 
@@ -176,7 +174,6 @@ function AdminPerguntas() {
                   required
                 />
 
-                {/* Visual da Imagem Voltou */}
                 <div className="relative group cursor-pointer">
                   <input
                     type="file"
@@ -184,7 +181,7 @@ function AdminPerguntas() {
                     onChange={(e) => setImagem(e.target.files[0])}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                   />
-                  <div className="bg-black/40 border-2 border-dashed border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center group-hover:border-cyan-500/50 transition-all">
+                  <div className="bg-black/40 border-2 border-dashed border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center group-hover:border-cyan-500/50 transition-all text-center">
                     <span className="text-cyan-400 font-bold uppercase text-[10px] tracking-widest">
                       {imagem ? imagem.name : "Clique ou arraste a imagem"}
                     </span>
@@ -217,15 +214,11 @@ function AdminPerguntas() {
                     Escolha a pergunta...
                   </option>
                   {perguntas.map((p, idx) => {
-                    const textoPergunta = p.enunciado || p.texto || "";
+                    const texto = p.enunciado || p.texto || "";
                     return (
-                      <option
-                        key={idx}
-                        value={textoPergunta}
-                        className="bg-[#0a1945]"
-                      >
-                        {textoPergunta.substring(0, 50)}
-                        {textoPergunta.length > 50 ? "..." : ""}
+                      <option key={idx} value={texto} className="bg-[#0a1945]">
+                        {texto.substring(0, 50)}
+                        {texto.length > 50 ? "..." : ""}
                       </option>
                     );
                   })}
@@ -252,7 +245,7 @@ function AdminPerguntas() {
                   </span>
                 </label>
 
-                <button className="w-full bg-yellow-500 text-[#0a1945] font-black py-5 rounded-2xl uppercase tracking-[0.2em] text-xs hover:bg-white transition-all shadow-xl shadow-yellow-500/20">
+                <button className="w-full bg-yellow-500 text-[#0a1945] font-black py-5 rounded-2xl uppercase tracking-widest text-xs hover:bg-white transition-all shadow-xl shadow-yellow-500/20">
                   Adicionar Alternativa
                 </button>
               </div>
@@ -270,43 +263,38 @@ function AdminPerguntas() {
                   Sincronizando...
                 </div>
               ) : perguntas.length > 0 ? (
-                perguntas.map((p, index) => (
-                  <div
-                    key={index}
-                    className="flex flex-col gap-3 p-6 bg-white/5 rounded-3xl border border-white/10 hover:border-cyan-500/50 transition-all group relative overflow-hidden"
-                  >
-                    <div className="flex justify-between items-start gap-4 relative z-10">
-                      <div className="flex gap-4">
-                        <span className="text-cyan-500 font-mono font-black text-2xl drop-shadow-[0_0_8px_rgba(6,182,212,0.5)]">
-                          {(index + 1).toString().padStart(2, "0")}
-                        </span>
-                        <div className="flex flex-col gap-1">
-                          <span className="font-bold text-gray-100 text-lg leading-snug">
-                            {(
-                              p.enunciado ||
-                              p.texto ||
-                              "Sem título"
-                            )?.substring(0, 35)}
-                            {(p.enunciado || p.texto)?.length > 35 ? "..." : ""}
+                perguntas.map((p, index) => {
+                  const enunciadoFinal = p.enunciado || p.texto || "Sem título";
+                  return (
+                    <div
+                      key={index}
+                      className="flex flex-col gap-3 p-6 bg-white/5 rounded-3xl border border-white/10 hover:border-cyan-500/50 transition-all group relative overflow-hidden"
+                    >
+                      <div className="flex justify-between items-start gap-4 relative z-10">
+                        <div className="flex gap-4">
+                          <span className="text-cyan-500 font-mono font-black text-2xl drop-shadow-[0_0_8px_rgba(6,182,212,0.5)]">
+                            {(index + 1).toString().padStart(2, "0")}
                           </span>
-                          <span className="text-[10px] uppercase tracking-widest text-gray-500 font-black">
-                            Ref:{" "}
-                            {(p.enunciado || p.texto || "")?.substring(0, 20)}
-                            ...
-                          </span>
+                          <div className="flex flex-col gap-1">
+                            <span className="font-bold text-gray-100 text-lg leading-snug">
+                              {enunciadoFinal.substring(0, 35)}
+                              {enunciadoFinal.length > 35 ? "..." : ""}
+                            </span>
+                            <span className="text-[10px] uppercase tracking-widest text-gray-400 font-black opacity-60">
+                              Ref: {enunciadoFinal.substring(0, 20)}...
+                            </span>
+                          </div>
                         </div>
+                        <button
+                          onClick={() => handleDeletarPergunta(enunciadoFinal)}
+                          className="text-red-500/30 hover:text-red-500 transition-colors uppercase text-[10px] font-black"
+                        >
+                          [ Excluir ]
+                        </button>
                       </div>
-                      <button
-                        onClick={() =>
-                          handleDeletarPergunta(p.enunciado || p.texto)
-                        }
-                        className="text-red-500/30 hover:text-red-500 transition-colors uppercase text-[10px] font-black"
-                      >
-                        [ Excluir ]
-                      </button>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               ) : (
                 <div className="text-center py-20 opacity-20 uppercase font-black">
                   Nenhuma pergunta cadastrada

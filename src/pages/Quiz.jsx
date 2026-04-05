@@ -17,51 +17,50 @@ function Quiz() {
 
   const matricula = sessionStorage.getItem("matriculaUsuario");
   const navigate = useNavigate();
+
   useEffect(() => {
-    const verificarConclusao = async () => {
+    const carregarTudo = async () => {
       try {
-        const res = await fetch(`${API_URL}/admin/quiz/resultados`, {
+        setLoading(true);
+
+        const resVerificacao = await fetch(`${API_URL}/admin/quiz/resultados`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ workshop_id: id }),
         });
-        const resultados = await res.json();
-        const jaFez = resultados.some(
-          (r) => String(r.matricula) === String(matricula),
-        );
-        if (jaFez) {
-          toast.error(
-            "Você já completou este quiz! Os Botcoins são creditados apenas uma vez.",
-            {
-              duration: 5000,
-            },
+        const resultados = await resVerificacao.json();
+
+        if (Array.isArray(resultados)) {
+          const jaFez = resultados.some(
+            (r) => String(r.matricula) === String(matricula),
           );
-          navigate("/home");
+          if (jaFez) {
+            toast.error(
+              "Você já completou este quiz! Os Botcoins são creditados apenas uma vez.",
+            );
+            navigate("/home");
+            return;
+          }
         }
-      } catch (err) {
-        console.error(err);
-        toast.error(err);
-      }
-    };
-    const fetchQuiz = async () => {
-      try {
-        const res = await fetch(`${API_URL}/quiz/get?id=${id}&qtd=5`);
-        const data = await res.json();
+
+        const resQuiz = await fetch(`${API_URL}/quiz/get?id=${id}&qtd=5`);
+        const data = await resQuiz.json();
+
         if (Array.isArray(data) && data.length > 0) {
           setPerguntas(data);
         } else {
           toast.error("Não há perguntas suficientes para este quiz.");
         }
       } catch (err) {
-        console.error("Erro ao carregar quiz:", err);
+        console.error("Erro no Quiz:", err);
         toast.error("Erro ao conectar com o servidor.");
       } finally {
         setLoading(false);
       }
     };
-    verificarConclusao();
-    fetchQuiz();
-  }, [id, matricula]);
+
+    carregarTudo();
+  }, [id, matricula, navigate]);
 
   const enviarResultado = async (pontosFinais) => {
     const totalMoedas = pontosFinais * 50;
@@ -69,7 +68,7 @@ function Quiz() {
       const formData = new FormData();
       formData.append("matricula", matricula);
       formData.append("botcoin", totalMoedas);
-      await fetch(`${API_URL}/alteracaoBotcoin`, {
+      await fetch(`${API_URL}/alteracaoBotcoin/`, {
         method: "POST",
         body: formData,
       });
@@ -254,7 +253,7 @@ function Quiz() {
               </div>
 
               <h2 className="text-white font-black text-2xl md:text-3xl mb-6 leading-tight">
-                {pergunta.pergunta}
+                {pergunta.enunciado || pergunta.pergunta}
               </h2>
 
               {pergunta.imagem && (
@@ -278,7 +277,7 @@ function Quiz() {
                         : "bg-[#0a1945]/50 border-white/20 text-gray-200 hover:border-yellow-400/50 hover:bg-white/5"
                     }`}
                   >
-                    {opcao}
+                    {opcao.texto || opcao}
                   </button>
                 ))}
               </div>

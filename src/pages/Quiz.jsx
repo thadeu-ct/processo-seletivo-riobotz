@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { navigate, useParams, Link } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
@@ -16,7 +16,7 @@ function Quiz() {
   const [mostrarResultado, setMostrarResultado] = useState(false);
 
   const matricula = sessionStorage.getItem("matriculaUsuario");
-
+  const navigate = useNavigate();
   useEffect(() => {
     const verificarConclusao = async () => {
       try {

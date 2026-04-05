@@ -6,7 +6,6 @@ function PrivateNavBar() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [botcoins, setBotcoins] = useState(0);
-
   const location = useLocation();
 
   useEffect(() => {
@@ -17,13 +16,9 @@ function PrivateNavBar() {
       }
     };
 
-    // Atualiza ao montar o componente
     updateBotcoins();
 
-    // Listener para atualizar caso mude em outra aba ou parte do app
     window.addEventListener("storage", updateBotcoins);
-
-    // Evento customizado caso você atualize o storage manualmente no mesmo documento
     window.addEventListener("botcoinsUpdated", updateBotcoins);
 
     return () => {

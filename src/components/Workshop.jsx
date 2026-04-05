@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
 
@@ -25,7 +26,7 @@ function Workshop({
     if (statusInscrito) return;
 
     const matricula = sessionStorage.getItem("matriculaUsuario");
-    if (!matricula) return alert("Você precisa estar logado!");
+    if (!matricula) return toast.error("Você precisa estar logado!");
 
     try {
       const formData = new FormData();
@@ -40,7 +41,7 @@ function Workshop({
       const data = await res.json();
       if (data.inscricao === 1) {
         setStatusInscrito(true);
-        alert("Inscrição confirmada!");
+        toast.success("Inscrição confirmada!");
       }
     } catch (err) {
       console.error(err);

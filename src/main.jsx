@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import "./index.css";
 
 // components
@@ -147,6 +148,37 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
+    <Toaster
+      position="bottom-right"
+      reverseOrder={false}
+      gutter={8}
+      toastOptions={{
+        duration: 4000,
+        style: {
+          background: "#0a1945",
+          color: "#fff",
+          border: "1px solid rgba(255, 255, 255, 0.1)",
+          borderRadius: "16px",
+          fontFamily: "sans-serif",
+          fontWeight: "bold",
+          fontSize: "14px",
+        },
+        success: {
+          iconTheme: {
+            primary: "#fbbf24",
+            secondary: "#0a1945",
+          },
+          style: {
+            border: "1px solid #fbbf24",
+          },
+        },
+        error: {
+          style: {
+            border: "1px solid #ef4444",
+          },
+        },
+      }}
+    />
     <RouterProvider router={router} />
   </StrictMode>,
 );

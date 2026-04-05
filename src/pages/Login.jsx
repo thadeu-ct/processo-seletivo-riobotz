@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import Footer from "../components/Footer";
 import LogoRioBotz from "../assets/logo-riobotz.svg";
 import Input from "../components/Input";
@@ -96,7 +97,7 @@ function Login() {
       }
     } catch (error) {
       console.error("Erro de conexão:", error);
-      alert("Erro ao conectar com o servidor.");
+      toast.error("Erro ao conectar com o servidor.");
     } finally {
       setLoading(false);
     }

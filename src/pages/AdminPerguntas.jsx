@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
 
@@ -9,7 +10,6 @@ function AdminPerguntas() {
   const { id } = useParams();
 
   const [perguntas, setPerguntas] = useState([]);
-
   const [loading, setLoading] = useState(true);
   const [novaPergunta, setNovaPergunta] = useState("");
   const [imagem, setImagem] = useState(null);
@@ -60,7 +60,7 @@ function AdminPerguntas() {
         setNovaPergunta("");
         setImagem(null);
         carregarPerguntas();
-        alert("Pergunta cadastrada!");
+        toast.success("Pergunta cadastrada!");
       }
     } catch (err) {
       console.error(err);
@@ -69,7 +69,7 @@ function AdminPerguntas() {
 
   const handleAddOpcao = async (e) => {
     e.preventDefault();
-    if (!perguntaSelecionada) return alert("Selecione uma pergunta!");
+    if (!perguntaSelecionada) return toast.error("Selecione uma pergunta!");
 
     const formData = new FormData();
     formData.append("pergunta", perguntaSelecionada);
@@ -85,7 +85,7 @@ function AdminPerguntas() {
       if (!data.erro) {
         setNovaOpcao("");
         setIsCerto(false);
-        alert("Opção adicionada com sucesso!");
+        toast.success("Opção adicionada com sucesso!");
       }
     } catch (err) {
       console.error(err);

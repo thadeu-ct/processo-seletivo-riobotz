@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { toast } from "react-hot-toast";
 import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
 
@@ -179,12 +180,10 @@ function Calendario() {
   useEffect(() => {
     const carregarTudo = async () => {
       try {
-        // Busca todos os workshops para a grade
         const resW = await fetch(`${API_URL}/workshops`, { method: "POST" });
         const dataW = await resW.json();
         if (Array.isArray(dataW)) setWorkshopsData(dataW);
 
-        // Busca inscrições reais do banco
         if (matricula) {
           const resI = await fetch(`${API_URL}/user/workshops`, {
             method: "POST",
@@ -211,7 +210,7 @@ function Calendario() {
   }, [matricula]);
 
   const handleInscricaoReal = async (id) => {
-    if (!matricula) return alert("Faça login primeiro!");
+    if (!matricula) return toast.error("Faça login primeiro!");
     if (inscricoes[Number(id)]) return;
 
     try {
@@ -227,9 +226,9 @@ function Calendario() {
 
       if (data.inscricao === 1 || !data.erro) {
         setInscricoes((prev) => ({ ...prev, [Number(id)]: true }));
-        alert("Inscrição confirmada via Calendário!");
+        toast.success("Inscrição confirmada via Calendário!");
       } else {
-        alert(data.erro || "Erro na inscrição");
+        toast.error(data.erro || "Erro na inscrição");
       }
     } catch (err) {
       console.error("Erro conexão:", err);

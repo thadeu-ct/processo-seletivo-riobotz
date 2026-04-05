@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import Footer from "../components/Footer";
 import LogoRioBotz from "../assets/logo-riobotz.svg";
 import Input from "../components/Input";
@@ -21,7 +22,7 @@ function Cadastro() {
   const location = useLocation();
   useEffect(() => {
     if (location.state?.erro) {
-      alert(location.state.erro);
+      toast.error(location.state.erro);
       window.history.replaceState({}, document.title);
     }
   }, [location]);

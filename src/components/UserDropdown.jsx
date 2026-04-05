@@ -6,7 +6,7 @@ function UserDropdown({ onClose }) {
 
   const userMatricula = sessionStorage.getItem("matriculaUsuario") || "";
 
-  const envAdmins = import.meta.env.VITE_ADMIN_MATRICULAS || "2610000";
+  const envAdmins = import.meta.env.VITE_ADMIN_MATRICULAS || "";
   const ADMIN_MATRICULAS = envAdmins.split(",");
   const isAdmin = ADMIN_MATRICULAS.includes(userMatricula);
 

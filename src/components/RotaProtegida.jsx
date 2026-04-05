@@ -15,7 +15,7 @@ const RotaProtegida = ({ children, requireAdmin = false }) => {
       <Navigate
         to="/cadastro"
         state={{
-          erro: "usuário não cadastrado, conclua o cadastro para entrar",
+          erro: "Usuário não cadastrado, conclua o cadastro para entrar",
         }}
         replace
       />

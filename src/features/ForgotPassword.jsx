@@ -8,7 +8,7 @@ const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
 
 function ForgotPassword() {
   const navigate = useNavigate();
-  
+
   const [etapa, setEtapa] = useState(1);
   const [loading, setLoading] = useState(false);
   const [mensagem, setMensagem] = useState({ texto: "", tipo: "" });
@@ -18,7 +18,7 @@ function ForgotPassword() {
     email: "",
     codigo: "",
     novaSenha: "",
-    confirmacaoSenha: ""
+    confirmacaoSenha: "",
   });
 
   const handleChange = (e) => {
@@ -43,10 +43,16 @@ function ForgotPassword() {
       const data = await response.json();
 
       if (response.ok && !data.erro) {
-        setMensagem({ texto: "Código enviado! Verifique seu e-mail (e a caixa de spam).", tipo: "sucesso" });
+        setMensagem({
+          texto: "Código enviado! Verifique seu e-mail (e a caixa de spam).",
+          tipo: "sucesso",
+        });
         setEtapa(2);
       } else {
-        setMensagem({ texto: data.erro || "Matrícula ou e-mail não encontrados.", tipo: "erro" });
+        setMensagem({
+          texto: data.erro || "Matrícula ou e-mail não encontrados.",
+          tipo: "erro",
+        });
       }
     } catch (error) {
       console.error("Erro ao solicitar código:", error);
@@ -68,7 +74,10 @@ function ForgotPassword() {
     }
 
     if (formData.novaSenha.length < 6) {
-      setMensagem({ texto: "A senha deve ter pelo menos 6 caracteres.", tipo: "erro" });
+      setMensagem({
+        texto: "A senha deve ter pelo menos 6 caracteres.",
+        tipo: "erro",
+      });
       setLoading(false);
       return;
     }
@@ -82,17 +91,23 @@ function ForgotPassword() {
         body: JSON.stringify({
           matricula: matLimpa,
           codigo: formData.codigo,
-          nova_senha: formData.novaSenha
+          nova_senha: formData.novaSenha,
         }),
       });
 
       const data = await response.json();
 
       if (response.ok && !data.erro) {
-        setMensagem({ texto: "Senha alterada com sucesso! Redirecionando...", tipo: "sucesso" });
+        setMensagem({
+          texto: "Senha alterada com sucesso! Redirecionando...",
+          tipo: "sucesso",
+        });
         setTimeout(() => navigate("/login"), 2500);
       } else {
-        setMensagem({ texto: data.erro || "Código inválido ou expirado.", tipo: "erro" });
+        setMensagem({
+          texto: data.erro || "Código inválido ou expirado.",
+          tipo: "erro",
+        });
       }
     } catch (error) {
       console.error("Erro ao trocar senha:", error);
@@ -118,15 +133,21 @@ function ForgotPassword() {
 
       <div className="bg-white rounded-lg p-8 w-11/12 max-w-sm shadow-2xl transition-all">
         {mensagem.texto && (
-          <div className={`px-4 py-3 rounded relative mb-6 text-sm font-bold text-center border ${mensagem.tipo === "sucesso" ? "bg-green-100 text-green-700 border-green-400" : "bg-red-100 text-red-700 border-red-400"}`}>
+          <div
+            className={`px-4 py-3 rounded relative mb-6 text-sm font-bold text-center border ${mensagem.tipo === "sucesso" ? "bg-green-100 text-green-700 border-green-400" : "bg-red-100 text-red-700 border-red-400"}`}
+          >
             {mensagem.texto}
           </div>
         )}
 
         {etapa === 1 && (
-          <form onSubmit={handleSolicitarCodigo} className="flex flex-col animate-fade-in">
+          <form
+            onSubmit={handleSolicitarCodigo}
+            className="flex flex-col animate-fade-in"
+          >
             <p className="text-[#0a1945] text-sm mb-6 text-center font-medium">
-              Confirme seus dados para receber um código de verificação por e-mail.
+              Confirme seus dados para receber um código de verificação por
+              e-mail.
             </p>
 
             <Input
@@ -147,7 +168,11 @@ function ForgotPassword() {
 
             <button
               type="submit"
-              disabled={loading || formData.matricula.length < 5 || !formData.email.includes("@")}
+              disabled={
+                loading ||
+                formData.matricula.length < 5 ||
+                !formData.email.includes("@")
+              }
               className={`bg-yellow-500 hover:bg-yellow-600 text-[#0a1945] font-bold py-3 px-8 rounded mt-4 transition-colors ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
             >
               {loading ? "Enviando..." : "Enviar Código"}
@@ -156,7 +181,10 @@ function ForgotPassword() {
         )}
 
         {etapa === 2 && (
-          <form onSubmit={handleTrocarSenha} className="flex flex-col animate-fade-in">
+          <form
+            onSubmit={handleTrocarSenha}
+            className="flex flex-col animate-fade-in"
+          >
             <p className="text-[#0a1945] text-sm mb-6 text-center font-medium">
               Digite o código recebido no e-mail <br /> <b>{formData.email}</b>
             </p>
@@ -192,7 +220,11 @@ function ForgotPassword() {
 
             <button
               type="submit"
-              disabled={loading || formData.codigo.length < 6 || formData.novaSenha.length < 6}
+              disabled={
+                loading ||
+                formData.codigo.length < 6 ||
+                formData.novaSenha.length < 6
+              }
               className={`bg-blue-800 hover:bg-blue-900 text-white font-bold py-3 px-8 rounded mt-4 transition-colors ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
             >
               {loading ? "Salvando..." : "Redefinir Senha"}

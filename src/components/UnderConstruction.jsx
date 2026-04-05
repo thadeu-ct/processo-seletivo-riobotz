@@ -2,10 +2,8 @@ import { Link } from "react-router-dom";
 
 function UnderConstruction({ title = "Página", description }) {
   return (
-    /* Container principal para garantir o fundo azul em toda a tela */
     <div className="min-h-screen bg-[#0a1945] flex flex-col font-sans overflow-x-hidden">
       <main className="flex-grow flex flex-col items-center justify-center py-12 px-6 relative">
-        {/* Elementos Decorativos de Fundo */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
           <div className="absolute top-20 left-10 transform -rotate-12">
             <svg
@@ -28,7 +26,6 @@ function UnderConstruction({ title = "Página", description }) {
         </div>
 
         <div className="max-w-3xl w-full text-center relative z-10">
-          {/* Ícone Animado de Construção */}
           <div className="mb-8 flex justify-center">
             <div className="relative">
               <div className="bg-yellow-500 p-8 rounded-full shadow-[0_0_50px_rgba(250,204,21,0.3)] animate-pulse">
@@ -77,7 +74,6 @@ function UnderConstruction({ title = "Página", description }) {
               "Nossos engenheiros estão ajustando os últimos parafusos desta seção. Em breve, novidades bônus estarão disponíveis!"}
           </p>
 
-          {/* Status cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
             <div className="bg-white/5 border border-white/10 p-6 rounded-2xl flex items-center gap-4">
               <div className="w-2 h-12 bg-blue-500 rounded-full"></div>
@@ -103,7 +99,6 @@ function UnderConstruction({ title = "Página", description }) {
             </div>
           </div>
 
-          {/* Botões de Ação */}
           <div className="flex flex-col md:flex-row items-center justify-center gap-4">
             <Link
               to="/"
@@ -147,7 +142,6 @@ function UnderConstruction({ title = "Página", description }) {
           </div>
         </div>
 
-        {/* Fita de isolamento no rodapé */}
         <div className="absolute bottom-0 w-full overflow-hidden whitespace-nowrap opacity-20 h-8 flex">
           {[...Array(20)].map((_, i) => (
             <div key={i} className="flex flex-shrink-0">

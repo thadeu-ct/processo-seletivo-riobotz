@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import PrivateHeader from "../components/PrivateHeader";
 
 const areasDaEquipe = [
@@ -210,13 +211,13 @@ function EscolhaAreas() {
       const data = await response.json();
 
       if (data.erro) {
-        alert("Erro ao salvar suas áreas: " + data.erro);
+        toast.error("Erro ao salvar suas áreas: " + data.erro);
       } else {
         navigate("/home");
       }
     } catch (error) {
       console.error("Erro na requisição:", error);
-      alert("Erro de conexão com o servidor. Tente novamente.");
+      toast.error("Erro de conexão com o servidor. Tente novamente.");
     } finally {
       setIsLoading(false);
     }

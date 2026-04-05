@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
 import Input from "../components/Input";
@@ -117,7 +118,7 @@ function Perfil() {
 
   const handleSalvarDados = async () => {
     try {
-      alert(
+      toast.success(
         "Função de atualização de dados pessoais em implementação no servidor.",
       );
     } catch (err) {
@@ -127,13 +128,13 @@ function Perfil() {
 
   const handleSalvarSenha = async () => {
     if (!senhas.atual || !senhas.nova || !senhas.confirmacao) {
-      return alert("Preencha todos os campos de senha.");
+      return toast.error("Preencha todos os campos de senha.");
     }
     if (senhas.nova.length < 6) {
-      return alert("A nova senha deve ter no mínimo 6 caracteres.");
+      return toast.error("A nova senha deve ter no mínimo 6 caracteres.");
     }
     if (senhas.nova !== senhas.confirmacao) {
-      return alert("A nova senha e a confirmação não coincidem.");
+      return toast.error("A nova senha e a confirmação não coincidem.");
     }
 
     try {
@@ -150,16 +151,16 @@ function Perfil() {
       const data = await response.json();
 
       if (data.erro) {
-        alert(
+        toast.error(
           data.erro === 5 ? "Senha atual incorreta." : "Erro ao alterar senha.",
         );
       } else {
-        alert("Senha alterada com sucesso!");
+        toast.success("Senha alterada com sucesso!");
         setSenhas({ atual: "", nova: "", confirmacao: "" });
       }
     } catch (err) {
       console.error("Erro ao trocar senha:", err);
-      alert("Erro de conexão com o servidor.");
+      toast.error("Erro de conexão com o servidor.");
     }
   };
 

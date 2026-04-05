@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
 
@@ -85,10 +86,10 @@ function AdminWorkshop() {
         }),
       });
       const data = await res.json();
-      if (!data.erro) alert("Lançamentos salvos com sucesso!");
+      if (!data.erro) toast.success("Lançamentos salvos com sucesso!");
     } catch (err) {
       console.error("Erro ao salvar:", err);
-      alert("Erro ao conectar com o servidor.");
+      toast.error("Erro ao conectar com o servidor.");
     }
   };
 

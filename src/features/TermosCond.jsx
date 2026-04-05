@@ -1,11 +1,7 @@
-import React from "react";
-
 function TermosCond({ onClose }) {
   return (
     <div className="fixed inset-0 bg-[#0a1945] bg-opacity-80 flex justify-center items-center z-50 animate-fade-in p-4">
-      {/* Container do Modal com altura máxima para gerar scroll se a tela for pequena */}
       <div className="bg-white rounded-lg p-8 w-full max-w-2xl max-h-[85vh] shadow-2xl flex flex-col relative overflow-hidden">
-        {/* Botão de Fechar no canto */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-500 hover:text-red-500 transition-colors"
@@ -30,7 +26,6 @@ function TermosCond({ onClose }) {
           Termos e Condições (LGPD)
         </h2>
 
-        {/* Área de rolagem para o texto longo */}
         <div className="overflow-y-auto pr-2 text-gray-700 space-y-4 text-sm md:text-base leading-relaxed mb-6">
           <p>
             Ao concluir e enviar a sua inscrição por meio deste formulário, você
@@ -72,7 +67,6 @@ function TermosCond({ onClose }) {
           </p>
         </div>
 
-        {/* Botão de Ciente no final */}
         <button
           onClick={onClose}
           className="w-full bg-[#0a1945] hover:bg-blue-900 text-white font-bold py-4 px-8 rounded transition-colors mt-auto"

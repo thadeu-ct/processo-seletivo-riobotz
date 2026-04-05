@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Link } from "react-router-dom"; // Importar Link para a rota de admin
+import { Link } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
 
 function MateriaisExtras() {
   const [isPdfOpen, setIsPdfOpen] = useState(false);
 
-  // Lógica de Admin (SessionStorage para isolamento de aba)
   const matriculaUsuario = sessionStorage.getItem("matriculaUsuario") || "";
   const envAdmins = import.meta.env.VITE_ADMIN_MATRICULAS || "";
   const isAdminReal =
@@ -18,13 +18,13 @@ function MateriaisExtras() {
 
   const sections = [
     {
-      id: "tutorial_quiz", // ID que deve bater com o que o Telhado criou no Banco
+      id: "tutorial_quiz",
       title: "Quiz Tutorial",
       description: "Teste seus conhecimentos sobre o manual da equipe.",
       icon: "📝",
       color: "from-blue-600 to-blue-800",
       bonus: "200 Botcoins",
-      locked: !finalAdminView, // Destrava se for admin
+      locked: !finalAdminView,
     },
     {
       id: "desafios",
@@ -45,7 +45,7 @@ function MateriaisExtras() {
   ];
 
   const handleLockedClick = () => {
-    alert(
+    toast.success(
       "Missão em desenvolvimento! Nossos engenheiros estão preparando os desafios. Fique de olho nos workshops para saber quando liberar!",
     );
   };
@@ -55,7 +55,6 @@ function MateriaisExtras() {
       <PrivateHeader />
 
       <main className="flex-grow flex relative">
-        {/* Lado Esquerdo: Painel do PDF */}
         <div
           className={`fixed inset-y-0 left-0 z-40 transition-all duration-500 ease-in-out bg-white shadow-2xl flex ${isPdfOpen ? "w-full md:w-[50%]" : "w-0"}`}
         >
@@ -86,7 +85,6 @@ function MateriaisExtras() {
           </div>
         </div>
 
-        {/* Lado Direito: Menu de Missões */}
         <section
           className={`flex-grow transition-all duration-500 ease-in-out p-6 md:p-12 overflow-y-auto ${isPdfOpen ? "md:ml-[50%] opacity-20 md:opacity-100" : "ml-0"}`}
         >
@@ -103,7 +101,6 @@ function MateriaisExtras() {
               </p>
             </div>
 
-            {/* Cards de Navegação */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {sections.map((section) => (
                 <div
@@ -112,14 +109,12 @@ function MateriaisExtras() {
                   className={`relative group bg-white/5 border border-white/10 rounded-[2.5rem] p-8 transition-all duration-300 overflow-hidden shadow-2xl 
                     ${section.locked ? "cursor-not-allowed opacity-80" : "cursor-pointer hover:bg-white/10 hover:-translate-y-2"}`}
                 >
-                  {/* Badge de Recompensa */}
                   {section.bonus && (
                     <div className="absolute -top-2 -right-2 bg-yellow-500 text-[#0a1945] font-black text-[10px] px-4 py-2 rounded-bl-2xl uppercase tracking-tighter shadow-lg">
                       +{section.bonus}
                     </div>
                   )}
 
-                  {/* Overlay de "Em breve" - Só aparece se não for admin em modo admin */}
                   {section.locked && (
                     <div className="absolute inset-0 bg-[#0a1945]/40 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center">
                       <div className="bg-yellow-500 text-[#0a1945] font-black text-[10px] px-3 py-1 rounded-full uppercase mb-2">
@@ -154,7 +149,6 @@ function MateriaisExtras() {
                       <span>→</span>
                     </div>
 
-                    {/* BOTÃO DE GESTÃO - Só aparece no Quiz se for Admin */}
                     {finalAdminView && section.id === "tutorial_quiz" && (
                       <Link
                         to={`/admin/quiz/perguntas/${section.id}`}

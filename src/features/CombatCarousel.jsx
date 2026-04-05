@@ -13,21 +13,21 @@ const combatVideos = [
     id: 1,
     title: "Combates de alto impacto.",
     location: "BattleBots - Las Vegas, EUA",
-    videoId: "GkbAcwYix7I", //https://www.youtube.com/watch?v=GkbAcwYix7I
+    videoId: "GkbAcwYix7I",
     startSeconds: 0,
   },
   {
     id: 2,
     title: "Em competições internacionais.",
     location: "NHRL - Norwalk, EUA",
-    videoId: "fqgrigHtMI4", // https://www.youtube.com/live/fqgrigHtMI4?si=HBtOuM7IEqZ1B9ec&t=13266
+    videoId: "fqgrigHtMI4",
     startSeconds: 13266,
   },
   {
     id: 3,
     title: "Por todo o Brasil.",
     location: "Bots Fight Club - São Paulo, Brasil",
-    videoId: "OF76Ie9mRQc", // https://www.youtube.com/live/OF76Ie9mRQc?si=4DBKXISI0IMV-I5s&t=29442
+    videoId: "OF76Ie9mRQc",
     startSeconds: 29442,
   },
 ];

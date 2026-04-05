@@ -22,25 +22,34 @@ function Quiz() {
     const carregarTudo = async () => {
       try {
         setLoading(true);
-
-        const resVerificacao = await fetch(`${API_URL}/admin/quiz/resultados`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ workshop_id: id }),
-        });
-        const resultados = await resVerificacao.json();
-
-        if (Array.isArray(resultados)) {
-          const jaFez = resultados.some(
-            (r) => String(r.matricula) === String(matricula),
+        try {
+          const resVerificacao = await fetch(
+            `${API_URL}/admin/quiz/resultados`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ workshop_id: id }),
+            },
           );
-          if (jaFez) {
-            toast.error(
-              "Você já completou este quiz! Os Botcoins são creditados apenas uma vez.",
-            );
-            navigate("/home");
-            return;
+
+          if (resVerificacao.ok) {
+            const resultados = await resVerificacao.json();
+            if (Array.isArray(resultados)) {
+              const jaFez = resultados.some(
+                (r) => String(r.matricula) === String(matricula),
+              );
+              if (jaFez) {
+                toast.error("Você já completou este quiz!");
+                navigate("/home");
+                return;
+              }
+            }
           }
+        } catch (e) {
+          console.warn(
+            "Servidor de resultados offline, permitindo tentativa...",
+            e,
+          );
         }
 
         const resQuiz = await fetch(`${API_URL}/quiz/get?id=${id}&qtd=5`);
@@ -53,7 +62,6 @@ function Quiz() {
         }
       } catch (err) {
         console.error("Erro no Quiz:", err);
-        toast.error("Erro ao conectar com o servidor.");
       } finally {
         setLoading(false);
       }

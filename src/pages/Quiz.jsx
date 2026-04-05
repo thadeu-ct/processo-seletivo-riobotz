@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { navigate, useParams, Link } from "react-router-dom";
+import toast from "react-hot-toast";
 import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
 
@@ -14,26 +15,83 @@ function Quiz() {
   const [pontuacao, setPontuacao] = useState(0);
   const [mostrarResultado, setMostrarResultado] = useState(false);
 
+  const matricula = sessionStorage.getItem("matriculaUsuario");
+
   useEffect(() => {
+    const verificarConclusao = async () => {
+      try {
+        const res = await fetch(`${API_URL}/admin/quiz/resultados`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ workshop_id: id }),
+        });
+        const resultados = await res.json();
+        const jaFez = resultados.some(
+          (r) => String(r.matricula) === String(matricula),
+        );
+        if (jaFez) {
+          toast.error(
+            "Você já completou este quiz! Os Botcoins são creditados apenas uma vez.",
+            {
+              duration: 5000,
+            },
+          );
+          navigate("/home");
+        }
+      } catch (err) {
+        console.error(err);
+        toast.error(err);
+      }
+    };
     const fetchQuiz = async () => {
       try {
-        const res = await fetch(`${API_URL}/quiz/${id}`);
+        const res = await fetch(`${API_URL}/quiz/get?id=${id}&qtd=5`);
         const data = await res.json();
-        if (data) setPerguntas(data);
+        if (Array.isArray(data) && data.length > 0) {
+          setPerguntas(data);
+        } else {
+          toast.error("Não há perguntas suficientes para este quiz.");
+        }
       } catch (err) {
         console.error("Erro ao carregar quiz:", err);
+        toast.error("Erro ao conectar com o servidor.");
       } finally {
         setLoading(false);
       }
     };
+    verificarConclusao();
     fetchQuiz();
-  }, [id]);
+  }, [id, matricula]);
+
+  const enviarResultado = async (pontosFinais) => {
+    const totalMoedas = pontosFinais * 50;
+    try {
+      const formData = new FormData();
+      formData.append("matricula", matricula);
+      formData.append("botcoin", totalMoedas);
+      await fetch(`${API_URL}/alteracaoBotcoin`, {
+        method: "POST",
+        body: formData,
+      });
+      toast.success(`Você ganhou ${totalMoedas} Botcoins!`, {
+        icon: "💰",
+      });
+    } catch (err) {
+      console.error("Erro ao salvar resultado", err);
+      toast.error("Erro ao creditar suas moedas.");
+    }
+  };
 
   const handleResponder = () => {
     if (opcaoSelecionada === null) return;
 
-    if (opcaoSelecionada === perguntas[perguntaAtual].respostaCorreta) {
-      setPontuacao(pontuacao + 1);
+    const respostaEhCorreta =
+      perguntas[perguntaAtual].opcoes[opcaoSelecionada].correta;
+
+    let novaPontuacao = pontuacao;
+    if (respostaEhCorreta) {
+      novaPontuacao = pontuacao + 1;
+      setPontuacao(novaPontuacao);
     }
 
     const proximaPergunta = perguntaAtual + 1;
@@ -42,6 +100,7 @@ function Quiz() {
       setOpcaoSelecionada(null);
     } else {
       setMostrarResultado(true);
+      enviarResultado(novaPontuacao);
     }
   };
 

@@ -154,6 +154,25 @@ function Workshop({
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto mt-2 lg:mt-0">
+          {tipo === "Presencial" && link && (
+            <a
+              href={link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto px-6 py-4 rounded-full bg-white/5 border border-white/20 text-gray-300 font-bold text-sm hover:bg-white/10 hover:text-white transition-all flex items-center justify-center gap-2 group/pdf"
+            >
+              <svg
+                className="w-5 h-5 text-red-400 group-hover/pdf:scale-110 transition-transform"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" />
+                <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
+              </svg>
+              Baixar Slides
+            </a>
+          )}
+
           {tipo === "Presencial" &&
             (isAdminView ? (
               <Link

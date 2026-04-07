@@ -33,6 +33,7 @@ import Calendario from "./pages/Calendario";
 import MateriaisExtras from "./pages/MateriaisExtras";
 import AdminQuiz from "./pages/AdminQuiz";
 import AdminPerguntas from "./pages/AdminPerguntas";
+import VideosExtras from "./pages/VideosExtras";
 
 const router = createBrowserRouter([
   {
@@ -89,6 +90,10 @@ const router = createBrowserRouter([
       {
         path: "/workshops/materiais-extras",
         element: <MateriaisExtras />,
+      },
+      {
+        path: "/videos-extras",
+        element: <VideosExtras />,
       },
       {
         path: "/quiz/:id",

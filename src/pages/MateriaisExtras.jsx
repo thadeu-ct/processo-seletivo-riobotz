@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // Importado useNavigate
 import { toast } from "react-hot-toast";
 import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
 
 function MateriaisExtras() {
   const [isPdfOpen, setIsPdfOpen] = useState(false);
+  const navigate = useNavigate(); // Inicializado aqui
 
   const matriculaUsuario = sessionStorage.getItem("matriculaUsuario") || "";
   const envAdmins = import.meta.env.VITE_ADMIN_MATRICULAS || "";
@@ -25,6 +26,7 @@ function MateriaisExtras() {
       color: "from-blue-600 to-blue-800",
       bonus: "200 Botcoins",
       locked: !finalAdminView,
+      path: "/quiz/tutorial",
     },
     {
       id: "desafios",
@@ -33,6 +35,7 @@ function MateriaisExtras() {
       icon: "⚙️",
       color: "from-yellow-500 to-orange-600",
       locked: !finalAdminView,
+      path: "/em-constucao",
     },
     {
       id: "videos",
@@ -40,14 +43,23 @@ function MateriaisExtras() {
       description: "Conteúdo visual complementar para aprofundamento.",
       icon: "🎬",
       color: "from-purple-600 to-indigo-700",
-      locked: !finalAdminView,
+      locked: false,
+      path: "/videos-extras",
     },
   ];
 
-  const handleLockedClick = () => {
-    toast.success(
-      "Missão em desenvolvimento! Nossos engenheiros estão preparando os desafios. Fique de olho nos workshops para saber quando liberar!",
-    );
+  const handleAction = (section) => {
+    if (section.locked) {
+      toast.success(
+        "Missão em desenvolvimento! Nossos engenheiros estão preparando os desafios.",
+        { icon: "🛠️" },
+      );
+      return;
+    }
+
+    if (section.path) {
+      navigate(section.path);
+    }
   };
 
   return (
@@ -55,6 +67,7 @@ function MateriaisExtras() {
       <PrivateHeader />
 
       <main className="flex-grow flex relative">
+        {/* SIDEBAR DO PDF */}
         <div
           className={`fixed inset-y-0 left-0 z-40 transition-all duration-500 ease-in-out bg-white shadow-2xl flex ${isPdfOpen ? "w-full md:w-[50%]" : "w-0"}`}
         >
@@ -105,9 +118,9 @@ function MateriaisExtras() {
               {sections.map((section) => (
                 <div
                   key={section.id}
-                  onClick={section.locked ? handleLockedClick : () => {}}
+                  onClick={() => handleAction(section)}
                   className={`relative group bg-white/5 border border-white/10 rounded-[2.5rem] p-8 transition-all duration-300 overflow-hidden shadow-2xl 
-                    ${section.locked ? "cursor-not-allowed opacity-80" : "cursor-pointer hover:bg-white/10 hover:-translate-y-2"}`}
+                    ${section.locked ? "cursor-not-allowed opacity-80" : "cursor-pointer hover:bg-white/10 hover:-translate-y-2 hover:border-yellow-500/30"}`}
                 >
                   {section.bonus && (
                     <div className="absolute -top-2 -right-2 bg-yellow-500 text-[#0a1945] font-black text-[10px] px-4 py-2 rounded-bl-2xl uppercase tracking-tighter shadow-lg">
@@ -146,13 +159,15 @@ function MateriaisExtras() {
                   <div className="flex flex-col gap-3">
                     <div className="flex items-center gap-2 text-yellow-500 font-bold text-xs uppercase tracking-widest transition-all">
                       {section.locked ? "Bloqueado" : "Acessar Missão"}{" "}
-                      <span>→</span>
+                      <span className="group-hover:translate-x-1 transition-transform">
+                        →
+                      </span>
                     </div>
 
                     {finalAdminView && section.id === "tutorial_quiz" && (
                       <Link
                         to={`/admin/quiz/perguntas/${section.id}`}
-                        onClick={(e) => e.stopPropagation()} // Impede o clique no card de disparar
+                        onClick={(e) => e.stopPropagation()}
                         className="mt-2 text-cyan-400 font-black text-[10px] uppercase tracking-widest hover:text-white transition-colors border-t border-white/10 pt-4"
                       >
                         [ Gerenciar Perguntas ]
@@ -165,7 +180,6 @@ function MateriaisExtras() {
           </div>
         </section>
       </main>
-
       <Footer />
     </div>
   );

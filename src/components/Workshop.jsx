@@ -153,8 +153,8 @@ function Workshop({
           )}
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto mt-2 lg:mt-0">
-          {tipo === "Presencial" && link && (
+        <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto mt-2 lg:mt-0 justify-between items-center">
+          {tipo === "Presencial" && link ? (
             <a
               href={link}
               target="_blank"
@@ -171,8 +171,9 @@ function Workshop({
               </svg>
               Baixar Slides
             </a>
+          ) : (
+            <div className="hidden sm:block w-1"></div>
           )}
-
           {tipo === "Presencial" &&
             (isAdminView ? (
               <Link
@@ -213,7 +214,6 @@ function Workshop({
                 )}
               </button>
             ))}
-
           {tipo === "Online" &&
             (quizLink || isAdminView) &&
             (isAdminView ? (

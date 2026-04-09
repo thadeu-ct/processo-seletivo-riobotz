@@ -21,8 +21,10 @@ function AdminQuiz() {
         const resW = await fetch(`${API_URL}/workshops`, { method: "POST" });
         const dataW = await resW.json();
         const found = dataW.find((w) => Number(w.id) === Number(id));
-        setWorkshop(found);
-
+        if (found) {
+          setWorkshop(found);
+          setQuizLiberado(!!found.link);
+        }
         const resR = await fetch(`${API_URL}/admin/quiz/resultados`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -56,8 +58,8 @@ function AdminQuiz() {
           quiz_link: novoLink,
         }),
       });
-    
-    if (res.ok) {
+
+      if (res.ok) {
         setQuizLiberado(acaoLiberar);
         toast.success(
           acaoLiberar ? "Quiz liberado para os alunos!" : "Quiz ocultado!",
@@ -246,7 +248,7 @@ function AdminQuiz() {
           >
             {quizLiberado ? "Suspender Quiz" : "Liberar Quiz"}
           </button>
-        </div>        
+        </div>
 
         <div className="w-full max-w-6xl mt-12 flex flex-col md:flex-row justify-between items-center gap-6">
           <button className="text-gray-500 hover:text-white font-black uppercase text-[10px] tracking-widest transition-colors flex items-center gap-2">

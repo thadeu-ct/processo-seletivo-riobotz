@@ -598,6 +598,35 @@ def presencaWorkshops():
     except Exception as e:
         return handle_error(e), 500
 
+@app.route("/api/workshops/atualizar-link", methods=["POST"])
+def atualizar_link_quiz():
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"erro": "Dados ausentes"}), 400
+
+    workshop_id = data.get("workshop_id")
+    # O quiz_link pode vir como "/quiz/11" ou como null (para esconder)
+    novo_link = data.get("quiz_link") 
+
+    try:
+        banco = get_db_connection()
+        db = banco.cursor()
+
+        # O comando SQL que faz a mágica:
+        # Ele atualiza a coluna 'link' (ou o nome que ele deu para o link do quiz)
+        db.execute(
+            "UPDATE workshops SET link = %s WHERE id = %s",
+            (novo_link, workshop_id)
+        )
+
+        banco.commit()
+        db.close()
+        banco.close()
+
+        return jsonify({"erro": 0, "status": "Link atualizado com sucesso!"})
+    except Exception as e:
+        print(f"Erro ao atualizar link: {e}")
+        return {"erro": str(e)}, 500
 
 @app.route("/api/user/workshops", methods=["POST"])
 def getUserWorkshops():

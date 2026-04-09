@@ -574,7 +574,7 @@ def inscritosWorkshop():
 def presencaWorkshops():
     data = request.get_json(silent=True)
     mats: tuple[str, int] = [
-        (int(d.get("botcoins")), d.get("matricula"))
+        (int(d.get("botcoin")), d.get("matricula"))
         for d in data
     ]
 
@@ -583,7 +583,7 @@ def presencaWorkshops():
         db = banco.cursor()
 
         db.executemany(
-            "UPDATE users SET botcoins = users.botcoins + %s WHERE matricula = %s",
+            "UPDATE users SET botcoin = users.botcoin + %s WHERE matricula = %s",
             mats
         )
 

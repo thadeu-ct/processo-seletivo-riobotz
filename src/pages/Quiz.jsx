@@ -283,9 +283,6 @@ function Quiz() {
                 </span>
               </div>
 
-              <h2 className="text-white font-black text-2xl md:text-3xl mb-6 leading-tight">
-                {pergunta.enunciado || pergunta.pergunta}
-              </h2>
               <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-yellow-400 transition-all duration-300 ease-out"

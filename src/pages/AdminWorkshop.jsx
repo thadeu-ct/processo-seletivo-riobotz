@@ -21,13 +21,9 @@ function AdminWorkshop() {
     const carregarDados = async () => {
       try {
         setLoading(true);
-
         const resW = await fetch(`${API_URL}/workshops`, { method: "POST" });
         const todosWorkshops = await resW.json();
-        const wsEncontrado = todosWorkshops.find(
-          (w) => String(w.id) === String(id),
-        );
-        setWorkshop(wsEncontrado);
+        setWorkshop(todosWorkshops.find((w) => String(w.id) === String(id)));
 
         const resI = await fetch(`${API_URL}/workshops/inscritos`, {
           method: "POST",
@@ -48,44 +44,41 @@ function AdminWorkshop() {
           );
         }
       } catch (err) {
-        console.error("Erro ao carregar dados do workshop:", err);
+        console.error("Erro ao carregar:", err);
       } finally {
         setLoading(false);
       }
     };
-
     if (isAdminReal) carregarDados();
   }, [id, isAdminReal]);
 
   const togglePresenca = (alunoId) => {
     setAlunos((prev) =>
-      prev.map((aluno) =>
-        aluno.matricula === alunoId
-          ? { ...aluno, presente: !aluno.presente }
-          : aluno,
+      prev.map((a) =>
+        a.matricula === alunoId ? { ...a, presente: !a.presente } : a,
       ),
     );
   };
 
   const addBonus = (alunoId) => {
     setAlunos((prev) =>
-      prev.map((aluno) =>
-        aluno.matricula === alunoId
-          ? { ...aluno, bonus: (aluno.bonus || 0) + 10 }
-          : aluno,
+      prev.map((a) =>
+        a.matricula === alunoId ? { ...a, bonus: (a.bonus || 0) + 10 } : a,
       ),
     );
   };
 
   const handleSalvar = async () => {
-    const dadosParaEnviar = alunos
-      .map((aluno) => ({
-        matricula: aluno.matricula,
-        botcoins:
-          (aluno.presente && !aluno.jaEstavaPresente ? 50 : 0) +
-          (aluno.bonus || 0),
-        presente: aluno.presente,
-      }))
+    const dadosFormatados = alunos
+      .map((aluno) => {
+        const ganhoPresenca =
+          aluno.presente && !aluno.jaEstavaPresente ? 50 : 0;
+        return {
+          matricula: aluno.matricula,
+          botcoins: ganhoPresenca + (aluno.bonus || 0),
+          presente: aluno.presente,
+        };
+      })
       .filter(
         (d) =>
           d.botcoins > 0 ||
@@ -93,55 +86,44 @@ function AdminWorkshop() {
             alunos.find((a) => a.matricula === d.matricula).jaEstavaPresente,
       );
 
-    if (dadosParaEnviar.length === 0) {
-      return toast.error("Nenhuma alteração para salvar.");
-    }
+    if (dadosFormatados.length === 0)
+      return toast.error("Nada novo para salvar.");
+
     try {
       const res = await fetch(`${API_URL}/workshops/salvar-presenca`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          workshop_id: id,
-          dados: alunos,
-        }),
+        body: JSON.stringify(dadosFormatados),
       });
+
       const data = await res.json();
       if (!data.erro) {
-        toast.success("Lançamentos salvos com sucesso!");
+        toast.success("Botcoins creditados e presenças salvas!");
         setAlunos((prev) =>
-          prev.map((a) => ({
-            ...a,
-            jaEstavaPresente: a.presente,
-            bonus: 0,
-          })),
+          prev.map((a) => ({ ...a, jaEstavaPresente: a.presente, bonus: 0 })),
         );
       }
     } catch (err) {
-      console.error("Erro ao salvar:", err);
-      toast.error("Erro ao conectar com o servidor.");
+      toast.error("Erro ao salvar no servidor: ", err);
     }
   };
 
   if (!isAdminReal)
     return (
-      <div className="min-h-screen bg-[#0a1945] text-white flex items-center justify-center font-black">
-        ACESSO NEGADO
+      <div className="min-h-screen bg-[#0a1945] text-white flex items-center justify-center font-black uppercase tracking-widest text-2xl">
+        Acesso Restrito à Engenharia
       </div>
     );
-
   if (loading)
     return (
       <div className="min-h-screen bg-[#0a1945] text-white flex items-center justify-center">
-        <div className="animate-pulse font-black text-cyan-400">
-          SINCRONIZANDO COM O BANCO...
-        </div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400"></div>
       </div>
     );
-
   if (!workshop)
     return (
       <div className="min-h-screen bg-[#0a1945] text-white flex items-center justify-center font-black text-2xl">
-        Workshop {id} não encontrado no BD.
+        Workshop não mapeado.
       </div>
     );
 
@@ -152,10 +134,10 @@ function AdminWorkshop() {
         <div className="w-full max-w-5xl mb-6">
           <Link
             to="/home"
-            className="inline-flex items-center gap-2 text-gray-400 hover:text-cyan-400 font-bold transition-colors"
+            className="inline-flex items-center gap-2 text-gray-400 hover:text-cyan-400 font-bold transition-all uppercase text-xs tracking-widest"
           >
             <svg
-              className="w-6 h-6"
+              className="w-4 h-4"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -171,98 +153,99 @@ function AdminWorkshop() {
           </Link>
         </div>
 
-        <div className="w-full max-w-5xl mb-8 flex items-center justify-between">
+        <div className="w-full max-w-5xl mb-8 flex items-end justify-between border-b border-white/10 pb-6">
           <div>
-            <span className="text-cyan-400 font-bold tracking-widest uppercase text-sm mb-1 block">
-              Modo Administrador
+            <span className="text-cyan-400 font-black tracking-[0.2em] uppercase text-[10px] mb-2 block">
+              Painel de Controle
             </span>
-            <h1 className="text-white font-black text-3xl md:text-4xl tracking-tight leading-tight">
+            <h1 className="text-white font-black text-3xl md:text-5xl tracking-tighter uppercase">
               {workshop.titulo}
             </h1>
           </div>
           <div className="hidden md:flex flex-col items-end">
-            <span className="text-gray-400 font-medium">Inscritos totais</span>
-            <span className="text-cyan-400 font-black text-3xl">
+            <span className="text-gray-500 font-bold uppercase text-[10px] tracking-widest">
+              Inscritos
+            </span>
+            <span className="text-white font-black text-4xl">
               {alunos.length}
             </span>
           </div>
         </div>
 
-        <div className="w-full max-w-5xl bg-white/5 border border-white/10 rounded-2xl overflow-hidden shadow-2xl backdrop-blur-md">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-white/10 border-b border-white/10 text-gray-300 text-sm uppercase tracking-wider">
-                  <th className="p-4 font-bold text-center w-24">
-                    Presença (+50 ₿)
-                  </th>
-                  <th className="p-4 font-bold">Matrícula</th>
-                  <th className="p-4 font-bold">Nome do Candidato</th>
-                  <th className="p-4 font-bold text-center w-36">Bônus</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/10">
-                {alunos.map((aluno) => (
-                  <tr
-                    key={aluno.matricula}
-                    className="hover:bg-white/5 transition-colors group"
-                  >
-                    <td className="p-4 text-center">
-                      <button
-                        onClick={() => togglePresenca(aluno.matricula)}
-                        className={`w-8 h-8 rounded-lg border-2 flex items-center justify-center transition-all mx-auto ${
-                          aluno.presente
-                            ? "bg-cyan-500 border-cyan-500 text-[#0a1945]"
-                            : "bg-transparent border-gray-500 text-transparent"
-                        }`}
+        <div className="w-full max-w-5xl bg-white/5 border border-white/10 rounded-[2rem] overflow-hidden shadow-2xl backdrop-blur-md">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-white/5 border-b border-white/10 text-gray-400 text-[10px] font-black uppercase tracking-[0.2em]">
+                <th className="p-6 text-center w-32">Presença (+50 ₿)</th>
+                <th className="p-6">Matrícula</th>
+                <th className="p-6">Candidato</th>
+                <th className="p-6 text-center w-48">Lançar Bônus</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/5">
+              {alunos.map((aluno) => (
+                <tr
+                  key={aluno.matricula}
+                  className="hover:bg-white/5 transition-colors group"
+                >
+                  <td className="p-6 text-center">
+                    <button
+                      onClick={() => togglePresenca(aluno.matricula)}
+                      className={`w-10 h-10 rounded-xl border-2 flex items-center justify-center transition-all mx-auto ${aluno.presente ? "bg-green-500 border-green-500 text-[#0a1945] shadow-[0_0_15px_rgba(34,197,94,0.4)]" : "bg-transparent border-white/20 text-transparent hover:border-white/40"}`}
+                    >
+                      <svg
+                        className="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        strokeWidth="4"
                       >
-                        <svg
-                          className="w-5 h-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          strokeWidth="3"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                      </button>
-                    </td>
-                    <td className="p-4 font-mono text-gray-400">
-                      {aluno.matricula}
-                    </td>
-                    <td className="p-4 font-bold text-white uppercase text-sm">
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    </button>
+                  </td>
+                  <td className="p-6 font-mono text-sm text-gray-500 group-hover:text-cyan-400 transition-colors">
+                    {aluno.matricula}
+                  </td>
+                  <td className="p-6">
+                    <div className="text-white font-black uppercase text-sm tracking-tight">
                       {aluno.nome}
-                    </td>
-                    <td className="p-4 text-center">
-                      <div className="flex items-center justify-center gap-2">
-                        <button
-                          onClick={() => addBonus(aluno.matricula)}
-                          className="px-3 py-1.5 bg-yellow-400/10 text-yellow-400 border border-yellow-400/30 rounded-lg font-black hover:bg-yellow-400 hover:text-[#0a1945] transition-all"
-                        >
-                          +10 ₿
-                        </button>
-                        {aluno.bonus > 0 && (
-                          <span className="text-yellow-400 font-mono text-sm">
-                            {aluno.bonus}
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </div>
+                    {aluno.jaEstavaPresente && (
+                      <span className="text-[9px] bg-green-500/10 text-green-500 px-2 py-0.5 rounded-full font-bold uppercase tracking-widest">
+                        Confirmado
+                      </span>
+                    )}
+                  </td>
+                  <td className="p-6 text-center">
+                    <div className="flex items-center justify-center gap-3">
+                      <button
+                        onClick={() => addBonus(aluno.matricula)}
+                        className="px-4 py-2 bg-yellow-500/10 text-yellow-500 border border-yellow-500/30 rounded-xl font-black text-xs hover:bg-yellow-500 hover:text-[#0a1945] transition-all active:scale-95"
+                      >
+                        +10 ₿
+                      </button>
+                      {aluno.bonus > 0 && (
+                        <div className="bg-yellow-500 text-[#0a1945] font-black text-xs px-2 py-1 rounded-md animate-bounce">
+                          +{aluno.bonus}
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
-        <div className="w-full max-w-5xl mt-8 flex justify-end">
+        <div className="w-full max-w-5xl mt-10 flex justify-end">
           <button
             onClick={handleSalvar}
-            className="px-8 py-4 rounded-full bg-cyan-500 text-[#0a1945] font-black text-lg hover:bg-white hover:scale-105 transition-all shadow-[0_0_20px_rgba(6,182,212,0.4)]"
+            className="px-12 py-5 rounded-full bg-cyan-500 text-[#0a1945] font-black text-xl hover:bg-white hover:scale-105 transition-all shadow-[0_0_30px_rgba(6,182,212,0.3)] uppercase tracking-tighter"
           >
             Salvar Lançamentos
           </button>

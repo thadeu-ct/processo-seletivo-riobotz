@@ -52,7 +52,7 @@ function PrivateNavBar() {
       <div className="flex items-center gap-3 md:gap-6 z-50">
         {location.pathname !== "/espera" && (
           <Link
-            to="/botcoin"
+            to="/botcoins"
             className="flex items-center gap-1.5 md:gap-2 font-black text-yellow-400 bg-yellow-400/10 hover:bg-yellow-400/20 px-3 md:px-4 py-1.5 rounded-full border border-yellow-400/30 transition-colors cursor-pointer"
           >
             <svg

@@ -41,10 +41,7 @@ function AdminQuiz() {
     };
 
     carregarDadosAdmin();
-    if (workshop) {
-      setQuizLiberado(!!workshop.quiz_link || !!workshop.link);
-    }
-  }, [id, workshop]);
+  }, [id]);
 
   const handleToggleQuiz = async () => {
     const acaoLiberar = !quizLiberado;

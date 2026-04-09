@@ -574,7 +574,7 @@ def inscritosWorkshop():
 def presencaWorkshops():
     data = request.get_json(silent=True)
     mats: tuple[str, int] = [
-        (int(d.get("botcoin")), d.get("matricula"))
+        (d.get("botcoin"), d.get("matricula"))
         for d in data
     ]
 

@@ -39,9 +39,11 @@ function AdminWorkshop() {
         if (Array.isArray(dataI)) {
           setAlunos(
             dataI.map((a) => ({
-              ...a,
-              presente: a.presente || false,
-              bonus: a.bonus || 0,
+              matricula: a.matricula,
+              nome: a.nome,
+              presente: a.presenca || false,
+              jaEstavaPresente: a.presenca || false,
+              bonus: 0,
             })),
           );
         }
@@ -76,6 +78,24 @@ function AdminWorkshop() {
   };
 
   const handleSalvar = async () => {
+    const dadosParaEnviar = alunos
+      .map((aluno) => ({
+        matricula: aluno.matricula,
+        botcoins:
+          (aluno.presente && !aluno.jaEstavaPresente ? 50 : 0) +
+          (aluno.bonus || 0),
+        presente: aluno.presente,
+      }))
+      .filter(
+        (d) =>
+          d.botcoins > 0 ||
+          d.presente !==
+            alunos.find((a) => a.matricula === d.matricula).jaEstavaPresente,
+      );
+
+    if (dadosParaEnviar.length === 0) {
+      return toast.error("Nenhuma alteração para salvar.");
+    }
     try {
       const res = await fetch(`${API_URL}/workshops/salvar-presenca`, {
         method: "POST",
@@ -86,7 +106,16 @@ function AdminWorkshop() {
         }),
       });
       const data = await res.json();
-      if (!data.erro) toast.success("Lançamentos salvos com sucesso!");
+      if (!data.erro) {
+        toast.success("Lançamentos salvos com sucesso!");
+        setAlunos((prev) =>
+          prev.map((a) => ({
+            ...a,
+            jaEstavaPresente: a.presente,
+            bonus: 0,
+          })),
+        );
+      }
     } catch (err) {
       console.error("Erro ao salvar:", err);
       toast.error("Erro ao conectar com o servidor.");

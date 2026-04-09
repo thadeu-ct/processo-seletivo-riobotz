@@ -3,18 +3,16 @@ import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
 
 function VideosExtras() {
-  // Dados reais do vídeo sobre Motores Brushless
   const videos = [
     {
       id: "1",
       titulo: "Como funciona um Motor Brushless (BLDC)?",
       descricao:
-        "Entenda a física por trás dos motores sem escovas: interação entre eletroímãs e ímãs permanentes, sensores de efeito Hall e o papel do ESC no controle de rotação.",
+        "Entenda o funcionamento interno dos motores sem escovas: interação entre estator com eletroímas e rotor com ímãs permanentes, além do papel do ESC no controle de rotação.",
       youtubeId: "bCEiOnuODac",
       duracao: "04:40",
-      tag: "Eletrônica / Mecânica",
+      tag: "Autônomos / Eletrônica / Mecânica",
     },
-    // Você pode adicionar outros mocks aqui futuramente
   ];
 
   return (
@@ -67,7 +65,6 @@ function VideosExtras() {
               key={video.id}
               className="bg-white/5 border border-white/10 rounded-[2.5rem] overflow-hidden hover:border-purple-500/40 transition-all group shadow-2xl backdrop-blur-sm"
             >
-              {/* Container do Iframe com Proporção 16:9 */}
               <div className="aspect-video w-full bg-black/40 relative">
                 <iframe
                   className="absolute inset-0 w-full h-full border-none"

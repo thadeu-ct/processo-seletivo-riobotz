@@ -551,7 +551,7 @@ def inscritosWorkshop():
 
         db.execute(
             """
-            SELECT u.matricula AS matricula, u.nome AS nome
+            SELECT u.matricula, u.nome, w.presenca 
             FROM user_workshop AS w
             JOIN users AS u ON w.matricula = u.matricula
             WHERE w.id = %s

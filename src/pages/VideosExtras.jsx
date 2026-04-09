@@ -6,11 +6,19 @@ function VideosExtras() {
   const videos = [
     {
       id: "1",
-      titulo: "Como funciona um Motor Brushless (BLDC)?",
+      titulo: "Como funciona um Motor Brushless?",
       descricao:
         "Entenda o funcionamento interno dos motores sem escovas: interação entre estator com eletroímas e rotor com ímãs permanentes, além do papel do ESC no controle de rotação.",
       youtubeId: "bCEiOnuODac",
       duracao: "04:40",
+      tag: "Autônomos / Eletrônica / Mecânica",
+    },
+    {
+      id: "2",
+      titulo: "Como funciona um motor brushed?",
+      descricao: "",
+      youtubeId: "LAtPHANEfQo",
+      duracao: "",
       tag: "Autônomos / Eletrônica / Mecânica",
     },
   ];

@@ -137,9 +137,7 @@ function Quiz() {
   if (loading)
     return (
       <div className="min-h-screen bg-[#0a1945] flex items-center justify-center text-white">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-400">
-          Carregando Quiz...
-        </div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-400"></div>
       </div>
     );
 

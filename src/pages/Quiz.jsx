@@ -104,16 +104,29 @@ function Quiz() {
       const formData = new FormData();
       formData.append("matricula", matricula);
       formData.append("botcoin", totalMoedas);
-      const res = await fetch(`${API_URL}/alteracaoBotcoin/`, {
+      const resBotcoin = await fetch(`${API_URL}/alteracaoBotcoin/`, {
         method: "POST",
         body: formData,
       });
-      const data = await res.json();
-      if (res.ok && data.botcoin !== undefined) {
+      const dataBotcoin = await resBotcoin.json();
+
+      await fetch(`${API_URL}/admin/quiz/resultados`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          workshop_id: id,
+          matricula: matricula,
+          acertos: pontosFinais,
+          total: perguntas.length,
+          completado: true,
+        }),
+      });
+
+      if (resBotcoin.ok) {
         toast.success(`Quiz Finalizado! Você ganhou ${totalMoedas} Botcoins!`, {
           icon: "💰",
         });
-        sessionStorage.setItem("botcoin", data.botcoin);
+        sessionStorage.setItem("botcoin", dataBotcoin.botcoin);
         window.dispatchEvent(new Event("botcoinUpdated"));
       }
     } catch (err) {

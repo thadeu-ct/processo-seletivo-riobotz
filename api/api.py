@@ -583,7 +583,7 @@ def presencaWorkshops():
         db = banco.cursor()
 
         db.executemany(
-            "UPDATE users SET botcoins = botcoins + %s WHERE matricula = %s",
+            "UPDATE users SET botcoins = users.botcoins + %s WHERE matricula = %s",
             mats
         )
 

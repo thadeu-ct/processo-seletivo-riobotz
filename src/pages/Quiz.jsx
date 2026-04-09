@@ -104,13 +104,18 @@ function Quiz() {
       const formData = new FormData();
       formData.append("matricula", matricula);
       formData.append("botcoin", totalMoedas);
-      await fetch(`${API_URL}/alteracaoBotcoin/`, {
+      const res = await fetch(`${API_URL}/alteracaoBotcoin/`, {
         method: "POST",
         body: formData,
       });
-      toast.success(`Quiz Finalizado! Você ganhou ${totalMoedas} Botcoins!`, {
-        icon: "💰",
-      });
+      const data = await res.json();
+      if (res.ok && data.botcoin !== undefined) {
+        toast.success(`Quiz Finalizado! Você ganhou ${totalMoedas} Botcoins!`, {
+          icon: "💰",
+        });
+        sessionStorage.setItem("botcoin", data.botcoin);
+        window.dispatchEvent(new Event("botcoinUpdated"));
+      }
     } catch (err) {
       console.error("Erro ao salvar resultado", err);
       toast.error("Erro ao creditar suas moedas.");

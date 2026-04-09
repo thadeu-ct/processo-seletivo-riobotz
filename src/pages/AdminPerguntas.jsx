@@ -30,7 +30,10 @@ function AdminPerguntas() {
       console.log("DADOS DO BACK:", data);
 
       if (Array.isArray(data) && data.length > 0) {
-        setPerguntas(data);
+        const perguntasFiltradas = data.filter(
+          (p) => String(p.id) === String(id),
+        );
+        setPerguntas(perguntasFiltradas);
       }
     } catch (err) {
       console.error("Erro ao carregar perguntas:", err);

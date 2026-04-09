@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import toast from "react-hot-toast";
 import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
 
@@ -11,7 +10,6 @@ function AdminQuiz() {
   const [workshop, setWorkshop] = useState(null);
   const [resultados, setResultados] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [quizLiberado, setQuizLiberado] = useState(false);
 
   useEffect(() => {
     const carregarDadosAdmin = async () => {
@@ -41,36 +39,7 @@ function AdminQuiz() {
     };
 
     carregarDadosAdmin();
-    if (workshop) {
-      setQuizLiberado(!!workshop.quiz_link || !!workshop.link);
-    }
-  }, [id, workshop]);
-
-  const handleToggleQuiz = async () => {
-    const acaoLiberar = !quizLiberado;
-    const novoLink = acaoLiberar ? `/quiz/${id}` : null;
-
-    try {
-      const res = await fetch(`${API_URL}/workshops/atualizar-link`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          workshop_id: id,
-          quiz_link: novoLink,
-        }),
-      });
-
-      if (res.ok) {
-        setQuizLiberado(acaoLiberar);
-        toast.success(
-          acaoLiberar ? "Quiz liberado para os alunos!" : "Quiz ocultado!",
-          { icon: acaoLiberar ? "🚀" : "🙈" },
-        );
-      }
-    } catch (err) {
-      toast.error("Erro ao mudar status do quiz: ", err);
-    }
-  };
+  }, [id]);
 
   const mediaGeral = useMemo(() => {
     if (resultados.length === 0) return "0.0";
@@ -223,34 +192,7 @@ function AdminQuiz() {
             </table>
           </div>
         </div>
-        <div className="w-full max-w-6xl mb-8 bg-white/5 border border-white/10 p-6 rounded-[2rem] flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div
-              className={`w-3 h-3 rounded-full ${quizLiberado ? "bg-green-500 animate-pulse" : "bg-red-500"}`}
-            ></div>
-            <div>
-              <h3 className="text-white font-black uppercase text-sm">
-                Status do Quiz
-              </h3>
-              <p className="text-gray-500 text-[10px] uppercase font-bold">
-                {quizLiberado
-                  ? "Visível para os candidatos"
-                  : "Oculto na plataforma"}
-              </p>
-            </div>
-          </div>
 
-          <button
-            onClick={handleToggleQuiz}
-            className={`px-8 py-3 rounded-full font-black text-xs uppercase tracking-widest transition-all ${
-              quizLiberado
-                ? "bg-red-500/10 text-red-500 border border-red-500/50 hover:bg-red-500 hover:text-white"
-                : "bg-green-500 text-[#0a1945] hover:bg-white hover:scale-105 shadow-lg shadow-green-500/20"
-            }`}
-          >
-            {quizLiberado ? "Suspender Quiz" : "Liberar Quiz"}
-          </button>
-        </div>
         <div className="w-full max-w-6xl mt-12 flex flex-col md:flex-row justify-between items-center gap-6">
           <button className="text-gray-500 hover:text-white font-black uppercase text-[10px] tracking-widest transition-colors flex items-center gap-2">
             <svg

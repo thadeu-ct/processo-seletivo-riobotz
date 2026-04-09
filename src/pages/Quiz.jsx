@@ -15,7 +15,9 @@ function Quiz() {
   const [pontuacao, setPontuacao] = useState(0);
   const [mostrarResultado, setMostrarResultado] = useState(false);
 
-  const matricula = sessionStorage.getItem("matriculaUsuario");
+  const [matricula] = useState(() =>
+    sessionStorage.getItem("matriculaUsuario")
+  );
   const navigate = useNavigate();
 
   useEffect(() => {

@@ -215,9 +215,9 @@ function Workshop({
               </button>
             ))}
           {tipo === "Online" &&
-            (quizLink || isAdminView) &&
+            (quizLink || (link && link.startsWith("/quiz/")) || isAdminView) &&
             (isAdminView ? (
-              quizLink ? (
+              quizLink || (link && link.startsWith("/quiz/")) ? (
                 <Link
                   to={`/admin/quiz/${id}`}
                   className="flex-1 bg-green-600/20 border-2 border-green-500 text-green-400 font-black py-4 px-6 rounded-full hover:bg-green-500 hover:text-white transition-all text-center"
@@ -233,9 +233,9 @@ function Workshop({
                 </Link>
               )
             ) : (
-              quizLink && (
+              (quizLink || (link && link.startsWith("/quiz/"))) && (
                 <Link
-                  to={quizLink}
+                  to={quizLink || link}
                   className="w-full sm:w-auto px-8 py-4 rounded-full bg-yellow-400 text-[#0a1945] font-black text-lg hover:bg-white hover:scale-105 transition-all shadow-lg shadow-yellow-400/20 text-center whitespace-nowrap"
                 >
                   Fazer Quiz

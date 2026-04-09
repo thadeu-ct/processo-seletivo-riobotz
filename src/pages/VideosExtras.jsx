@@ -18,7 +18,7 @@ function VideosExtras() {
       titulo: "Como funciona um motor brushed?",
       descricao: "",
       youtubeId: "LAtPHANEfQo",
-      duracao: "",
+      duracao: "04:50",
       tag: "Autônomos / Eletrônica / Mecânica",
     },
   ];

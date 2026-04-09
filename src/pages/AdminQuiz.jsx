@@ -10,6 +10,7 @@ function AdminQuiz() {
   const [workshop, setWorkshop] = useState(null);
   const [resultados, setResultados] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [quizLiberado, setQuizLiberado] = useState(false)
 
   useEffect(() => {
     const carregarDadosAdmin = async () => {

@@ -15,9 +15,7 @@ function Quiz() {
   const [pontuacao, setPontuacao] = useState(0);
   const [mostrarResultado, setMostrarResultado] = useState(false);
 
-  const [matricula] = useState(() =>
-    sessionStorage.getItem("matriculaUsuario")
-  );
+  const matricula = sessionStorage.getItem("matriculaUsuario");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -54,11 +52,7 @@ function Quiz() {
           );
         }
 
-        const resQuiz = await fetch(`${API_URL}/quiz/get`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id, qtd: 5 }),
-        });
+        const resQuiz = await fetch(`${API_URL}/quiz/get?id=${id}&qtd=5`);
         const data = await resQuiz.json();
 
         if (Array.isArray(data) && data.length > 0) {
@@ -74,7 +68,7 @@ function Quiz() {
     };
 
     carregarTudo();
-  }, [id, matricula]);
+  }, [id, matricula, navigate]);
 
   const enviarResultado = async (pontosFinais) => {
     const totalMoedas = pontosFinais * 50;

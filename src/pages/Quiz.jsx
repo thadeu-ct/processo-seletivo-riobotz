@@ -11,9 +11,10 @@ function Quiz() {
   const [perguntas, setPerguntas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [perguntaAtual, setPerguntaAtual] = useState(0);
-  const [opcaoSelecionada, setOpcaoSelecionada] = useState(null);
+  const [respostasUsuario, setRespostasUsuario] = useState({});
   const [pontuacao, setPontuacao] = useState(0);
   const [mostrarResultado, setMostrarResultado] = useState(false);
+  const [isEnviando, setIsEnviando] = useState(false);
 
   const matricula = sessionStorage.getItem("matriculaUsuario");
   const navigate = useNavigate();
@@ -77,7 +78,27 @@ function Quiz() {
     carregarTudo();
   }, [id, matricula, navigate]);
 
+  const handleSelecionarOpcao = (indiceOpcao) => {
+    setRespostasUsuario((prev) => ({
+      ...prev,
+      [perguntaAtual]: indiceOpcao,
+    }));
+  };
+
+  const proximaPergunta = () => {
+    if (perguntaAtual < perguntas.length - 1) {
+      setPerguntaAtual(perguntaAtual + 1);
+    }
+  };
+
+  const perguntaAnterior = () => {
+    if (perguntaAtual > 0) {
+      setPerguntaAtual(perguntaAtual - 1);
+    }
+  };
+
   const enviarResultado = async (pontosFinais) => {
+    setIsEnviando(true);
     const totalMoedas = pontosFinais * 50;
     try {
       const formData = new FormData();
@@ -87,41 +108,38 @@ function Quiz() {
         method: "POST",
         body: formData,
       });
-      toast.success(`Você ganhou ${totalMoedas} Botcoins!`, {
+      toast.success(`Quiz Finalizado! Você ganhou ${totalMoedas} Botcoins!`, {
         icon: "💰",
       });
     } catch (err) {
       console.error("Erro ao salvar resultado", err);
       toast.error("Erro ao creditar suas moedas.");
+    } finally {
+      setIsEnviando(false);
     }
   };
 
-  const handleResponder = () => {
-    if (opcaoSelecionada === null) return;
+  const handleFinalizarQuiz = async () => {
+    let acertos = 0;
+    perguntas.forEach((pergunta, index) => {
+      const respostaDada = respostasUsuario[index];
+      if (respostaDada !== undefined && pergunta.opcoes[respostaDada].correta) {
+        acertos += 1;
+      }
+    });
 
-    const respostaEhCorreta =
-      perguntas[perguntaAtual].opcoes[opcaoSelecionada].correta;
+    setPontuacao(acertos);
+    setMostrarResultado(true);
 
-    let novaPontuacao = pontuacao;
-    if (respostaEhCorreta) {
-      novaPontuacao = pontuacao + 1;
-      setPontuacao(novaPontuacao);
-    }
-
-    const proximaPergunta = perguntaAtual + 1;
-    if (proximaPergunta < perguntas.length) {
-      setPerguntaAtual(proximaPergunta);
-      setOpcaoSelecionada(null);
-    } else {
-      setMostrarResultado(true);
-      enviarResultado(novaPontuacao);
-    }
+    enviarResultado(acertos);
   };
 
   if (loading)
     return (
       <div className="min-h-screen bg-[#0a1945] flex items-center justify-center text-white">
-        Carregando Quiz...
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-400">
+          Carregando Quiz...
+        </div>
       </div>
     );
 
@@ -134,6 +152,9 @@ function Quiz() {
 
   const moedasGanhas = pontuacao * 50;
   const pergunta = perguntas[perguntaAtual];
+  const opcaoSelecionadaAgora = respostasUsuario[perguntaAtual];
+  const todasRespondidas =
+    Object.keys(respostasUsuario).length === perguntas.length;
 
   return (
     <div className="min-h-screen bg-[#0a1945] flex flex-col font-sans">
@@ -262,15 +283,22 @@ function Quiz() {
                 <span className="text-yellow-400 font-bold uppercase tracking-widest text-sm">
                   Questão {perguntaAtual + 1} de {perguntas.length}
                 </span>
-                <span className="text-white/50 font-mono text-sm">
-                  ID: {id}
-                </span>
               </div>
 
               <h2 className="text-white font-black text-2xl md:text-3xl mb-6 leading-tight">
                 {pergunta.enunciado || pergunta.pergunta}
               </h2>
-
+              <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-yellow-400 transition-all duration-300 ease-out"
+                  style={{
+                    width: `${((perguntaAtual + 1) / perguntas.length) * 100}%`,
+                  }}
+                ></div>
+              </div>
+              <h2 className="text-white font-black text-2xl md:text-3xl mb-6 leading-tight">
+                {pergunta.enunciado || pergunta.pergunta}
+              </h2>
               {pergunta.imagem && (
                 <div className="mb-8 w-full rounded-xl overflow-hidden border-2 border-white/10 shadow-lg">
                   <img
@@ -285,9 +313,9 @@ function Quiz() {
                 {pergunta.opcoes.map((opcao, index) => (
                   <button
                     key={index}
-                    onClick={() => setOpcaoSelecionada(index)}
+                    onClick={() => handleSelecionarOpcao(index)}
                     className={`text-left w-full p-5 rounded-xl border-2 font-medium text-lg transition-all duration-200 ${
-                      opcaoSelecionada === index
+                      opcaoSelecionadaAgora === index
                         ? "bg-yellow-400 border-yellow-400 text-[#0a1945] shadow-[0_0_15px_rgba(250,204,21,0.4)] transform scale-[1.02]"
                         : "bg-[#0a1945]/50 border-white/20 text-gray-200 hover:border-yellow-400/50 hover:bg-white/5"
                     }`}
@@ -297,19 +325,46 @@ function Quiz() {
                 ))}
               </div>
 
-              <button
-                onClick={handleResponder}
-                disabled={opcaoSelecionada === null}
-                className={`w-full py-5 rounded-xl font-black text-xl transition-all uppercase tracking-wider ${
-                  opcaoSelecionada !== null
-                    ? "bg-blue-600 text-white hover:bg-blue-500 shadow-lg hover:-translate-y-1"
-                    : "bg-gray-700 text-gray-500 cursor-not-allowed"
-                }`}
-              >
-                {perguntaAtual === perguntas.length - 1
-                  ? "Finalizar Quiz"
-                  : "Confirmar Resposta"}
-              </button>
+              <div className="flex justify-between items-center gap-4 mt-8 pt-6 border-t border-white/10">
+                <button
+                  onClick={perguntaAnterior}
+                  disabled={perguntaAtual === 0}
+                  className={`px-6 py-3 rounded-xl font-bold uppercase tracking-widest text-sm transition-all ${
+                    perguntaAtual === 0
+                      ? "bg-transparent text-gray-600 cursor-not-allowed"
+                      : "bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white"
+                  }`}
+                >
+                  ← Voltar
+                </button>
+
+                {perguntaAtual < perguntas.length - 1 ? (
+                  <button
+                    onClick={proximaPergunta}
+                    className="px-8 py-3 rounded-xl bg-blue-600 text-white font-black uppercase tracking-widest hover:bg-blue-500 shadow-lg transition-all"
+                  >
+                    Avançar →
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleFinalizarQuiz}
+                    disabled={!todasRespondidas || isEnviando}
+                    className={`px-8 py-3 rounded-xl font-black uppercase tracking-widest transition-all ${
+                      todasRespondidas && !isEnviando
+                        ? "bg-green-500 text-[#0a1945] hover:bg-green-400 shadow-[0_0_20px_rgba(34,197,94,0.4)] hover:scale-105"
+                        : "bg-gray-700 text-gray-500 cursor-not-allowed"
+                    }`}
+                  >
+                    {isEnviando ? "Enviando..." : "Finalizar Quiz ✓"}
+                  </button>
+                )}
+              </div>
+
+              {!todasRespondidas && perguntaAtual === perguntas.length - 1 && (
+                <p className="text-center text-red-400 text-xs font-bold mt-4 animate-pulse">
+                  Responda todas as questões para finalizar.
+                </p>
+              )}
             </div>
           )}
         </div>

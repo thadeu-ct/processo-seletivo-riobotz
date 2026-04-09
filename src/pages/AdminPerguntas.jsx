@@ -31,7 +31,7 @@ function AdminPerguntas() {
 
       if (Array.isArray(data) && data.length > 0) {
         const perguntasFiltradas = data.filter(
-          (p) => String(p.id) === String(id),
+          (p) => String(p[1]) === String(id),
         );
         console.log(id);
 

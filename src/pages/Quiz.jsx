@@ -52,7 +52,11 @@ function Quiz() {
           );
         }
 
-        const resQuiz = await fetch(`${API_URL}/quiz/get?id=${id}&qtd=5`);
+        const resQuiz = await fetch(`${API_URL}/quiz/get`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, qtd: 5 }),
+        });
         const data = await resQuiz.json();
 
         if (Array.isArray(data) && data.length > 0) {

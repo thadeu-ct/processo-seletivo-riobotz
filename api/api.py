@@ -626,7 +626,7 @@ def getUserWorkshops():
 '''
 ------------------ Funções das perguntas ------------------
 '''
-@app.route("/api/quiz/get", methods=["GET"])
+@app.route("/api/quiz/get", methods=["POST"])
 def get_quiz_data():
     data = request.get_json(silent=True)
     workshop_id = data.get("id") if data else request.form.get("id")

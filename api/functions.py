@@ -1,10 +1,8 @@
 from datetime import datetime
-from flask import Flask, request, jsonify
 import os
 import psycopg2
 from werkzeug.security import generate_password_hash, check_password_hash
 from zoneinfo import ZoneInfo
-
 
 import smtplib
 from email.mime.text import MIMEText
@@ -84,10 +82,6 @@ def get_user(mat: str) -> dict:
         banco.close()
     except Exception as e:
         return handle_error(e)
-        # print(e)
-        # return {
-        #     "erro": str(e)
-        # }
     
     return resultados[0]
 
@@ -113,7 +107,3 @@ def send_verification_email(to_email, code):
         return 0
     except Exception as e:
         return handle_error(e), 500
-        # print(e)
-        # return {
-        #     "erro": str(e)
-        # }

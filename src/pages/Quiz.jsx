@@ -68,7 +68,7 @@ function Quiz() {
     };
 
     carregarTudo();
-  }, [id, matricula, navigate]);
+  }, [id, matricula]);
 
   const enviarResultado = async (pontosFinais) => {
     const totalMoedas = pontosFinais * 50;

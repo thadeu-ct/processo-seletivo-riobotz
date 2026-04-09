@@ -33,6 +33,8 @@ function AdminPerguntas() {
         const perguntasFiltradas = data.filter(
           (p) => String(p.id) === String(id),
         );
+        console.log(id);
+
         setPerguntas(perguntasFiltradas);
       }
     } catch (err) {

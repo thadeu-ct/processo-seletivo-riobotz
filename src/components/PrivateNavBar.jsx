@@ -5,25 +5,25 @@ import UserDropdown from "../components/UserDropdown";
 function PrivateNavBar() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [botcoins, setBotcoins] = useState(0);
+  const [botcoin, setbotcoin] = useState(0);
   const location = useLocation();
 
   useEffect(() => {
-    const updateBotcoins = () => {
-      const storedBotcoins = sessionStorage.getItem("botcoinUsuario");
-      if (storedBotcoins) {
-        setBotcoins(parseInt(storedBotcoins, 10));
+    const updatebotcoin = () => {
+      const storedbotcoin = sessionStorage.getItem("botcoin");
+      if (storedbotcoin) {
+        setbotcoin(parseInt(storedbotcoin, 10));
       }
     };
 
-    updateBotcoins();
+    updatebotcoin();
 
-    window.addEventListener("storage", updateBotcoins);
-    window.addEventListener("botcoinsUpdated", updateBotcoins);
+    window.addEventListener("storage", updatebotcoin);
+    window.addEventListener("botcoinUpdated", updatebotcoin);
 
     return () => {
-      window.removeEventListener("storage", updateBotcoins);
-      window.removeEventListener("botcoinsUpdated", updateBotcoins);
+      window.removeEventListener("storage", updatebotcoin);
+      window.removeEventListener("botcoinUpdated", updatebotcoin);
     };
   }, []);
 
@@ -52,7 +52,7 @@ function PrivateNavBar() {
       <div className="flex items-center gap-3 md:gap-6 z-50">
         {location.pathname !== "/espera" && (
           <Link
-            to="/botcoins"
+            to="/botcoin"
             className="flex items-center gap-1.5 md:gap-2 font-black text-yellow-400 bg-yellow-400/10 hover:bg-yellow-400/20 px-3 md:px-4 py-1.5 rounded-full border border-yellow-400/30 transition-colors cursor-pointer"
           >
             <svg
@@ -62,7 +62,7 @@ function PrivateNavBar() {
             >
               <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zm1-13h-2v2H9v2h2v2H9v2h2v2h2v-2h2v-2h-2v-2h2V9h-2V7z" />
             </svg>
-            <span className="text-sm md:text-base">{botcoins} ₿</span>
+            <span className="text-sm md:text-base">{botcoin} ₿</span>
           </Link>
         )}
 

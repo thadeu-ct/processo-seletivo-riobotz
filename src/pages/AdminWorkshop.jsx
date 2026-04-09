@@ -75,13 +75,13 @@ function AdminWorkshop() {
           aluno.presente && !aluno.jaEstavaPresente ? 50 : 0;
         return {
           matricula: aluno.matricula,
-          botcoins: ganhoPresenca + (aluno.bonus || 0),
+          botcoin: ganhoPresenca + (aluno.bonus || 0),
           presente: aluno.presente,
         };
       })
       .filter(
         (d) =>
-          d.botcoins > 0 ||
+          d.botcoin > 0 ||
           d.presente !==
             alunos.find((a) => a.matricula === d.matricula).jaEstavaPresente,
       );

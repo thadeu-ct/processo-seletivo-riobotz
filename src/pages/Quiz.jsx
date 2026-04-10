@@ -110,19 +110,18 @@ function Quiz() {
       });
       const dataBotcoin = await resBotcoin.json();
 
-      await fetch(`${API_URL}/admin/quiz/resultados`, {
+      const resTrava = await fetch(`${API_URL}/admin/quiz/resultados`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          user_mat: matricula,
           workshop_id: id,
-          matricula: matricula,
           acertos: pontosFinais,
-          total: perguntas.length,
           completado: true,
         }),
       });
 
-      if (resBotcoin.ok) {
+      if (resTrava.ok && resBotcoin.ok) {
         toast.success(`Quiz Finalizado! Você ganhou ${totalMoedas} Botcoins!`, {
           icon: "💰",
         });

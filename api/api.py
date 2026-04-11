@@ -257,30 +257,49 @@ def registrar():
 @app.route("/api/admin/quiz/resultados", methods=["POST"])
 def quizHistorico():
     data = request.get_json(silent=True)
-    workshop_id = int(data.get("workshop_id")) if data else int(request.form.get("workshop_id"))
+    if not data:
+        return jsonify({"erro": "Dados ausentes"}), 400
+    workshop_id = data.get("workshop_id")
+    user_mat = data.get("user_mat")
+    acertos = data.get("acertos")
+    completado = data.get("completado", False)
 
     try:
         banco = get_db_connection()
-        db = banco.cursor()
+        db = banco.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-        db.execute(
-            """
-            SELECT u.user_mat AS matricula, COUNT(*) AS total
-            FROM user_pergunta AS u JOIN perguntas AS p ON p.texto = u.pergunta_id
-            WHERE p.workshop_id = %s
-            GROUP BY u.user_mat
-            """,
-            (workshop_id, )
-        )
+        if completado and user_mat and workshop_id is not None:
+            db.execute(
+                """
+                INSERT INTO user_pergunta (user_mat, workshop_id, acertos)
+                VALUES (%s, %s, %s)
+                ON CONFLICT (user_mat, workshop_id) DO NOTHING
+                """,
+                (str(user_mat), int(workshop_id), int(acertos or 0))
+            )
+            banco.commit()
+            db.close()
+            banco.close()
+            return jsonify({"erro": 0, "msg": "Participação registrada!"})
 
-        rows = db.fetchall()
+        else:
+            db.execute(
+                """
+                SELECT u.nome, up.user_mat AS matricula, up.acertos, up.workshop_id
+                FROM user_pergunta AS up
+                JOIN users AS u ON up.user_mat = u.matricula
+                WHERE up.workshop_id = %s
+                """,
+                (int(workshop_id),)
+            )
+            rows = db.fetchall()
+            db.close()
+            banco.close()
+            return jsonify(rows)
 
-        db.close()
-        banco.close()
-        return jsonify(rows)
     except Exception as e:
-        return handle_error(e), 500
-    
+        print(f"ERRO NO QUIZ RESULTADOS: {e}")
+        return {"erro": str(e)}, 500
 
 '''
 ------------------ Funções de Trocar senha ------------------

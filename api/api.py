@@ -258,18 +258,31 @@ def registrar():
 def quizHistorico():
     data = request.get_json(silent=True)
     workshop_id = int(data.get("workshop_id")) if data else int(request.form.get("workshop_id"))
+    user_mat = data.get("user_mat")
+    acertos = data.get("acertos")
+    completado = data.get("completado", False)
     try:
         banco = get_db_connection()
         db = banco.cursor()
-        db.execute(
-            """
-            SELECT u.user_mat AS matricula, COUNT(*) AS total
-            FROM user_pergunta AS u JOIN perguntas AS p ON p.workshop_id = u.workshop_id
-            WHERE p.workshop_id = %s
-            GROUP BY u.user_mat
-            """,
-            (workshop_id, )
-        )
+        if completado and user_mat:
+            db.execute(
+                """
+                INSERT INTO user_pergunta (user_mat, workshop_id, acertos)
+                VALUES (%s, %s, %s)
+                ON CONFLICT (user_mat, workshop_id) DO NOTHING
+                """,
+                (str(user_mat), int(workshop_id), int(acertos or 0))
+            )
+        else:
+            db.execute(
+                """
+                SELECT u.user_mat AS matricula, COUNT(*) AS total
+                FROM user_pergunta AS u JOIN perguntas AS p ON p.workshop_id = u.workshop_id
+                WHERE p.workshop_id = %s
+                GROUP BY u.user_mat
+                """,
+                (workshop_id, )
+            )
         rows = db.fetchall()
         db.close()
         banco.close()

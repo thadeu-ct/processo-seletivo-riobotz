@@ -259,7 +259,6 @@ def quizHistorico():
     data = request.get_json(silent=True)
     workshop_id = int(data.get("workshop_id")) if data else int(request.form.get("workshop_id"))
     user_mat = data.get("user_mat")
-    acertos = data.get("acertos")
     completado = data.get("completado", False)
     try:
         banco = get_db_connection()
@@ -267,11 +266,10 @@ def quizHistorico():
         if completado and user_mat:
             db.execute(
                 """
-                INSERT INTO user_pergunta (user_mat, workshop_id, acertos)
-                VALUES (%s, %s, %s)
-                ON CONFLICT (user_mat, workshop_id) DO NOTHING
+                INSERT INTO user_pergunta (user_mat, workshop_id)
+                VALUES (%s, %s)
                 """,
-                (str(user_mat), int(workshop_id), int(acertos or 0))
+                (str(user_mat), int(workshop_id))
             )
         else:
             db.execute(

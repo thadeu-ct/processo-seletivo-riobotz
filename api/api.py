@@ -264,7 +264,7 @@ def quizHistorico():
         db.execute(
             """
             SELECT u.user_mat AS matricula, COUNT(*) AS total
-            FROM user_pergunta AS u JOIN perguntas AS p ON p.texto = u.pergunta_id
+            FROM user_pergunta AS u JOIN perguntas AS p ON p.texto = u.workshop_id
             WHERE p.workshop_id = %s
             GROUP BY u.user_mat
             """,

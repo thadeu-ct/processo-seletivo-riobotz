@@ -266,11 +266,9 @@ def quizHistorico():
 
     try:
         banco = get_db_connection()
-        # Usamos RealDictCursor para garantir que o retorno seja um dicionário chave:valor
         db = banco.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
         if completado and user_mat:
-            # 1. Registra a trava (o par matricula + workshop)
             db.execute(
                 """
                 INSERT INTO user_pergunta (user_mat, workshop_id)
@@ -281,14 +279,12 @@ def quizHistorico():
             )
             banco.commit()
 
-            # 2. Busca o saldo atual do usuário para devolver pro Front atualizar a NavBar
             db.execute("SELECT botcoin FROM users WHERE matricula = %s", (str(user_mat),))
             user_data = db.fetchone()
             
             db.close()
             banco.close()
             
-            # RETORNO IMPORTANTE: O Flask precisa de um jsonify aqui
             return jsonify({
                 "erro": 0, 
                 "msg": "Sucesso", 
@@ -296,7 +292,6 @@ def quizHistorico():
             })
 
         else:
-            # Lógica de consulta (Admin ou Verificação de entrada)
             db.execute(
                 """
                 SELECT u.user_mat AS matricula, COUNT(*) AS total
@@ -616,7 +611,7 @@ def presencaWorkshops():
         db = banco.cursor()
 
         db.executemany(
-            "UPDATE users SET botcoin = users.botcoin + %s, prenca = TRUE WHERE matricula = %s AND presenca = FALSE",
+            "UPDATE users SET botcoin = users.botcoin + %s, presenca = TRUE WHERE matricula = %s AND presenca = FALSE",
             mats
         )
 

@@ -601,29 +601,40 @@ def inscritosWorkshop():
 @app.route("/api/workshops/salvar-presenca", methods=["POST"])
 def presencaWorkshops():
     data = request.get_json(silent=True)
-    mats: tuple[str, int] = [
-        (int(d.get("botcoin")), d.get("matricula"))
-        for d in data
-    ]
+    if not data:
+        return jsonify({"erro": "Dados ausentes"}), 400
 
     try:
         banco = get_db_connection()
         db = banco.cursor()
 
-        db.executemany(
-            "UPDATE users SET botcoin = users.botcoin + %s, presenca = TRUE WHERE matricula = %s AND presenca = FALSE",
-            mats
-        )
+        for d in data:
+            matricula = d.get("matricula")
+            moedas = int(d.get("botcoin", 0))
+            workshop_id = d.get("workshop_id") 
+
+            if matricula and workshop_id:
+                db.execute(
+                    """
+                    UPDATE user_workshop 
+                    SET presenca = TRUE 
+                    WHERE matricula = %s AND id = %s AND presenca = FALSE
+                    """,
+                    (str(matricula), int(workshop_id))
+                )
+                if db.rowcount > 0 and moedas > 0:
+                    db.execute(
+                        "UPDATE users SET botcoin = botcoin + %s WHERE matricula = %s",
+                        (moedas, str(matricula))
+                    )
 
         banco.commit()
-
         db.close()
         banco.close()
 
-        return {
-            "erro": 0
-        }
+        return jsonify({"erro": 0, "msg": "Presenças e Botcoins processados!"})
     except Exception as e:
+        print(f"Erro ao salvar presença: {e}")
         return handle_error(e), 500
 
 @app.route("/api/workshops/atualizar-link", methods=["POST"])

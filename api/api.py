@@ -610,32 +610,38 @@ def presencaWorkshops():
 
         for d in data:
             matricula = d.get("matricula")
-            moedas = int(d.get("botcoin", 0))
-            workshop_id = d.get("workshop_id") 
+            workshop_id = d.get("workshop_id")
+            novo_estado_presenca = d.get("presente")
+            bonus_extra = int(d.get("botcoin", 0))
 
-            if matricula and workshop_id:
+            if matricula and workshop_id is not None:
                 db.execute(
-                    """
-                    UPDATE user_workshop 
-                    SET presenca = TRUE 
-                    WHERE matricula = %s AND id = %s AND presenca = FALSE
-                    """,
+                    "SELECT presenca FROM user_workshop WHERE matricula = %s AND id = %s",
                     (str(matricula), int(workshop_id))
                 )
-                if db.rowcount > 0 and moedas > 0:
-                    db.execute(
-                        "UPDATE users SET botcoin = botcoin + %s WHERE matricula = %s",
-                        (moedas, str(matricula))
-                    )
+                resultado = db.fetchone()
+                
+                if resultado:
+                    estado_antigo = resultado[0]
+
+                    if novo_estado_presenca and not estado_antigo:
+                        db.execute("UPDATE user_workshop SET presenca = TRUE WHERE matricula = %s AND id = %s", (matricula, workshop_id))
+                        db.execute("UPDATE users SET botcoin = botcoin + %s WHERE matricula = %s", (50 + bonus_extra, matricula))
+                    
+                    elif not novo_estado_presenca and estado_antigo:
+                        db.execute("UPDATE user_workshop SET presenca = FALSE WHERE matricula = %s AND id = %s", (matricula, workshop_id))
+                        db.execute("UPDATE users SET botcoin = botcoin - 50 WHERE matricula = %s", (matricula,))
+
+                    elif novo_estado_presenca and estado_antigo and bonus_extra > 0:
+                        db.execute("UPDATE users SET botcoin = botcoin + %s WHERE matricula = %s", (bonus_extra, matricula))
 
         banco.commit()
         db.close()
         banco.close()
-
-        return jsonify({"erro": 0, "msg": "Presenças e Botcoins processados!"})
+        return jsonify({"erro": 0, "msg": "Sincronização completa!"})
     except Exception as e:
-        print(f"Erro ao salvar presença: {e}")
-        return handle_error(e), 500
+        print(f"Erro ao sincronizar presença: {e}")
+        return {"erro": str(e)}, 500
 
 @app.route("/api/workshops/atualizar-link", methods=["POST"])
 def atualizar_link_quiz():

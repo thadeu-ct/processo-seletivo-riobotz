@@ -28,7 +28,7 @@ function VideosExtras() {
       descricao:
         "Domine a técnica de soldagem com o Manual do Mundo: do aquecimento dos terminais à aplicação do estanho, garantindo conexões elétricas robustas e duráveis para seus projetos.",
       youtubeId: "MGbgyuVXRcI", // https://www.youtube.com/watch?v=MGbgyuVXRcI
-      duracao: "10:15",
+      duracao: "18:24",
       tag: "Autônomos / Eletrônica",
     },
   ];

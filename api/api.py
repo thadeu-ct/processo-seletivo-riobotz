@@ -467,6 +467,7 @@ def getworkshops():
                 w.nome AS titulo,
                 w.descricao,
                 w.link,
+                w.quiz_link,
                 CASE 
                     WHEN w.is_online THEN 'Online'
                     ELSE 'Presencial'
@@ -509,6 +510,7 @@ def areaWorkshops():
                 w.nome AS titulo,
                 w.descricao,
                 w.link,
+                w.quiz_link,
                 CASE 
                     WHEN w.is_online THEN 'Online'
                     ELSE 'Presencial'
@@ -727,27 +729,24 @@ def atualizar_link_quiz():
         return jsonify({"erro": "Dados ausentes"}), 400
 
     workshop_id = data.get("workshop_id")
-    # O quiz_link pode vir como "/quiz/11" ou como null (para esconder)
-    novo_link = data.get("quiz_link") 
+    novo_link_quiz = data.get("quiz_link") 
 
     try:
         banco = get_db_connection()
         db = banco.cursor()
 
-        # O comando SQL que faz a mágica:
-        # Ele atualiza a coluna 'link' (ou o nome que ele deu para o link do quiz)
         db.execute(
-            "UPDATE workshops SET link = %s WHERE id = %s",
-            (novo_link, workshop_id)
+            "UPDATE workshops SET quiz_link = %s WHERE id = %s",
+            (novo_link_quiz, workshop_id)
         )
 
         banco.commit()
         db.close()
         banco.close()
 
-        return jsonify({"erro": 0, "status": "Link atualizado com sucesso!"})
+        return jsonify({"erro": 0, "status": "Quiz liberado/escondido com sucesso!"})
     except Exception as e:
-        print(f"Erro ao atualizar link: {e}")
+        print(f"Erro ao atualizar quiz_link: {e}")
         return {"erro": str(e)}, 500
 
 @app.route("/api/user/workshops", methods=["POST"])

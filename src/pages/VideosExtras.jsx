@@ -9,7 +9,7 @@ function VideosExtras() {
       titulo: "Como funciona um Motor Brushless?",
       descricao:
         "Entenda o funcionamento interno dos motores sem escovas: interação entre estator com eletroímas e rotor com ímãs permanentes, além do papel do ESC no controle de rotação.",
-      youtubeId: "bCEiOnuODac",
+      youtubeId: "bCEiOnuODac", // https://www.youtube.com/watch?v=bCEiOnuODac
       duracao: "04:40",
       tag: "Autônomos / Eletrônica / Mecânica",
     },
@@ -18,7 +18,7 @@ function VideosExtras() {
       titulo: "Como funciona um motor brushed?",
       descricao:
         "Descubra a mecânica dos motores com escovas: a função do comutador e das escovas de carvão na inversão da polaridade do rotor para manter o movimento contínuo via indução eletromagnética.",
-      youtubeId: "LAtPHANEfQo",
+      youtubeId: "LAtPHANEfQo", // https://www.youtube.com/watch?v=LAtPHANEfQo
       duracao: "04:50",
       tag: "Autônomos / Eletrônica / Mecânica",
     },
@@ -27,7 +27,7 @@ function VideosExtras() {
       titulo: "Aprenda a Soldar Eletrônica",
       descricao:
         "Domine a técnica de soldagem com o Manual do Mundo: do aquecimento dos terminais à aplicação do estanho, garantindo conexões elétricas robustas e duráveis para seus projetos.",
-      youtubeId: "7f6T6O_m9pM",
+      youtubeId: "MGbgyuVXRcI", // https://www.youtube.com/watch?v=MGbgyuVXRcI
       duracao: "10:15",
       tag: "Autônomos / Eletrônica",
     },

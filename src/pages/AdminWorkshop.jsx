@@ -77,6 +77,7 @@ function AdminWorkshop() {
           matricula: aluno.matricula,
           botcoin: ganhoPresenca + (aluno.bonus || 0),
           presente: aluno.presente,
+          workshop_id: Number(id),
         };
       })
       .filter(
@@ -98,13 +99,18 @@ function AdminWorkshop() {
 
       const data = await res.json();
       if (!data.erro) {
-        toast.success("Botcoins creditados e presenças salvas!");
+        toast.success("Lançamentos salvos com sucesso!");
         setAlunos((prev) =>
-          prev.map((a) => ({ ...a, jaEstavaPresente: a.presente, bonus: 0 })),
+          prev.map((a) => ({
+            ...a,
+            jaEstavaPresente: a.presente,
+            bonus: 0,
+          })),
         );
       }
     } catch (err) {
-      toast.error("Erro ao salvar no servidor: ", err);
+      toast.error("Erro ao salvar no servidor.");
+      console.error(err);
     }
   };
 

@@ -663,6 +663,63 @@ def presencaWorkshops():
         print(f"Erro ao sincronizar presença: {e}")
         return jsonify({"erro": str(e)}), 500
 
+@app.route("/api/workshops/adicionar-matricula", methods=["POST"])
+def adicionar_aluno_manual():
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"erro": "Dados ausentes"}), 400
+
+    matricula = data.get("matricula")
+    workshop_id = data.get("workshop_id")
+
+    if not matricula or not workshop_id:
+        return jsonify({"erro": "Matrícula e Workshop ID são obrigatórios"}), 400
+
+    try:
+        banco = get_db_connection()
+        db = banco.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+        db.execute("SELECT nome FROM users WHERE matricula = %s", (str(matricula),))
+        aluno = db.fetchone()
+
+        if not aluno:
+            db.close()
+            banco.close()
+            return jsonify({"erro": "Matrícula não encontrada no sistema RioBotz."}), 404
+
+        db.execute(
+            """
+            INSERT INTO user_workshop (matricula, id, presenca, bonus)
+            VALUES (%s, %s, FALSE, 0)
+            ON CONFLICT (matricula, id) DO NOTHING
+            """,
+            (str(matricula), int(workshop_id))
+        )
+        
+        ja_inscrito = db.rowcount == 0
+        
+        banco.commit()
+        db.close()
+        banco.close()
+
+        if ja_inscrito:
+            return jsonify({"erro": "Este aluno já está na lista deste workshop."}), 400
+
+        return jsonify({
+            "erro": 0,
+            "msg": "Aluno adicionado com sucesso!",
+            "aluno": {
+                "matricula": matricula,
+                "nome": aluno["nome"],
+                "presenca": False,
+                "bonus": 0
+            }
+        })
+
+    except Exception as e:
+        print(f"Erro ao adicionar aluno: {e}")
+        return jsonify({"erro": str(e)}), 500
+
 @app.route("/api/workshops/atualizar-link", methods=["POST"])
 def atualizar_link_quiz():
     data = request.get_json(silent=True)

@@ -134,6 +134,45 @@ function AdminWorkshop() {
     }
   };
 
+  const adicionarAluno = async () => {
+    if (!buscaMatricula.trim()) return toast.error("Digite uma matrícula.");
+
+    try {
+      const res = await fetch(`${API_URL}/workshops/adicionar-matricula`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          matricula: buscaMatricula,
+          workshop_id: id,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && !data.erro) {
+        toast.success(`${data.aluno.nome} adicionado à lista!`);
+
+        setAlunos((prev) => [
+          ...prev,
+          {
+            matricula: data.aluno.matricula,
+            nome: data.aluno.nome,
+            presente: false,
+            jaEstavaPresente: false,
+            bonus: 0,
+            bonusTotalAcumulado: 0,
+          },
+        ]);
+
+        setBuscaMatricula("");
+      } else {
+        toast.error(data.erro || "Erro ao adicionar aluno.");
+      }
+    } catch (err) {
+      toast.error("Erro de conexão com o servidor: ", err);
+    }
+  };
+
   if (!isAdminReal)
     return (
       <div className="min-h-screen bg-[#0a1945] text-white flex items-center justify-center font-black uppercase tracking-widest text-2xl">
@@ -199,9 +238,9 @@ function AdminWorkshop() {
             />
             <button
               className="bg-cyan-500 text-[#0a1945] px-4 py-2 rounded-xl font-black text-xs uppercase hover:bg-white transition-all"
-              onClick={() =>
-                toast("Ação de inscrição manual será programada em breve.")
-              }
+              onClick={() => {
+                adicionarAluno;
+              }}
             >
               + Adicionar
             </button>

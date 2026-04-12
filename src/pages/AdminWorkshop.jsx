@@ -11,6 +11,7 @@ function AdminWorkshop() {
   const [alunos, setAlunos] = useState([]);
   const [workshop, setWorkshop] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [buscaMatricula, setBuscaMatricula] = useState("");
 
   const matriculaUsuario = sessionStorage.getItem("matriculaUsuario") || "";
   const envAdmins = import.meta.env.VITE_ADMIN_MATRICULAS || "";
@@ -40,6 +41,7 @@ function AdminWorkshop() {
               presente: a.presenca || false,
               jaEstavaPresente: a.presenca || false,
               bonus: 0,
+              bonusTotalAcumulado: a.bonus || 0,
             })),
           );
         }
@@ -68,6 +70,16 @@ function AdminWorkshop() {
     );
   };
 
+  const removeBonus = (alunoId) => {
+    setAlunos((prev) =>
+      prev.map((a) =>
+        a.matricula === alunoId && a.bonus > 0
+          ? { ...a, bonus: a.bonus - 10 }
+          : a,
+      ),
+    );
+  };
+
   const handleSalvar = async () => {
     const dadosFormatados = alunos
       .map((aluno) => {
@@ -81,7 +93,7 @@ function AdminWorkshop() {
       })
       .filter(
         (d) =>
-          d.botcoin > 0 ||
+          d.botcoin !== 0 ||
           d.presente !==
             alunos.find((a) => a.matricula === d.matricula).jaEstavaPresente,
       );
@@ -103,6 +115,7 @@ function AdminWorkshop() {
           prev.map((a) => ({
             ...a,
             jaEstavaPresente: a.presente,
+            bonusTotalAcumulado: a.bonusTotalAcumulado + a.bonus,
             bonus: 0,
           })),
         );
@@ -140,7 +153,7 @@ function AdminWorkshop() {
     <div className="min-h-screen bg-[#0a1945] flex flex-col font-sans">
       <PrivateHeader />
       <main className="flex-grow flex flex-col items-center py-8 px-4 md:px-8">
-        <div className="w-full max-w-5xl mb-6">
+        <div className="w-full max-w-5xl mb-6 flex justify-between items-center">
           <Link
             to="/home"
             className="inline-flex items-center gap-2 text-gray-400 hover:text-cyan-400 font-bold transition-all uppercase text-xs tracking-widest"
@@ -162,22 +175,32 @@ function AdminWorkshop() {
           </Link>
         </div>
 
-        <div className="w-full max-w-5xl mb-8 flex items-end justify-between border-b border-white/10 pb-6">
+        <div className="w-full max-w-5xl mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-6">
           <div>
             <span className="text-cyan-400 font-black tracking-[0.2em] uppercase text-[10px] mb-2 block">
               Painel de Controle
             </span>
-            <h1 className="text-white font-black text-3xl md:text-5xl tracking-tighter uppercase">
+            <h1 className="text-white font-black text-3xl md:text-5xl tracking-tighter uppercase leading-none">
               {workshop.titulo}
             </h1>
           </div>
-          <div className="hidden md:flex flex-col items-end">
-            <span className="text-gray-500 font-bold uppercase text-[10px] tracking-widest">
-              Inscritos
-            </span>
-            <span className="text-white font-black text-4xl">
-              {alunos.length}
-            </span>
+
+          <div className="flex items-center gap-2 bg-white/5 p-2 rounded-2xl border border-white/10">
+            <input
+              type="text"
+              placeholder="Matrícula do aluno..."
+              value={buscaMatricula}
+              onChange={(e) => setBuscaMatricula(e.target.value)}
+              className="bg-transparent border-none outline-none text-white text-sm px-4 py-2 w-48 font-bold"
+            />
+            <button
+              className="bg-cyan-500 text-[#0a1945] px-4 py-2 rounded-xl font-black text-xs uppercase hover:bg-white transition-all"
+              onClick={() =>
+                toast("Ação de inscrição manual será programada em breve.")
+              }
+            >
+              + Adicionar
+            </button>
           </div>
         </div>
 
@@ -188,7 +211,7 @@ function AdminWorkshop() {
                 <th className="p-6 text-center w-32">Presença (+50 ₿)</th>
                 <th className="p-6">Matrícula</th>
                 <th className="p-6">Candidato</th>
-                <th className="p-6 text-center w-48">Lançar Bônus</th>
+                <th className="p-6 text-center w-64">Ajustar Bônus</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
@@ -221,28 +244,48 @@ function AdminWorkshop() {
                     {aluno.matricula}
                   </td>
                   <td className="p-6">
-                    <div className="text-white font-black uppercase text-sm tracking-tight">
-                      {aluno.nome}
+                    <div className="flex items-center gap-3">
+                      <div className="text-white font-black uppercase text-sm tracking-tight">
+                        {aluno.nome}
+                      </div>
+                      {aluno.bonusTotalAcumulado > 0 && (
+                        <span className="text-[10px] bg-cyan-500/20 text-cyan-400 px-2 py-0.5 rounded-md font-black border border-cyan-500/30">
+                          {aluno.bonusTotalAcumulado} ₿ salvos
+                        </span>
+                      )}
                     </div>
                     {aluno.jaEstavaPresente && (
-                      <span className="text-[9px] bg-green-500/10 text-green-500 px-2 py-0.5 rounded-full font-bold uppercase tracking-widest">
+                      <span className="text-[9px] bg-green-500/10 text-green-500 px-2 py-0.5 rounded-full font-bold uppercase tracking-widest mt-1 inline-block">
                         Confirmado
                       </span>
                     )}
                   </td>
                   <td className="p-6 text-center">
-                    <div className="flex items-center justify-center gap-3">
+                    <div className="flex items-center justify-center gap-2">
+                      <button
+                        onClick={() => removeBonus(aluno.matricula)}
+                        disabled={aluno.bonus === 0}
+                        className={`w-8 h-8 rounded-lg border flex items-center justify-center transition-all ${
+                          aluno.bonus > 0
+                            ? "bg-red-500/10 border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
+                            : "bg-gray-800 border-gray-700 text-gray-600 cursor-not-allowed"
+                        }`}
+                      >
+                        -
+                      </button>
+
+                      <div
+                        className={`min-w-[60px] py-1 rounded-lg font-black text-xs ${aluno.bonus > 0 ? "bg-yellow-500 text-[#0a1945]" : "bg-white/5 text-gray-500"}`}
+                      >
+                        +{aluno.bonus}
+                      </div>
+
                       <button
                         onClick={() => addBonus(aluno.matricula)}
-                        className="px-4 py-2 bg-yellow-500/10 text-yellow-500 border border-yellow-500/30 rounded-xl font-black text-xs hover:bg-yellow-500 hover:text-[#0a1945] transition-all active:scale-95"
+                        className="w-8 h-8 rounded-lg bg-yellow-500/10 border border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-[#0a1945] font-black transition-all"
                       >
-                        +10 ₿
+                        +
                       </button>
-                      {aluno.bonus > 0 && (
-                        <div className="bg-yellow-500 text-[#0a1945] font-black text-xs px-2 py-1 rounded-md animate-bounce">
-                          +{aluno.bonus}
-                        </div>
-                      )}
                     </div>
                   </td>
                 </tr>

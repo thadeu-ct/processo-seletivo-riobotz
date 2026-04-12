@@ -638,7 +638,8 @@ def presencaWorkshops():
         banco.commit()
         db.close()
         banco.close()
-        return jsonify({"erro": 0, "msg": "Sincronização completa!"})
+        user = get_user(matricula)
+        return jsonify({"erro": 0, "botcoin": user["botcoin"], "msg": "Sincronização completa!"})
     except Exception as e:
         print(f"Erro ao sincronizar presença: {e}")
         return {"erro": str(e)}, 500

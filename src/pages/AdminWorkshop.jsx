@@ -105,6 +105,10 @@ function AdminWorkshop() {
             bonus: 0,
           })),
         );
+        if (data.botcoin !== undefined) {
+          sessionStorage.setItem("botcoinUsuario", data.botcoin);
+          window.dispatchEvent(new Event("botcoinUpdated"));
+        }
       }
     } catch (err) {
       toast.error("Erro ao salvar no servidor.");

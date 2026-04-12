@@ -10,7 +10,7 @@ function PrivateNavBar() {
 
   useEffect(() => {
     const updatebotcoin = () => {
-      const storedbotcoin = sessionStorage.getItem("botcoin");
+      const storedbotcoin = sessionStorage.getItem("botcoinUsuário");
       if (storedbotcoin) {
         setbotcoin(parseInt(storedbotcoin, 10));
       }

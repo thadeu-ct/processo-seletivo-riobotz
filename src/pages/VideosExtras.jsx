@@ -16,10 +16,20 @@ function VideosExtras() {
     {
       id: "2",
       titulo: "Como funciona um motor brushed?",
-      descricao: "",
+      descricao:
+        "Descubra a mecânica dos motores com escovas: a função do comutador e das escovas de carvão na inversão da polaridade do rotor para manter o movimento contínuo via indução eletromagnética.",
       youtubeId: "LAtPHANEfQo",
       duracao: "04:50",
       tag: "Autônomos / Eletrônica / Mecânica",
+    },
+    {
+      id: "3",
+      titulo: "Aprenda a Soldar Eletrônica",
+      descricao:
+        "Domine a técnica de soldagem com o Manual do Mundo: do aquecimento dos terminais à aplicação do estanho, garantindo conexões elétricas robustas e duráveis para seus projetos.",
+      youtubeId: "7f6T6O_m9pM",
+      duracao: "10:15",
+      tag: "Autônomos / Eletrônica",
     },
   ];
 

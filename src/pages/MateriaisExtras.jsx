@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; // Importado useNavigate
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import PrivateHeader from "../components/PrivateHeader";
 import Footer from "../components/Footer";
@@ -67,7 +67,6 @@ function MateriaisExtras() {
       <PrivateHeader />
 
       <main className="flex-grow flex relative">
-        {/* SIDEBAR DO PDF */}
         <div
           className={`fixed inset-y-0 left-0 z-40 transition-all duration-500 ease-in-out bg-white shadow-2xl flex ${isPdfOpen ? "w-full md:w-[50%]" : "w-0"}`}
         >

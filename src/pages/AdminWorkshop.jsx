@@ -76,6 +76,7 @@ function AdminWorkshop() {
           botcoin: aluno.bonus || 0,
           presente: aluno.presente,
           workshop_id: Number(id),
+          admin_mat: matriculaUsuario,
         };
       })
       .filter(

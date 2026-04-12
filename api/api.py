@@ -257,37 +257,63 @@ def registrar():
 @app.route("/api/admin/quiz/resultados", methods=["POST"])
 def quizHistorico():
     data = request.get_json(silent=True)
-    workshop_id = int(data.get("workshop_id")) if data else int(request.form.get("workshop_id"))
+    if not data:
+        return jsonify({"erro": "Dados ausentes"}), 400
+
+    workshop_id = data.get("workshop_id")
     user_mat = data.get("user_mat")
     completado = data.get("completado", False)
+
     try:
         banco = get_db_connection()
-        db = banco.cursor()
+        # Usamos RealDictCursor para garantir que o retorno seja um dicionário chave:valor
+        db = banco.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
         if completado and user_mat:
+            # 1. Registra a trava (o par matricula + workshop)
             db.execute(
                 """
                 INSERT INTO user_pergunta (user_mat, workshop_id)
                 VALUES (%s, %s)
+                ON CONFLICT DO NOTHING
                 """,
                 (str(user_mat), int(workshop_id))
             )
+            banco.commit()
+
+            # 2. Busca o saldo atual do usuário para devolver pro Front atualizar a NavBar
+            db.execute("SELECT botcoin FROM users WHERE matricula = %s", (str(user_mat),))
+            user_data = db.fetchone()
+            
+            db.close()
+            banco.close()
+            
+            # RETORNO IMPORTANTE: O Flask precisa de um jsonify aqui
+            return jsonify({
+                "erro": 0, 
+                "msg": "Sucesso", 
+                "botcoin": user_data["botcoin"] if user_data else 0
+            })
+
         else:
+            # Lógica de consulta (Admin ou Verificação de entrada)
             db.execute(
                 """
                 SELECT u.user_mat AS matricula, COUNT(*) AS total
-                FROM user_pergunta AS u JOIN perguntas AS p ON p.workshop_id = u.workshop_id
-                WHERE p.workshop_id = %s
+                FROM user_pergunta AS u 
+                WHERE u.workshop_id = %s
                 GROUP BY u.user_mat
                 """,
-                (workshop_id, )
+                (int(workshop_id), )
             )
-        rows = db.fetchall()
-        db.close()
-        banco.close()
-        return jsonify(rows)
+            rows = db.fetchall()
+            db.close()
+            banco.close()
+            return jsonify(rows)
+
     except Exception as e:
-        return handle_error(e), 500
-    
+        print(f"Erro na rota resultados: {e}")
+        return jsonify({"erro": str(e)}), 500 
 
 '''
 ------------------ Funções de Trocar senha ------------------

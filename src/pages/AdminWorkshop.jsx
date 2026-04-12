@@ -238,9 +238,7 @@ function AdminWorkshop() {
             />
             <button
               className="bg-cyan-500 text-[#0a1945] px-4 py-2 rounded-xl font-black text-xs uppercase hover:bg-white transition-all"
-              onClick={() => {
-                adicionarAluno;
-              }}
+              onClick={adicionarAluno}
             >
               + Adicionar
             </button>

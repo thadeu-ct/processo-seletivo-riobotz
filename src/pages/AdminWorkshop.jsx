@@ -71,11 +71,9 @@ function AdminWorkshop() {
   const handleSalvar = async () => {
     const dadosFormatados = alunos
       .map((aluno) => {
-        const ganhoPresenca =
-          aluno.presente && !aluno.jaEstavaPresente ? 50 : 0;
         return {
           matricula: aluno.matricula,
-          botcoin: ganhoPresenca + (aluno.bonus || 0),
+          botcoin: aluno.bonus || 0,
           presente: aluno.presente,
           workshop_id: Number(id),
         };

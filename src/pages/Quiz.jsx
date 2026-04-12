@@ -125,7 +125,7 @@ function Quiz() {
         toast.success(`Quiz Finalizado! Você ganhou ${totalMoedas} Botcoins!`, {
           icon: "💰",
         });
-        sessionStorage.setItem("botcoin", dataBotcoin.botcoin);
+        sessionStorage.setItem("botcoinUsuario", dataBotcoin.botcoin);
         window.dispatchEvent(new Event("botcoinUpdated"));
       }
     } catch (err) {

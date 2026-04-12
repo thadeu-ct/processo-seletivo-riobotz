@@ -72,11 +72,15 @@ function AdminWorkshop() {
 
   const removeBonus = (alunoId) => {
     setAlunos((prev) =>
-      prev.map((a) =>
-        a.matricula === alunoId && a.bonus > 0
-          ? { ...a, bonus: a.bonus - 10 }
-          : a,
-      ),
+      prev.map((a) => {
+        if (a.matricula === alunoId) {
+          const saldoFuturo = a.bonusTotalAcumulado + (a.bonus - 10);
+
+          if (saldoFuturo >= 0) {
+            return { ...a, bonus: a.bonus - 10 };
+          }
+        }
+      }),
     );
   };
 
@@ -264,9 +268,9 @@ function AdminWorkshop() {
                     <div className="flex items-center justify-center gap-2">
                       <button
                         onClick={() => removeBonus(aluno.matricula)}
-                        disabled={aluno.bonus === 0}
+                        disabled={aluno.bonusTotalAcumulado + aluno.bonus === 0}
                         className={`w-8 h-8 rounded-lg border flex items-center justify-center transition-all ${
-                          aluno.bonus > 0
+                          aluno.bonusTotalAcumulado + aluno.bonus > 0
                             ? "bg-red-500/10 border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
                             : "bg-gray-800 border-gray-700 text-gray-600 cursor-not-allowed"
                         }`}

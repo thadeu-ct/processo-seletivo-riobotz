@@ -9,7 +9,7 @@ function Workshop({
   titulo,
   descricao,
   link,
-  quizLink,
+  quiz_link,
   tipo,
   dataHora,
   local,
@@ -124,13 +124,13 @@ function Workshop({
               ) : (
                 <Link
                   to={
-                    quizLink
+                    quiz_link
                       ? `/admin/quiz/${id}`
                       : `/admin/quiz/perguntas/${id}`
                   }
-                  className={`w-full px-8 py-4 rounded-full border-2 font-black text-center ${quizLink ? "bg-green-600/20 border-green-500 text-green-400" : "bg-yellow-500/10 border-yellow-500 text-yellow-500"}`}
+                  className={`w-full px-8 py-4 rounded-full border-2 font-black text-center ${quiz_link ? "bg-green-600/20 border-green-500 text-green-400" : "bg-yellow-500/10 border-yellow-500 text-yellow-500"}`}
                 >
-                  {quizLink ? "Resultados" : "Configurar Quiz"}
+                  {quiz_link ? "Resultados" : "Configurar Quiz"}
                 </Link>
               )}
             </div>
@@ -145,9 +145,9 @@ function Workshop({
                   {statusInscrito ? "✓ Inscrito" : "Inscrever-se"}
                 </button>
               ) : (
-                quizLink && (
+                quiz_link && (
                   <Link
-                    to={quizLink}
+                    to={quiz_link}
                     className="w-full sm:w-auto px-8 py-4 rounded-full bg-yellow-400 text-[#0a1945] font-black text-lg hover:bg-white transition-all shadow-lg text-center"
                   >
                     Fazer Quiz

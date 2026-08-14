@@ -6,7 +6,6 @@ import "./index.css";
 
 // components
 import RotaProtegida from "./components/RotaProtegida";
-import AdminRoute from "./components/AdminRoute";
 import EmConstrucao from "./components/UnderConstruction";
 
 // features
@@ -34,6 +33,8 @@ import MateriaisExtras from "./pages/MateriaisExtras";
 import AdminQuiz from "./pages/AdminQuiz";
 import AdminPerguntas from "./pages/AdminPerguntas";
 import VideosExtras from "./pages/VideosExtras";
+
+import AdminRoute from "./services/AdminRoute";
 
 const router = createBrowserRouter([
   {

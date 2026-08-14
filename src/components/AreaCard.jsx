@@ -8,12 +8,12 @@ function AreaCard({
   textClass,
   hoverShadowClass,
   iconeBg,
-  isLocked,
+  taBloqueado,
 }) {
-  const cardContent = (
+  const conteudoCard = (
     <div
       className={`relative group rounded-3xl p-8 flex flex-col h-full transition-all duration-300 overflow-hidden ${bgClass} ${
-        isLocked
+        taBloqueado
           ? "cursor-not-allowed"
           : `hover:-translate-y-2 hover:shadow-2xl ${hoverShadowClass}`
       }`}
@@ -62,7 +62,7 @@ function AreaCard({
         </div>
       </div>
 
-      {isLocked && (
+      {taBloqueado && (
         <div className="absolute inset-0 bg-[#0a1945]/90 backdrop-blur-sm rounded-3xl flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
           <svg
             className="w-8 h-8 text-amber-400"
@@ -88,8 +88,8 @@ function AreaCard({
     </div>
   );
 
-  if (isLocked) return cardContent;
-  return <Link to={`/workshops/${id}`}>{cardContent}</Link>;
+  if (taBloqueado) return conteudoCard;
+  return <Link to={`/workshops/${id}`}>{conteudoCard}</Link>;
 }
 
 export default AreaCard;

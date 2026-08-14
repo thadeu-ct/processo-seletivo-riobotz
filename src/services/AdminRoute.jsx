@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
 
-function AdminRoute({ children }) {
+function RotaAdmin({ children }) {
   const matriculaAtual = sessionStorage.getItem("matriculaUsuario") || "";
 
   const envAdmins = import.meta.env.VITE_ADMIN_MATRICULAS || "";
@@ -13,4 +13,4 @@ function AdminRoute({ children }) {
   return children;
 }
 
-export default AdminRoute;
+export default RotaAdmin;

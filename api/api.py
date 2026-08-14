@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from functions import *
+from .functions import *
 import psycopg2
 import psycopg2.extras
 import random

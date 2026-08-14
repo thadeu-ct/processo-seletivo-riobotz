@@ -11,7 +11,7 @@ from email.mime.multipart import MIMEMultipart
 '''
     Constantes
 '''
-DATA_INICIO: datetime = datetime(2026, 3, 25, 19, 0, 0, 0, tzinfo=ZoneInfo("America/Sao_Paulo"))
+DATA_INICIO: datetime = datetime(2026, 9, 1, 19, 0, 0, 0, tzinfo=ZoneInfo("America/Sao_Paulo"))
 DANGEROUS_CHARS: set = set(""",'";?""")
 ERRO_NOME = 1
 ERRO_MATRICULA = 2

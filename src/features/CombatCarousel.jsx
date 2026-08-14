@@ -30,6 +30,13 @@ const combatVideos = [
     videoId: "OF76Ie9mRQc",
     startSeconds: 29442,
   },
+  {
+    id: 4,
+    title: "BattleBots 2026",
+    location: "BattleBots - Las Vegas, EUA",
+    videoId: "xOOMHMxjsXg",
+    startSeconds: 731,
+  },
 ];
 
 function CombatCarousel() {

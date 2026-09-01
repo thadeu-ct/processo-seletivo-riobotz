@@ -16,7 +16,7 @@ const AREAS = [
 
 const generateSlots = () => {
   const slots = [];
-  for (let h = 13; h <= 21; h++) {
+  for (let h = 11; h <= 19; h++) {
     slots.push(`${h.toString().padStart(2, "0")}:00`);
     slots.push(`${h.toString().padStart(2, "0")}:30`);
   }

@@ -72,7 +72,7 @@ const parseTime = (timeStr) => {
 };
 
 const getEventStyle = (inicio, fim) => {
-  const baseMinutes = parseTime("13:00");
+  const baseMinutes = parseTime("11:00");
   const startMin = parseTime(inicio);
   const endMin = parseTime(fim);
   const top = ((startMin - baseMinutes) / 30) * SLOT_HEIGHT;

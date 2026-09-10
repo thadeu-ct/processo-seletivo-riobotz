@@ -15,6 +15,14 @@ function VideosExtras() {
     },
     {
       id: "2",
+      titulo: "Evolução de um motor brushed",
+      descricao: "",
+      youtubeId: "CWulQ1ZSE3c", // https://www.youtube.com/watch?v=LAtPHANEfQo
+      duracao: "",
+      tag: "Autônomos / Eletrônica / Mecânica",
+    },
+    {
+      id: "3",
       titulo: "Como funciona um motor brushed?",
       descricao:
         "Descubra a mecânica dos motores com escovas: a função do comutador e das escovas de carvão na inversão da polaridade do rotor para manter o movimento contínuo via indução eletromagnética.",
@@ -23,7 +31,7 @@ function VideosExtras() {
       tag: "Autônomos / Eletrônica / Mecânica",
     },
     {
-      id: "3",
+      id: "4",
       titulo: "Aprenda a Soldar Eletrônica",
       descricao:
         "Domine a técnica de soldagem com o Manual do Mundo: do aquecimento dos terminais à aplicação do estanho, garantindo conexões elétricas robustas e duráveis para seus projetos.",

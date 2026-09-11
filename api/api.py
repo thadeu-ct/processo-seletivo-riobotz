@@ -630,9 +630,9 @@ def presencaWorkshops():
 
                     diff_presenca = 0
                     if novo_estado_presenca and not estado_anterior:
-                        diff_presenca = 50
+                        diff_presenca = 100
                     elif not novo_estado_presenca and estado_anterior:
-                        diff_presenca = -50
+                        diff_presenca = -100
 
                     db.execute(
                         """

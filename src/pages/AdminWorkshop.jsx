@@ -249,7 +249,7 @@ function AdminWorkshop() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-white/5 border-b border-white/10 text-gray-400 text-[10px] font-black uppercase tracking-[0.2em]">
-                <th className="p-6 text-center w-32">Presença (+50 ₿)</th>
+                <th className="p-6 text-center w-32">Presença (+100 ₿)</th>
                 <th className="p-6">Matrícula</th>
                 <th className="p-6">Candidato</th>
                 <th className="p-6 text-center w-64">Ajustar Bônus</th>

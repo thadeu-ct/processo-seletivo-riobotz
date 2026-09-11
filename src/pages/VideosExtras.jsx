@@ -16,9 +16,9 @@ function VideosExtras() {
     {
       id: "2",
       titulo: "Evolução de um motor brushed",
-      descricao: "",
+      descricao: "Entenda o processo de evolução da ideia de criação de um motor brushed, os problemas infrentados e as soluções criadas para tornar factível o motor.",
       youtubeId: "CWulQ1ZSE3c", // https://www.youtube.com/watch?v=LAtPHANEfQo
-      duracao: "",
+      duracao: "10:03",
       tag: "Autônomos / Eletrônica / Mecânica",
     },
     {

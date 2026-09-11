@@ -80,6 +80,7 @@ function AdminWorkshop() {
             return { ...a, bonus: a.bonus - 10 };
           }
         }
+        return a;
       }),
     );
   };
